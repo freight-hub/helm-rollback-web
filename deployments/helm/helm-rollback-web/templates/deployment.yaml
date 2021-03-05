@@ -1,3 +1,4 @@
+{{- $fullName := include "helmrollbackweb.fullname" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -30,13 +31,27 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           env:
+            {{- range $key, $value := .Values.helmrollbackweb.env }}
+            - name: {{ $key }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ $fullName }}
+                  key: {{ $key | quote }}
+            {{- end }}
+            {{- range $key, $value := .Values.helmrollbackweb.secretenv }}
+            - name: {{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $fullName }}
+                  key: {{ $key | quote }}
+            {{- end }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default "latest" }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 5353
+              containerPort: 8080
               protocol: TCP
           livenessProbe:
             httpGet:
