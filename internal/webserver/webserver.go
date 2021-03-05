@@ -1,20 +1,230 @@
 package webserver
 
 import (
+	"encoding/json"
 	"internal/utility"
+	"io/ioutil"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/securecookie"
+	"github.com/gorilla/sessions"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 
 	"fmt"
 	"html/template"
 	"net/http"
+	"net/url"
 	"os"
+	"os/exec"
 	"strings"
 	"time"
 
-	rgb "github.com/foresthoffman/rgblog"
+	logger "github.com/apsdehal/go-logger"
 )
+
+var (
+	oauthConfGl = &oauth2.Config{
+		ClientID:     "",
+		ClientSecret: "",
+		RedirectURL:  "http://localhost:8080/callback-gl",
+		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
+		Endpoint:     google.Endpoint,
+	}
+	oauthStateStringGl = ""
+	log                *logger.Logger
+	sessionStorage     *sessions.CookieStore
+	helmCommand        = ""
+)
+
+type loginStruct struct {
+	Id            string `json:"id"` // Go has no int128 type. I've seen this before.
+	Email         string `json:"email"`
+	VerifiedEmail bool   `json:"verified_email"`
+	PictureUrl    string `json:"picture"`
+	HD            string `json:"hd"`
+}
+
+func GoogleLoginHandler(response http.ResponseWriter, request *http.Request) {
+	LoginHandler(response, request, oauthConfGl, oauthStateStringGl)
+}
+
+func LoginHandler(response http.ResponseWriter, request *http.Request, oauthConf *oauth2.Config, oauthStateString string) {
+	URL, err := url.Parse(oauthConf.Endpoint.AuthURL)
+	if err != nil {
+		log.Error("Parse: " + err.Error())
+	}
+	log.Info(URL.String())
+	parameters := url.Values{}
+	parameters.Add("client_id", oauthConf.ClientID)
+	parameters.Add("scope", strings.Join(oauthConf.Scopes, " "))
+	parameters.Add("redirect_uri", oauthConf.RedirectURL)
+	parameters.Add("response_type", "code")
+	parameters.Add("state", oauthStateString)
+	URL.RawQuery = parameters.Encode()
+	url := URL.String()
+	log.Info(url)
+	http.Redirect(response, request, url, http.StatusTemporaryRedirect)
+}
+
+/*
+CallBackFromGoogleHandler Function
+*/
+func CallBackFromGoogleHandler(response http.ResponseWriter, request *http.Request) {
+	session, _ := sessionStorage.Get(request, "session-name")
+	log.Info("Callback-gl..")
+
+	state := request.FormValue("state")
+	log.Info(state)
+	if state != oauthStateStringGl {
+		log.Info("invalid oauth state, expected " + oauthStateStringGl + ", got " + state + "\n")
+		http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
+		return
+	}
+
+	code := request.FormValue("code")
+	log.Info(code)
+
+	if code == "" {
+		log.Warning("Code not found..")
+		response.Write([]byte("Code Not Found to provide AccessToken..\n"))
+		reason := request.FormValue("error_reason")
+		if reason == "user_denied" {
+			response.Write([]byte("User has denied Permission.."))
+		}
+		// User has denied access..
+		// http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
+	} else {
+		token, err := oauthConfGl.Exchange(oauth2.NoContext, code)
+		if err != nil {
+			log.Error("oauthConfGl.Exchange() failed with " + err.Error() + "\n")
+			return
+		}
+		log.Info("TOKEN>> AccessToken>> " + token.AccessToken)
+		log.Info("TOKEN>> Expiration Time>> " + token.Expiry.String())
+		log.Info("TOKEN>> RefreshToken>> " + token.RefreshToken)
+
+		resp, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + url.QueryEscape(token.AccessToken))
+		if err != nil {
+			log.Error("Get: " + err.Error() + "\n")
+			http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
+			return
+		}
+		defer resp.Body.Close()
+
+		respBytes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Error("ReadAll: " + err.Error() + "\n")
+			http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
+			return
+		}
+
+		log.Info("parseResponseBody: " + string(respBytes) + "\n")
+
+		var loginData loginStruct
+		err = json.Unmarshal([]byte(respBytes), &loginData)
+		if err != nil {
+			log.Error("Unmarshal: " + err.Error() + "\n")
+			http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
+			return
+		}
+		session.Values["userEmail"] = loginData.Email
+		err = session.Save(request, response)
+		if err != nil {
+			log.Error("Session save error: " + err.Error() + "\n")
+			http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
+			return
+		}
+		log.InfoF("Successfully logged in user %s", loginData.Email)
+		http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
+		return
+	}
+}
+
+func LoginStatusHandler(response http.ResponseWriter, request *http.Request) {
+	response.Header().Add("Content-type", "application/json")
+	session, _ := sessionStorage.Get(request, "session-name")
+	if session.Values["userEmail"] != nil {
+		fmt.Fprintf(response, `{"email":"%s"}`, session.Values["userEmail"])
+	} else {
+		fmt.Fprintf(response, `{"email":null}`)
+	}
+}
+
+func HelmListHandler(response http.ResponseWriter, request *http.Request) {
+	session, _ := sessionStorage.Get(request, "session-name")
+	if session.Values["userEmail"] == nil {
+		UnauthorizedHandler(response, request)
+		return
+	}
+	userEmail := session.Values["userEmail"].(string)
+	if !utility.UserIsAllowed(userEmail) {
+		UnauthorizedHandler(response, request)
+		return
+	}
+	log.Info("Executing `" + helmCommand + " list -o json --all-namespaces")
+	out, err := exec.Command(helmCommand, "list", "-o", "json", "--all-namespaces").Output()
+	if err != nil {
+		ServerErrorHandler(response, request)
+		return
+	}
+	type releaseStruct struct {
+		ReleaseName       string `json:"name"` // Go has no int128 type. I've seen this before.
+		ReleaseNamespace  string `json:"namespace"`
+		ReleaseRevision   string `json:"revision"`
+		ReleaseUpdated    string `json:"updated"`
+		ReleaseStatus     string `json:"status"`
+		ReleaseChart      string `json:"chart"`
+		ReleaseAppVersion string `json:"app_version"`
+	}
+	var releases []releaseStruct
+	err = json.Unmarshal([]byte(out), &releases)
+	if err != nil {
+		ServerErrorHandler(response, request)
+		return
+	}
+	response.Header().Add("Content-type", "application/json")
+	fmt.Fprint(response, string(out))
+}
+
+func HelmHistoryHandler(response http.ResponseWriter, request *http.Request) {
+	vars := mux.Vars(request)
+	session, _ := sessionStorage.Get(request, "session-name")
+	if session.Values["userEmail"] == nil {
+		UnauthorizedHandler(response, request)
+		return
+	}
+	userEmail := session.Values["userEmail"].(string)
+	if !utility.UserIsAllowed(userEmail) {
+		UnauthorizedHandler(response, request)
+		return
+	}
+	log.Info("Executing `" + helmCommand + " history -o json --namespace " + vars["namespace"] + " " + vars["releasename"])
+	out, err := exec.Command(helmCommand, "history", "-o", "json", "--namespace", vars["namespace"], vars["releasename"]).Output()
+	if err != nil {
+		log.Error(err.Error())
+		ServerErrorHandler(response, request)
+		return
+	}
+	type releaseStruct struct {
+		ReleaseName       string `json:"name"`
+		ReleaseRevision   int    `json:"revision"`
+		ReleaseUpdated    string `json:"updated"`
+		ReleaseStatus     string `json:"status"`
+		ReleaseChart      string `json:"chart"`
+		ReleaseAppVersion string `json:"app_version"`
+	}
+	var releases []releaseStruct
+	err = json.Unmarshal([]byte(out), &releases)
+	if err != nil {
+		log.Error(err.Error())
+		ServerErrorHandler(response, request)
+		return
+	}
+	response.Header().Add("Content-type", "application/json")
+	fmt.Fprint(response, string(out))
+}
 
 func HealthHandler(response http.ResponseWriter, request *http.Request) {
 	response.Header().Add("Content-type", "text/plain")
@@ -88,6 +298,13 @@ func UnauthorizedHandler(response http.ResponseWriter, request *http.Request) {
 	tmpl.Execute(response, nil)
 }
 
+func ServerErrorHandler(response http.ResponseWriter, request *http.Request) {
+	response.Header().Add("X-Template-File", "html"+request.URL.Path)
+	response.WriteHeader(503)
+	tmpl := template.Must(template.ParseFiles("web/503.html"))
+	tmpl.Execute(response, nil)
+}
+
 func ReactIndexHandler(entrypoint string) func(w http.ResponseWriter, r *http.Request) {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, entrypoint)
@@ -97,13 +314,31 @@ func ReactIndexHandler(entrypoint string) func(w http.ResponseWriter, r *http.Re
 }
 
 func HandleHTTP(GoogleClientID string, GoogleClientSecret string, port string) {
-	rgb.YPrintf("[%s] Inside Go Func...\n", utility.TimeStamp())
+	err := error(nil)
+	log, err = logger.New("hrw-webserver", 1, os.Stderr)
+	if err != nil {
+		panic(err) // Check for error
+	}
+	helmCommand = os.Getenv("HELM_ROLLBACK_WEB_HELM_COMMAND")
+	if helmCommand == "" {
+		helmCommand = "helm"
+	}
+	sessionStorage = sessions.NewCookieStore([]byte(securecookie.GenerateRandomKey(32)))
+	oauthConfGl.ClientID = GoogleClientID
+	oauthConfGl.ClientSecret = GoogleClientSecret
+	oauthStateStringGl = ""
+	log.InfoF("Inside Go Func...\n")
 	r := mux.NewRouter()
 	loggedRouter := handlers.LoggingHandler(os.Stdout, r)
 	r.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
+	r.HandleFunc("/login-status", LoginStatusHandler)
 	r.HandleFunc("/healthz", HealthHandler)
 	r.HandleFunc("/web/{.*}", TemplateHandler)
 	r.PathPrefix("/static").Handler(http.StripPrefix("/static", http.FileServer(http.Dir("./web/react-frontend/static"))))
+	r.HandleFunc("/login", GoogleLoginHandler)
+	r.HandleFunc("/callback-gl", CallBackFromGoogleHandler)
+	r.HandleFunc("/helm-list", HelmListHandler)
+	r.HandleFunc("/helm-history/{namespace}/{releasename}", HelmHistoryHandler)
 	r.PathPrefix("/").HandlerFunc(ReactIndexHandler("./web/react-frontend/index.html"))
 	http.Handle("/", r)
 	srv := &http.Server{
@@ -112,6 +347,6 @@ func HandleHTTP(GoogleClientID string, GoogleClientSecret string, port string) {
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
-	fmt.Println("Listening on 0.0.0.0:" + port)
+	log.InfoF("Listening on 0.0.0.0:%s")
 	srv.ListenAndServe()
 }

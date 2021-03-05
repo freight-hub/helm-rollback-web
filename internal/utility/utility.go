@@ -27,3 +27,11 @@ func IsLower(s string) bool {
 	}
 	return true
 }
+
+func UserIsAllowed(email string) bool {
+	if email == "martyn.ranyard@forto.com" {
+		return true
+	} else {
+		return false
+	}
+}
