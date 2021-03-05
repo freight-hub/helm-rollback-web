@@ -43,6 +43,7 @@ ingress:
 helmrollbackweb:
   env:
     HELM_ROLLBACK_WEB_GCP_CLIENT_ID: 827794444486-s7n1oqbcscctg6r0g0j9ub1ut1etm576.apps.googleusercontent.com
+    HELM_ROLLBACK_WEB_HELM_COMMAND: /usr/bin/helm3
   secretenv:
 
 resources: {}
