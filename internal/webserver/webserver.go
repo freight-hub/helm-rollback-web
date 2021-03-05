@@ -166,6 +166,7 @@ func HelmListHandler(response http.ResponseWriter, request *http.Request) {
 	log.Info("Executing `" + helmCommand + " list -o json --all-namespaces")
 	out, err := exec.Command(helmCommand, "list", "-o", "json", "--all-namespaces").Output()
 	if err != nil {
+		log.Error(err.Error())
 		ServerErrorHandler(response, request)
 		return
 	}
@@ -181,6 +182,7 @@ func HelmListHandler(response http.ResponseWriter, request *http.Request) {
 	var releases []releaseStruct
 	err = json.Unmarshal([]byte(out), &releases)
 	if err != nil {
+		log.Error(err.Error())
 		ServerErrorHandler(response, request)
 		return
 	}
