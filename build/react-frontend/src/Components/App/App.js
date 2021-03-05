@@ -1,27 +1,43 @@
 import React from 'react';
-import logo from './../../forto_150.png';
+import logo from './../../forto_30.png';
 import './App.css';
 import Typography from '@material-ui/core/Typography';
-import { Button, Paper, Container, AppBar, Table, TableBody, TableCell, TableContainer, TableRow } from '@material-ui/core';
+import { Paper, Container, AppBar, Table, TableBody, TableCell, TableContainer, TableRow } from '@material-ui/core';
+import LoginOrWho from '../LoginOrWho/LoginOrWho';
+import LoginOrReleases from '../LoginOrReleases/LoginOrReleases';
+import ReleaseDetails from '../ReleaseDetails/ReleaseDetails';
+import RollBackDetails from '../RollBackDetails/RollBackDetails';
+
+function Page() {
+  if (window.location.href.split("/")[3] === "release") {
+    return <ReleaseDetails></ReleaseDetails>
+  } else if (window.location.href.split("/")[3] === "rollback") {
+    return <RollBackDetails></RollBackDetails>
+  } else {
+    return <LoginOrReleases></LoginOrReleases>
+  }
+}
 
 function App() {
-  const client_id = "sau3e70wvs369jw1u25ex8g3cve599"
-  const redirect_uri = "https://" + encodeURI(window.location.href.split("/")[2]) + "/twitchadmin"
-  const googleURL = "https://id.twitch.tv/oauth2/authorize?client_id="+ client_id +"&redirect_uri="+ redirect_uri +"&response_type=code&scope=user:read:broadcast"
-
   return (
     <Container className="App">
       <Paper>
-        <img src={logo} className="App-logo" alt="logo" />
+        
+      <AppBar position="static" className="Header">        
+      <TableContainer component={Container}>
+          <Table><TableBody>
+            <TableRow className="HeaderRow">
+              <TableCell className="HeaderCell"><img src={logo} className="Forto-logo" alt="logo" /></TableCell>
+              <TableCell className="HeaderCell">Helm Rollback Tool</TableCell>
+              <TableCell className="LoginCell"><LoginOrWho /></TableCell>
+            </TableRow>
+          </TableBody></Table>
+        </TableContainer>
+      </AppBar>
         <Typography variant="h4" component="h1" gutterBottom>
           Helm Rollback Tool
         </Typography>
-        <Button variant="contained" color="primary" href={googleURL}>
-          Log in with Google
-        </Button>
-        <Typography variant="h5" component="h2" gutterBottom>
-          Tool to rollback releases that are installed, to be used by engineers and product managers alike
-        </Typography>
+        <Page></Page>
       </Paper>
     </Container>
   );

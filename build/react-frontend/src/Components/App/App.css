@@ -40,3 +40,15 @@
   border: none !important;
   color: white !important;
 }
+
+.LoginCell {
+  text-align: right !important;
+}
+
+.LoginButton {
+  background-color:cornflowerblue !important;
+}
+
+.react-lazylog {
+  text-align: left;
+}
