@@ -12,7 +12,6 @@
     "react": "^16.13.1",
     "react-confirm-alert": "^2.7.0",
     "react-dom": "^16.13.1",
-    "react-lazylog": "^4.5.3",
     "react-scripts": "^3.4.1"
   },
   "scripts": {
