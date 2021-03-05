@@ -226,6 +226,31 @@ func HelmHistoryHandler(response http.ResponseWriter, request *http.Request) {
 	fmt.Fprint(response, string(out))
 }
 
+func HelmRollBackHandler(response http.ResponseWriter, request *http.Request) {
+	vars := mux.Vars(request)
+	session, _ := sessionStorage.Get(request, "session-name")
+	if session.Values["userEmail"] == nil {
+		log.Warning("No user session provided")
+		UnauthorizedHandler(response, request)
+		return
+	}
+	userEmail := session.Values["userEmail"].(string)
+	if !utility.UserIsAllowed(userEmail) {
+		log.WarningF("User `%s` is not allowed to rollback!")
+		UnauthorizedHandler(response, request)
+		return
+	}
+	log.Info("Executing `" + helmCommand + " rollback --namespace " + vars["namespace"] + " " + vars["releasename"] + " " + vars["revision"])
+	out, err := exec.Command(helmCommand, "rollback", "--namespace", vars["namespace"], vars["releasename"], vars["revision"]).Output()
+	if err != nil {
+		log.ErrorF("Error rolling back release %s in namespace %s to revision %s, error is %s", vars["releasename"], vars["namespace"], vars["revision"], err.Error())
+		ServerErrorHandler(response, request)
+		return
+	}
+	response.Header().Add("Content-type", "text/plain")
+	fmt.Fprint(response, string(out))
+}
+
 func HealthHandler(response http.ResponseWriter, request *http.Request) {
 	response.Header().Add("Content-type", "text/plain")
 	fmt.Fprint(response, "I'm okay jack!")
@@ -339,6 +364,7 @@ func HandleHTTP(GoogleClientID string, GoogleClientSecret string, port string) {
 	r.HandleFunc("/callback-gl", CallBackFromGoogleHandler)
 	r.HandleFunc("/helm-list", HelmListHandler)
 	r.HandleFunc("/helm-history/{namespace}/{releasename}", HelmHistoryHandler)
+	r.HandleFunc("/dorollback/{namespace}/{releasename}/{revision}", HelmRollBackHandler)
 	r.PathPrefix("/").HandlerFunc(ReactIndexHandler("./web/react-frontend/index.html"))
 	http.Handle("/", r)
 	srv := &http.Server{
@@ -347,6 +373,6 @@ func HandleHTTP(GoogleClientID string, GoogleClientSecret string, port string) {
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
-	log.InfoF("Listening on 0.0.0.0:%s")
+	log.InfoF("Listening on 0.0.0.0:%s", port)
 	srv.ListenAndServe()
 }
