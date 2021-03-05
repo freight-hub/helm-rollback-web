@@ -349,6 +349,10 @@ func HandleHTTP(GoogleClientID string, GoogleClientSecret string, port string) {
 		helmCommand = "helm"
 	}
 	sessionStorage = sessions.NewCookieStore([]byte(securecookie.GenerateRandomKey(32)))
+
+	if os.Getenv("HELM_ROLLBACK_WEB_CALLBACK_URL") != "" {
+		oauthConfGl.RedirectURL = os.Getenv("HELM_ROLLBACK_WEB_CALLBACK_URL")
+	}
 	oauthConfGl.ClientID = GoogleClientID
 	oauthConfGl.ClientSecret = GoogleClientSecret
 	oauthStateStringGl = ""
