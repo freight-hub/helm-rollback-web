@@ -16,6 +16,35 @@ jobs:
       - run:
           command: |
             echo "Digest is: $(</tmp/digest.txt)"
+  deploy:
+    description: Deploy using helm
+    executor: default
+    parameters:
+      namespace:
+        type: string
+      cluster_name:
+        type: string
+      project_name:
+        default: "{{cookiecutter.repo_name}}"
+        type: string
+      values_base:
+        default: "test"
+        type: string
+    steps:
+      - checkout
+      - restore_cache: *restore_cache
+      - helm3-deploy/deploy_with_helm:
+          path_to_helm_chart: deploy/{{cookiecutter.repo_name}}
+          update_release_name: << parameters.project_name >>
+          sops_aws_access_key_id: $SOPS_AWS_ACCESS_KEY_ID
+          sops_aws_secret_access_key: $SOPS_AWS_SECRET_ACCESS_KEY
+          cluster: << parameters.cluster_name >>
+          namespace: << parameters.namespace >>
+          tag: $CIRCLE_SHA1
+          values_files: "values.<< parameters.values_base >>.yaml,secrets.<< parameters.values_base >>.yaml"
+      - helm3-deploy/notify_velocity:
+          CLUSTER: << PARAMETERS.CLUSTER_NAME >>
+          VERSION: $circle_sha1
 orbs:
   gcp-gcr: circleci/gcp-gcr@0.13.0
 version: 2.1
@@ -24,3 +53,16 @@ workflows:
     jobs:
       - build-and-push:
           context: gcloud-registry
+      - deploy:
+          name: deploy-sandbox-master
+          values_base: sandbox
+          project_name: $CIRCLE_PROJECT_REPONAME
+          cluster_name: $PLAYGROUND
+          namespace: sre-tooling
+          context: gcloud-sandbox
+          requires:
+            - build-and-push
+          # filters:
+            # branches:
+              # only:
+                # - master
