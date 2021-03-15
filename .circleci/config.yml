@@ -12,6 +12,7 @@ jobs:
       - gcp-gcr/push-image:
           digest-path: /tmp/digest.txt
           image: ${CIRCLE_PROJECT_REPONAME}
+          tag: ${CIRCLE_SHA1}
       - run:
           command: |
             echo "Digest is: $(</tmp/digest.txt)"
