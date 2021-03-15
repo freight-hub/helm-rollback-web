@@ -1,4 +1,4 @@
-import  React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Button, Container, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Paper } from '@material-ui/core';
 import PropTypes from 'prop-types';
@@ -97,7 +97,7 @@ EnhancedTableHead.propTypes = {
   rowCount: PropTypes.number.isRequired,
 };
 
-function LoginOrReleases() {
+export default function LoginOrReleases() {
   const useStyles = makeStyles({
     table: {
       minWidth: 650,
@@ -145,57 +145,56 @@ function LoginOrReleases() {
   if (dd == null || !dd.hasOwnProperty("email") || dd.email == null) {
     return(
       <Container>
-      <Typography variant="h5" component="h2" gutterBottom>
-        Tool to rollback releases that are installed, to be used by engineers and product managers alike.
-      </Typography>
-      <Typography variant="h6" component="p" gutterBottom>
-        To view releases, log in above.
-      </Typography>
-      </Container>)
+        <Typography variant="h5" component="h2" gutterBottom>
+          Tool to rollback releases that are installed, to be used by engineers and product managers alike.
+        </Typography>
+        <Typography variant="h6" component="p" gutterBottom>
+          To view releases, log in above.
+        </Typography>
+      </Container>
+    );
   } else {
     if (releasesState.loading) {
       return <p>Sorry, still loading...</p>
     }
     return (
-          <TableContainer component={Paper} 
-              order={order}
-              orderBy={orderBy}
-              onRequestSort={handleRequestSort}>
-            <Table className={classes.table} size="small" aria-label="simple table">
-              <EnhancedTableHead onRequestSort={handleRequestSort}>
-                <TableRow>
-                  <TableCell>Release Name</TableCell>
-                  <TableCell align="right">Revision</TableCell>
+      <TableContainer component={Paper}
+          order={order}
+          orderBy={orderBy}
+          onRequestSort={handleRequestSort}>
+        <Table className={classes.table} size="small" aria-label="simple table">
+          <EnhancedTableHead onRequestSort={handleRequestSort}>
+            <TableRow>
+              <TableCell>Release Name</TableCell>
+              <TableCell align="right">Revision</TableCell>
+            </TableRow>
+          </EnhancedTableHead>
+          <TableBody>
+          {stableSort(releases, getComparator(order, orderBy))
+            .map((row, index) => {
+              const labelId = `enhanced-table-${index}`;
+              let releasehref = "/release/"+row.namespace+"/"+row.name
+              return (
+                <TableRow key={row.name} >
+                  <TableCell>
+                    {row.namespace}
+                  </TableCell>
+                  <TableCell>
+                    {row.name}
+                  </TableCell>
+                  <TableCell>
+                    {row.chart}
+                  </TableCell>
+                  <TableCell align="right">{row.revision}</TableCell>
+                  <TableCell align="right">{row.updated}</TableCell>
+                  <TableCell align="right">{row.app_version}</TableCell>
+                  <TableCell align="right"><Button variant="contained" color="primary" href={releasehref}>🔍</Button></TableCell>
                 </TableRow>
-              </EnhancedTableHead>
-              <TableBody>
-              {stableSort(releases, getComparator(order, orderBy))
-                .map((row, index) => {
-                  const labelId = `enhanced-table-${index}`;
-                  let releasehref = "/release/"+row.namespace+"/"+row.name
-                  return (
-                    <TableRow key={row.name} >
-                      <TableCell>
-                        {row.namespace}
-                      </TableCell>
-                      <TableCell>
-                        {row.name}
-                      </TableCell>
-                      <TableCell>
-                        {row.chart}
-                      </TableCell>
-                      <TableCell align="right">{row.revision}</TableCell>
-                      <TableCell align="right">{row.updated}</TableCell>
-                      <TableCell align="right">{row.app_version}</TableCell>
-                      <TableCell align="right"><Button variant="contained" color="primary" href={releasehref}>🔍</Button></TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
     );
   }
 }
-
-export default LoginOrReleases;

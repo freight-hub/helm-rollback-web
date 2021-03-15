@@ -1,8 +1,6 @@
-import  React from 'react';
+import React from 'react';
 import { Button } from '@material-ui/core';
 
-function ActionButton() {
-    return <Button variant="contained" color="primary" href="/login">⚙️</Button>
+export default function ActionButton() {
+  return <Button variant="contained" color="primary" href="/login">⚙️</Button>
 }
-
-export default ActionButton();
