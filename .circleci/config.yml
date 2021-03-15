@@ -32,7 +32,7 @@ jobs:
         type: string
     steps:
       - checkout
-      - restore_cache: *restore_cache
+      # - restore_cache: *restore_cache
       - helm3-deploy/deploy_with_helm:
           path_to_helm_chart: deploy/{{cookiecutter.repo_name}}
           update_release_name: << parameters.project_name >>
