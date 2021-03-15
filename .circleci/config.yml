@@ -1,0 +1,24 @@
+jobs:
+  build-and-push:
+    executor: gcp-gcr/default
+    steps:
+      - checkout
+      - gcp-gcr/gcr-auth
+      - gcp-gcr/build-image:
+          dockerfile: build/package/Dockerfile
+          image: ${CIRCLE_PROJECT_REPONAME}
+          no_output_timeout: 20m
+          tag: ${CIRCLE_SHA1}
+      - gcp-gcr/push-image:
+          digest-path: /tmp/digest.txt
+          image: ${CIRCLE_PROJECT_REPONAME}
+      - run:
+          command: |
+            echo "Digest is: $(</tmp/digest.txt)"
+orbs:
+  gcp-gcr: circleci/gcp-gcr@0.13.0
+version: 2.1
+workflows:
+  commit:
+    jobs:
+      - build-and-push
