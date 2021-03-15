@@ -163,35 +163,22 @@ export default function LoginOrReleases() {
           orderBy={orderBy}
           onRequestSort={handleRequestSort}>
         <Table className={classes.table} size="small" aria-label="simple table">
-          <EnhancedTableHead onRequestSort={handleRequestSort}>
-            <TableRow>
-              <TableCell>Release Name</TableCell>
-              <TableCell align="right">Revision</TableCell>
-            </TableRow>
-          </EnhancedTableHead>
+          <EnhancedTableHead onRequestSort={handleRequestSort} />
           <TableBody>
           {stableSort(releases, getComparator(order, orderBy))
-            .map((row, index) => {
-              const labelId = `enhanced-table-${index}`;
-              let releasehref = "/release/"+row.namespace+"/"+row.name
-              return (
-                <TableRow key={row.name} >
-                  <TableCell>
-                    {row.namespace}
-                  </TableCell>
-                  <TableCell>
-                    {row.name}
-                  </TableCell>
-                  <TableCell>
-                    {row.chart}
-                  </TableCell>
-                  <TableCell align="right">{row.revision}</TableCell>
-                  <TableCell align="right">{row.updated}</TableCell>
-                  <TableCell align="right">{row.app_version}</TableCell>
-                  <TableCell align="right"><Button variant="contained" color="primary" href={releasehref}>🔍</Button></TableCell>
-                </TableRow>
-              );
-            })}
+            .map(release => (
+              <TableRow key={`${release.namespace}/${release.name}`} >
+                <TableCell>{release.namespace}</TableCell>
+                <TableCell>{release.name}</TableCell>
+                <TableCell>{release.chart}</TableCell>
+                <TableCell align="right">{release.revision}</TableCell>
+                <TableCell align="right">{release.updated}</TableCell>
+                <TableCell align="right">{release.app_version}</TableCell>
+                <TableCell align="right">
+                  <Button variant="contained" color="primary" href={`/release/${release.namespace}/${release.name}`}>🔍</Button>
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>

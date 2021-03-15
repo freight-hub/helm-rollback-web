@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 
+const sampleData = ["command not run, we're in frontend dev mode"]
 export default function RollBackDetails() {
 
   const namespace = window.location.href.split("/")[4]
   const releasename = window.location.href.split("/")[5]
   const revision = window.location.href.split("/")[6]
-  const sampleData = ["command not run, we're in frontend dev mode"]
   const [commandState, setCommandState] = React.useState({loading:true,'commandData':[]});
   const fullURL = "/dorollback/"+namespace+"/"+releasename+"/"+revision
 
@@ -18,7 +18,7 @@ export default function RollBackDetails() {
         setCommandState({commandData: data, loading: false })
       }));
     }
-  }, [setCommandState]);
+  }, [setCommandState, fullURL]);
 
   if (commandState.loading) {
     return (

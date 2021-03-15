@@ -138,7 +138,7 @@ export default function ReleaseDetails() {
         setReleasesState({releasesData: data, loading: false })
       }));
     }
-  }, [setReleasesState]);
+  }, [setReleasesState, releasesURL]);
 
   let dd = appState.userData;
   let releases = releasesState.releasesData;
@@ -175,26 +175,18 @@ export default function ReleaseDetails() {
           </EnhancedTableHead>
           <TableBody>
           {stableSort(releases, getComparator(order, orderBy))
-            .map((row, index) => {
-              const labelId = `enhanced-table-${index}`;
-              let rollbackhref = "/rollback/"+namespace+"/"+releasename+"/"+row.revision
-              return (
-                <TableRow key={row.name} >
-                  <TableCell align="right">
-                    {row.revision}
-                  </TableCell>
-                  <TableCell align="right">{row.updated}</TableCell>
-                  <TableCell>
-                    {row.status}
-                  </TableCell>
-                  <TableCell>
-                    {row.chart}
-                  </TableCell>
-                  <TableCell align="right">{row.app_version}</TableCell>
-                  <TableCell align="right"><Button variant="contained" color="primary" href={rollbackhref}>↩️</Button></TableCell>
-                </TableRow>
-              );
-            })}
+            .map(row => (
+              <TableRow key={row.revision} >
+                <TableCell align="right">{row.revision}</TableCell>
+                <TableCell align="right">{row.updated}</TableCell>
+                <TableCell>{row.status}</TableCell>
+                <TableCell>{row.chart}</TableCell>
+                <TableCell align="right">{row.app_version}</TableCell>
+                <TableCell align="right">
+                  <Button variant="contained" color="primary" href={`/rollback/${namespace}/${releasename}/${row.revision}`}>↩️</Button>
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
