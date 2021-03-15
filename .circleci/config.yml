@@ -1,0 +1,18 @@
+jobs:
+  build-only:
+    executor: gcp-gcr/default
+    steps:
+      - checkout
+      - gcp-gcr/build-image:
+          dockerfile: build/package/Dockerfile
+          image: ${CIRCLE_PROJECT_REPONAME}
+          no_output_timeout: 20m
+          tag: ${CIRCLE_SHA1}
+orbs:
+  gcp-gcr: circleci/gcp-gcr@0.13.0
+version: 2.1
+workflows:
+  commit:
+    jobs:
+      - build-only:
+          context: gcloud-registry
