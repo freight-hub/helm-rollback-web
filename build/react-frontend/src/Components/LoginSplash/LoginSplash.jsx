@@ -1,6 +1,6 @@
-import React from 'react';
-import { Container, Typography, Paper } from '@material-ui/core';
+import { Typography, Paper } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
 import GoogleButton from 'react-google-button';
 
 const useStyles = makeStyles({

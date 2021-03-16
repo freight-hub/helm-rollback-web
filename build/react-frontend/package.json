@@ -21,13 +21,27 @@
     "typescript": "^4.2.3"
   },
   "scripts": {
+    "lint": "eslint src --ext .js,.jsx,.ts",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": "react-app",
+    "rules": {
+      "import/order": ["error", {
+        "alphabetize": {"order": "asc", "caseInsensitive": true},
+        "newlines-between": "always"
+      }],
+      "key-spacing": ["error", {
+        "beforeColon": false,
+        "afterColon": true
+      }],
+      "object-curly-spacing": ["error", "always"],
+      "array-bracket-spacing": ["error", "always"],
+      "comma-spacing": ["error", { "before": false, "after": true }]
+    }
   },
   "browserslist": {
     "production": [

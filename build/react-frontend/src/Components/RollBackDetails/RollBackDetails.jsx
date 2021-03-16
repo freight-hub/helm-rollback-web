@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { Paper, Button, CircularProgress, Toolbar, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTitle, setLinkProps } from 'hookrouter';
+import PropTypes from 'prop-types';
+import React, { useEffect } from 'react';
 
 import { DefaultRollbackApi } from "../../lib/rollback-api";
 
@@ -21,12 +21,12 @@ export default function RollBackDetails(props) {
   useTitle(`${releaseName} - ${namespace} - Helm Rollback`);
   const classes = useStyles();
 
-  const [commandText, setCommandText] = React.useState(false);
+  const [ commandText, setCommandText ] = React.useState(false);
   useEffect(() => {
     DefaultRollbackApi
       .performRollback(namespace, releaseName, revision)
       .then(setCommandText)
-  }, [setCommandText, namespace, releaseName, revision]);
+  }, [ setCommandText, namespace, releaseName, revision ]);
 
   const toolbar = (
     <Toolbar>
@@ -39,7 +39,7 @@ export default function RollBackDetails(props) {
 
   if (commandText === false) {
     return (
-      <Paper className={classes.paper} style={{textAlign: 'center'}}>
+      <Paper className={classes.paper} style={{ textAlign: 'center' }}>
         {toolbar}
         <div className={classes.paperPadding}>
           <p>Waiting for helm command to finish.... This usually happens immediately.</p>

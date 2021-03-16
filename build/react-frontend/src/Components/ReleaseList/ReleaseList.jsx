@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { Button, Table, TableBody, TableCell, TableContainer, TableRow, Toolbar, Paper, Typography, CircularProgress } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { useTitle, setLinkProps } from 'hookrouter';
+import React, { useEffect } from 'react';
 
-import EnhancedTableHead from '../EnhancedTableHead/EnhancedTableHead.jsx';
-import { stableSort, getComparator } from '../../lib/sorting.js';
 import { DefaultRollbackApi } from "../../lib/rollback-api";
+import { stableSort, getComparator } from '../../lib/sorting.js';
+import EnhancedTableHead from '../EnhancedTableHead/EnhancedTableHead.jsx';
 
 const headCells = [
   { id: 'namespace', numeric: false, disablePadding: false, label: 'Namespace' },
@@ -26,9 +26,9 @@ const useStyles = makeStyles({
 export default function ReleaseList() {
   useTitle(`Release List - Helm Rollback`);
 
-  const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('name');
-  const [releasesState, setReleasesState] = React.useState({loading:true,list:[]});
+  const [ order, setOrder ] = React.useState('asc');
+  const [ orderBy, setOrderBy ] = React.useState('name');
+  const [ releasesState, setReleasesState ] = React.useState({ loading: true, list: [] });
   const classes = useStyles();
 
   const handleRequestSort = (property) => {
@@ -39,9 +39,9 @@ export default function ReleaseList() {
 
   useEffect(() => {
     DefaultRollbackApi.getReleaseList().then((data) => {
-      setReleasesState({list: data, loading: false })
+      setReleasesState({ list: data, loading: false })
     });
-  }, [setReleasesState]);
+  }, [ setReleasesState ]);
 
   let releases = releasesState.list;
 

@@ -1,8 +1,8 @@
-import React from 'react';
 import { Avatar, Paper, Button, Typography, Link } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import PropTypes from 'prop-types';
 import { setLinkProps } from 'hookrouter';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 import logo from './../../forto_150.png';
 
@@ -29,7 +29,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function AppHeader(props) {
   const { email, isMock } = props?.userData ?? {};
-  const [handle, domain] = email?.split('@') ?? [];
+  const [ handle, domain ] = email?.split('@') ?? [];
 
   const theme = useTheme();
   const classes = useStyles(theme);
@@ -48,14 +48,14 @@ export default function AppHeader(props) {
       <Typography className={classes.title} variant="h4" component="h1">
         <Link  {...setLinkProps({
           href: `/`,
-        })} style={{color: 'inherit'}}>
+        })} style={{ color: 'inherit' }}>
           Helm Rollback Tool
         </Link>
       </Typography>
 
       {email ? (<>
         <Typography className={classes.userInfo} variant="subtitle1" component="p">
-          <strong style={{fontWeight: 500}}>{handle}</strong>@{domain}
+          <strong style={{ fontWeight: 500 }}>{handle}</strong>@{domain}
         </Typography>
 
         <Button variant="contained" color="secondary" onClick={doLogout}

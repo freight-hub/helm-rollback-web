@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
 import { Container } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useRoutes } from 'hookrouter';
+import React, { useEffect, useState } from 'react';
 
-import LoginSplash from '../LoginSplash/LoginSplash.jsx';
-import AppHeader from '../AppHeader/AppHeader.jsx';
-import ReleaseList from '../ReleaseList/ReleaseList.jsx';
-import ReleaseDetails from '../ReleaseDetails/ReleaseDetails.jsx';
-import RollBackDetails from '../RollBackDetails/RollBackDetails.jsx';
 import { DefaultRollbackApi } from "../../lib/rollback-api";
+import AppHeader from '../AppHeader/AppHeader.jsx';
 import TechEnabledOperationsIcon from "../Icons/TechEnabledOperationsIcon.jsx";
+import LoginSplash from '../LoginSplash/LoginSplash.jsx';
+import ReleaseDetails from '../ReleaseDetails/ReleaseDetails.jsx';
+import ReleaseList from '../ReleaseList/ReleaseList.jsx';
+import RollBackDetails from '../RollBackDetails/RollBackDetails.jsx';
 
 const routes = {
   '/': () => <ReleaseList />,
@@ -32,10 +32,10 @@ export default function App() {
   const routeResult = useRoutes(routes);
   const classes = useStyles();
 
-  const [userData, setUserData] = useState({});
+  const [ userData, setUserData ] = useState({});
   useEffect(() => {
     DefaultRollbackApi.getLoginStatus().then(setUserData);
-  }, [setUserData]);
+  }, [ setUserData ]);
 
   const hasUser = typeof userData?.email === 'string';
 
