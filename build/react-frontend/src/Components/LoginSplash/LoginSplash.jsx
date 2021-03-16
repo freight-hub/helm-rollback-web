@@ -1,14 +1,17 @@
 import React from 'react';
-import { Container, Button, Typography } from '@material-ui/core';
+import { Container, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import GoogleButton from 'react-google-button';
 
 const useStyles = makeStyles({
   container: {
+    margin: '5em 0 2em',
     textAlign: 'center',
   },
   loginButton: {
-    // backgroundColor: 'cornflowerblue',
-  },
+    margin: '1em 0',
+    display: 'inline-block',
+  }
 });
 
 export default function LoginSplash() {
@@ -26,14 +29,11 @@ export default function LoginSplash() {
         To view releases, please log in:
       </Typography>
 
-      <Button className={classes.loginButton}
-          variant="contained"
-          color="primary"
-          href="/login"
-          size="large"
-        >
-        Log in with Google
-      </Button>
+      <div className={classes.loginButton}>
+        <GoogleButton
+            onClick={() => { window.location.href = '/login' }}
+          />
+      </div>
 
     </Container>
   );
