@@ -1,3 +1,13 @@
+references:
+  main_branch: &main_branch
+    branches:
+      only:
+        - main
+  feature_branches: &feature_branches
+    branches:
+      ignore:
+        - main
+
 executors:
     helm:
         docker:
@@ -32,7 +42,6 @@ jobs:
         default: $CIRCLE_PROJECT_REPONAME
         type: string
       values_base:
-        default: "test"
         type: string
     steps:
       - checkout
@@ -56,7 +65,7 @@ workflows:
       - build-and-push:
           context: gcloud-registry
       - deploy:
-          name: deploy-sandbox-master
+          name: Deploy Sandbox From PR
           values_base: sandbox
           project_name: $CIRCLE_PROJECT_REPONAME
           cluster_name: $PLAYGROUND
@@ -64,7 +73,14 @@ workflows:
           context: gcloud-sandbox
           requires:
             - build-and-push
-          # filters:
-            # branches:
-              # only:
-                # - master
+          filters: *feature_branches
+      - deploy:
+          name: Deploy Production from main branch
+          values_base: production
+          project_name: $CIRCLE_PROJECT_REPONAME
+          cluster_name: $$GCLOUD_CLUSTER_NAME
+          namespace: sre-tooling
+          context: gcloud-production
+          requires:
+            - build-and-push
+          filters: *feature_branches
