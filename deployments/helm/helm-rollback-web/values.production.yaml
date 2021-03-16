@@ -40,15 +40,10 @@ ingress:
   enabled: true
   annotations: 
     kubernetes.io/ingress.class: traefik
-    cert-manager.io/cluster-issuer: letsencrypt
   hosts:
     - host: helm-rollback.forto.com
       paths:
       - /
-  tls: 
-    - secretName: helm-rollback-tls
-      hosts:
-        - helm-rollback.forto.com
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
