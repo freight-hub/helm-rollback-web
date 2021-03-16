@@ -1,6 +1,7 @@
 package webserver
 
 import (
+	"context"
 	"encoding/json"
 	"internal/utility"
 	"io/ioutil"
@@ -11,6 +12,10 @@ import (
 	"github.com/gorilla/sessions"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 
 	"fmt"
 	"html/template"
@@ -37,7 +42,7 @@ var (
 	log                *logger.Logger
 	sessionStorage     *sessions.CookieStore
 	helmCommand        = ""
-	kubectlCommand     = "kubectl"
+	clientset          *kubernetes.Clientset
 	slackClient        = slack.New(os.Getenv("SLACK_APP_HELM_OAUTH_TOKEN"))
 )
 
@@ -253,22 +258,23 @@ func HelmRollBackHandler(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	notifTitle := fmt.Sprintf("helm rollback for %v by %v",
-		vars["releasename"], userEmail)
+	notifTitle := fmt.Sprintf("rolled back %v to revision %v",
+		vars["releasename"], vars["revision"])
 	attachment := slack.Attachment{
 		Color:      "#3BB9FF",
 		AuthorName: userEmail,
 		Title:      notifTitle,
 		Text:       string(out),
 	}
-  channel, err := exec.Command(kubectlCommand, "get", "namespace", vars["namespace"], "-o", "jsonpath=\"{.metadata.annotations.slack-channel}\"").Output()
+	namespace, err := clientset.CoreV1().Namespaces().Get(context.TODO(), vars["namespace"], metav1.GetOptions{})
 	if err != nil {
 		log.Error(err.Error())
-	}
-
-  _, _, err = slackClient.PostMessage(string(channel), slack.MsgOptionAttachments(attachment))
-	if err != nil {
-		log.Error(err.Error())
+	} else {
+		channel := namespace.Annotations["slack-channel"]
+		_, _, err = slackClient.PostMessage(string(channel), slack.MsgOptionAttachments(attachment))
+		if err != nil {
+			log.Error(err.Error())
+		}
 	}
 
 	response.Header().Add("Content-type", "text/plain")
@@ -367,6 +373,18 @@ func HandleHTTP(GoogleClientID string, GoogleClientSecret string, port string) {
 	if err != nil {
 		panic(err) // Check for error
 	}
+
+	// creates the in-cluster config
+	config, err := rest.InClusterConfig()
+	if err != nil {
+		panic(err.Error())
+	}
+	// creates the clientset
+	clientset, err = kubernetes.NewForConfig(config)
+	if err != nil {
+		panic(err.Error())
+	}
+
 	helmCommand = os.Getenv("HELM_ROLLBACK_WEB_HELM_COMMAND")
 	if helmCommand == "" {
 		helmCommand = "helm"
