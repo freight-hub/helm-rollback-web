@@ -13,23 +13,6 @@ executors:
         docker:
             - image: cimg/node:12.18
 jobs:
-  build-and-push:
-    executor: gcp-gcr/default
-    steps:
-      - checkout
-      - gcp-gcr/gcr-auth
-      - gcp-gcr/build-image:
-          dockerfile: build/package/Dockerfile
-          image: ${CIRCLE_PROJECT_REPONAME}
-          no_output_timeout: 20m
-          tag: ${CIRCLE_SHA1}
-      - gcp-gcr/push-image:
-          digest-path: /tmp/digest.txt
-          image: ${CIRCLE_PROJECT_REPONAME}
-          tag: ${CIRCLE_SHA1}
-      - run:
-          command: |
-            echo "Digest is: $(</tmp/digest.txt)"
   deploy:
     description: Deploy using helm
     executor: helm
@@ -62,8 +45,15 @@ version: 2.1
 workflows:
   build-deploy:
     jobs:
-      - build-and-push:
+      - gcp-gcr/build-and-push-image:
+          executor: gcp-gcr/default
           context: gcloud-registry
+          dockerfile: build/package/Dockerfile
+          image: ${CIRCLE_PROJECT_REPONAME}
+          no_output_timeout: 20m
+          tag: ${CIRCLE_SHA1}
+          setup-remote-docker: true
+          use-docker-layer-caching: true
       - deploy:
           name: Deploy Sandbox From PR
           values_base: sandbox
@@ -72,7 +62,7 @@ workflows:
           namespace: sre-tooling
           context: gcloud-sandbox
           requires:
-            - build-and-push
+            - gcp-gcr/build-and-push-image
           filters: *feature_branches
       - deploy:
           name: Deploy Production from main branch
@@ -82,5 +72,5 @@ workflows:
           namespace: sre-tooling
           context: gcloud-production
           requires:
-            - build-and-push
+            - gcp-gcr/build-and-push-image
           filters: *main_branch
