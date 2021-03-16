@@ -1,3 +1,7 @@
+executors:
+    helm:
+        docker:
+            - image: cimg/node:12.18
 jobs:
   build-and-push:
     executor: gcp-gcr/default
@@ -18,9 +22,7 @@ jobs:
             echo "Digest is: $(</tmp/digest.txt)"
   deploy:
     description: Deploy using helm
-    # executor: default
-    executor: gcp-gcr/default
-    #
+    executor: helm
     parameters:
       namespace:
         type: string
