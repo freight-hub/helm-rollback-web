@@ -1,8 +1,3 @@
-// the overall codebase is in javascript for some reason,
-// but this api mock is nicely expressed w/ an interface so just some typescript here
-// if you edit this, recompile w/ deno bundle src/lib/rollback-api.ts > src/lib/rollback-api.js
-// if this codebase gets ported to proper typescript then this file will fit right in
-
 export interface RollbackApi {
 
   getLoginStatus(): Promise<{
