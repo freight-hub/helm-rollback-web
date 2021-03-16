@@ -29,7 +29,7 @@ jobs:
       cluster_name:
         type: string
       project_name:
-        default: "{{cookiecutter.repo_name}}"
+        default: $CIRCLE_PROJECT_REPONAME
         type: string
       values_base:
         default: "test"
@@ -38,7 +38,7 @@ jobs:
       - checkout
       # - restore_cache: *restore_cache
       - helm3-deploy/deploy_with_helm:
-          path_to_helm_chart: deploy/{{cookiecutter.repo_name}}
+          path_to_helm_chart: deployments/helm/helm-rollback-web
           update_release_name: << parameters.project_name >>
           sops_aws_access_key_id: $SOPS_AWS_ACCESS_KEY_ID
           sops_aws_secret_access_key: $SOPS_AWS_SECRET_ACCESS_KEY
