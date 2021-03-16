@@ -26,6 +26,14 @@
   max-width: 98%;
 }
 
+.App .HeaderCell {
+  display: flex;
+  align-items: center;
+}
+.App .HeaderCell img {
+  margin-right: 1em;
+}
+
 .Footer {
   max-width: 98%;
   background-color: #6207a4 !important;
