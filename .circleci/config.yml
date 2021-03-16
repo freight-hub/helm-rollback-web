@@ -46,12 +46,14 @@ workflows:
   build-deploy:
     jobs:
       - gcp-gcr/build-and-push-image:
-          executor: gcp-gcr/default
+          executor: helm
           context: gcloud-registry
           dockerfile: build/package/Dockerfile
           image: ${CIRCLE_PROJECT_REPONAME}
           no_output_timeout: 20m
           tag: ${CIRCLE_SHA1}
+          remote-docker-version: 19.03.14 #https://discuss.circleci.com/t/docker-build-fails-with-nonsensical-eperm-operation-not-permitted-copyfile/37364
+          setup-remote-docker: true
           use-docker-layer-caching: true
       - deploy:
           name: Deploy Sandbox From PR
