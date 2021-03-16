@@ -1,9 +1,22 @@
 import React from 'react';
 import { Container, Button, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles({
+  container: {
+    textAlign: 'center',
+  },
+  loginButton: {
+    // backgroundColor: 'cornflowerblue',
+  },
+});
 
 export default function LoginSplash() {
+
+  const classes = useStyles();
+
   return (
-    <Container>
+    <Container className={classes.container}>
 
       <Typography variant="h5" component="h2" gutterBottom>
         Tool to rollback releases that are installed, to be used by engineers and product managers alike.
@@ -13,7 +26,12 @@ export default function LoginSplash() {
         To view releases, please log in:
       </Typography>
 
-      <Button className="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary LoginButton" variant="contained" color="primary" href="/login">
+      <Button className={classes.loginButton}
+          variant="contained"
+          color="primary"
+          href="/login"
+          size="large"
+        >
         Log in with Google
       </Button>
 

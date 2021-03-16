@@ -27,7 +27,8 @@ export { HttpRollbackApi1 as HttpRollbackApi };
 class MockRollbackApi1 {
     async getLoginStatus() {
         return {
-            "email": "mock-demo-user@forto.com"
+            email: "mock-demo-user@forto.com",
+            isMock: true
         };
     }
     async getReleaseList() {
