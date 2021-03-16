@@ -8,19 +8,15 @@ import { stableSort, getComparator } from '../../lib/sorting.js';
 import { DefaultRollbackApi } from "../../lib/rollback-api";
 
 const headCells = [
-  { id: 'namespace', numeric: false, disablePadding: true, label: 'Namespace' },
-  { id: 'name', numeric: false, disablePadding: true, label: 'Release Name' },
-  { id: 'chart', numeric: false, disablePadding: true, label: 'Chart' },
-  { id: 'revision', numeric: true, disablePadding: false, label: 'Revision' },
-  { id: 'updated', numeric: false, disablePadding: true, label: 'Release Date' },
-  { id: 'app_version', numeric: true, disablePadding: false, label: 'Version' },
-  { id: 'action', numeric: true, disablePadding: false, label: 'Action' },
+  { id: 'namespace', numeric: false, disablePadding: false, label: 'Namespace' },
+  { id: 'name', numeric: false, disablePadding: false, label: 'Release Name' },
+  { id: 'chart', numeric: false, disablePadding: false, label: 'Chart' },
+  { id: 'updated', numeric: false, disablePadding: false, label: 'Release Date' },
+  { id: 'revision', numeric: false, disablePadding: false, label: 'Revision' },
+  { id: 'action', numeric: false, disablePadding: false, label: '' },
 ];
 
 const useStyles = makeStyles({
-  table: {
-    minWidth: 650,
-  },
 });
 
 export default function ReleaseList() {
@@ -59,21 +55,24 @@ export default function ReleaseList() {
           />
         <TableBody>
         {stableSort(releases, getComparator(order, orderBy))
-          .map(release => (
+          .map(release => (<>
             <TableRow key={`${release.namespace}/${release.name}`} >
               <TableCell>{release.namespace}</TableCell>
               <TableCell>{release.name}</TableCell>
               <TableCell>{release.chart}</TableCell>
-              <TableCell align="right">{release.revision}</TableCell>
-              <TableCell align="right">{release.updated}</TableCell>
-              <TableCell align="right">{release.app_version}</TableCell>
+              <TableCell>{release.updated.split('.')[0]}</TableCell>
+              <TableCell align="right">
+                #{release.revision}
+                <br/>
+                <code>{release.app_version}</code>
+              </TableCell>
               <TableCell align="right">
                 <Button variant="contained" color="primary" {...setLinkProps({
                   href: `/release/${release.namespace}/${release.name}`,
                 })}>🔍</Button>
               </TableCell>
             </TableRow>
-          ))}
+          </>))}
         </TableBody>
       </Table>
     </TableContainer>

@@ -1,31 +1,37 @@
 import React from 'react';
-import { Avatar, Container, Button, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Avatar, Paper, Button, Typography } from '@material-ui/core';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 
-import logo from './../../forto_30.png';
+import logo from './../../forto_150.png';
 
-const useStyles = makeStyles({
-  container: {
+const useStyles = makeStyles(theme => ({
+  paper: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    padding: theme.spacing(2),
+    backgroundColor: theme.palette.primary.main,
     display: 'flex',
     alignItems: 'center',
   },
   logo: {
-    marginRight: '1em',
+    marginRight: theme.spacing(1.5),
   },
   title: {
     flex: '1',
   },
   userInfo: {
-    margin: '0 1em',
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
   },
-});
+}));
 
 export default function AppHeader(props) {
   const { email, isMock } = props?.userData ?? {};
   const [handle, domain] = email?.split('@') ?? [];
 
-  const classes = useStyles();
+  const theme = useTheme();
+  const classes = useStyles(theme);
 
   const doLogout = () => {
     // works because the cookie isn't HttpOnly (as of writing)
@@ -34,7 +40,7 @@ export default function AppHeader(props) {
   };
 
   return (
-    <Container className={classes.container}>
+    <Paper className={classes.paper}>
 
       <Avatar className={classes.logo} src={logo} alt="logo" />
 
@@ -52,7 +58,7 @@ export default function AppHeader(props) {
           >Log out</Button>
       </>) : null}
 
-    </Container>
+    </Paper>
   );
 }
 AppHeader.propTypes = {

@@ -9,12 +9,12 @@ import { stableSort, getComparator } from '../../lib/sorting.js';
 import { DefaultRollbackApi } from "../../lib/rollback-api";
 
 const headCells = [
-  { id: 'revision', numeric: true, disablePadding: true, label: 'Revision' },
-  { id: 'updated', numeric: false, disablePadding: true, label: 'Release Date' },
-  { id: 'status', numeric: false, disablePadding: true, label: 'Status' },
-  { id: 'chart', numeric: false, disablePadding: true, label: 'Chart' },
-  { id: 'app_version', numeric: true, disablePadding: false, label: 'Version' },
-  { id: 'action', numeric: true, disablePadding: false, label: 'Action' },
+  { id: 'revision', numeric: true, disablePadding: false, label: 'Revision' },
+  { id: 'updated', numeric: false, disablePadding: false, label: 'Release Date' },
+  { id: 'status', numeric: false, disablePadding: false, label: 'Status' },
+  { id: 'chart', numeric: false, disablePadding: false, label: 'Chart' },
+  { id: 'app_version', numeric: false, disablePadding: false, label: 'Version' },
+  { id: 'action', numeric: true, disablePadding: false, label: '' },
 ];
 
 export default function ReleaseDetails(props) {
@@ -60,11 +60,11 @@ export default function ReleaseDetails(props) {
           .map(row => (
             <TableRow key={row.revision} >
               <TableCell align="right">{row.revision}</TableCell>
-              <TableCell align="right">{row.updated}</TableCell>
+              <TableCell>{row.updated.split('.')[0]}</TableCell>
               <TableCell>{row.status}</TableCell>
               <TableCell>{row.chart}</TableCell>
-              <TableCell align="right">{row.app_version}</TableCell>
-              <TableCell align="right">
+              <TableCell><code>{row.app_version}</code></TableCell>
+              <TableCell>
                 <Button variant="contained" color="primary" {...setLinkProps({
                   href: `/rollback/${namespace}/${releaseName}/${row.revision}`,
                 })}>↩️</Button>

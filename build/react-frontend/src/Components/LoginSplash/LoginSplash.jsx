@@ -1,17 +1,20 @@
 import React from 'react';
-import { Container, Typography } from '@material-ui/core';
+import { Container, Typography, Paper } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import GoogleButton from 'react-google-button';
 
 const useStyles = makeStyles({
   container: {
-    margin: '5em 0 2em',
+    maxWidth: '50em',
+    margin: '5em auto 2em',
     textAlign: 'center',
   },
-  loginButton: {
-    margin: '1em 0',
-    display: 'inline-block',
-  }
+  loginBox: {
+    margin: '5em',
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'column',
+  },
 });
 
 export default function LoginSplash() {
@@ -19,22 +22,22 @@ export default function LoginSplash() {
   const classes = useStyles();
 
   return (
-    <Container className={classes.container}>
+    <Paper className={classes.container}>
 
       <Typography variant="h5" component="h2" gutterBottom>
         Tool to rollback releases that are installed, to be used by engineers and product managers alike.
       </Typography>
 
-      <Typography variant="h6" component="p" gutterBottom>
-        To view releases, please log in:
-      </Typography>
+      <div className={classes.loginBox}>
+        <Typography variant="h6" component="p" gutterBottom>
+          To view releases:
+        </Typography>
 
-      <div className={classes.loginButton}>
         <GoogleButton
             onClick={() => { window.location.href = '/login' }}
           />
       </div>
 
-    </Container>
+    </Paper>
   );
 }
