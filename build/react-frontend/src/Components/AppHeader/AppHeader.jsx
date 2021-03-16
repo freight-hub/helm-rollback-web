@@ -1,7 +1,8 @@
 import React from 'react';
-import { Avatar, Paper, Button, Typography } from '@material-ui/core';
+import { Avatar, Paper, Button, Typography, Link } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
+import { setLinkProps } from 'hookrouter';
 
 import logo from './../../forto_150.png';
 
@@ -45,12 +46,16 @@ export default function AppHeader(props) {
       <Avatar className={classes.logo} src={logo} alt="logo" />
 
       <Typography className={classes.title} variant="h4" component="h1">
-        Helm Rollback Tool
+        <Link  {...setLinkProps({
+          href: `/`,
+        })} style={{color: 'inherit'}}>
+          Helm Rollback Tool
+        </Link>
       </Typography>
 
       {email ? (<>
-        <Typography className={classes.userInfo} variant="p" component="p">
-          <strong>{handle}</strong>@{domain}
+        <Typography className={classes.userInfo} variant="subtitle1" component="p">
+          <strong style={{fontWeight: 500}}>{handle}</strong>@{domain}
         </Typography>
 
         <Button variant="contained" color="secondary" onClick={doLogout}

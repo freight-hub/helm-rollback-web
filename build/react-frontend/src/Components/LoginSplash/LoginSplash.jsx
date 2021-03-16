@@ -7,6 +7,7 @@ const useStyles = makeStyles({
   container: {
     maxWidth: '50em',
     margin: '5em auto 2em',
+    padding: '2em',
     textAlign: 'center',
   },
   loginBox: {

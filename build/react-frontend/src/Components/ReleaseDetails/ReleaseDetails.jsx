@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
-import { Button, Table, TableBody, TableCell, TableContainer, TableRow, Paper } from '@material-ui/core';
+import { Button, Table, TableBody, TableCell, TableContainer, TableRow, Paper, Toolbar, Typography, CircularProgress } from '@material-ui/core';
 import { useTitle, setLinkProps } from 'hookrouter';
 
 import EnhancedTableHead from '../EnhancedTableHead/EnhancedTableHead.jsx';
@@ -12,6 +12,7 @@ const headCells = [
   { id: 'revision', numeric: true, disablePadding: false, label: 'Revision' },
   { id: 'updated', numeric: false, disablePadding: false, label: 'Release Date' },
   { id: 'status', numeric: false, disablePadding: false, label: 'Status' },
+  { id: 'description', numeric: false, disablePadding: false, label: 'Description' },
   { id: 'chart', numeric: false, disablePadding: false, label: 'Chart' },
   { id: 'app_version', numeric: false, disablePadding: false, label: 'Version' },
   { id: 'action', numeric: true, disablePadding: false, label: '' },
@@ -22,10 +23,12 @@ export default function ReleaseDetails(props) {
   useTitle(`${releaseName} - ${namespace} - Helm Rollback`);
 
   const useStyles = makeStyles({
-    table: {
-      minWidth: 650,
+    spinnerWrap: {
+      textAlign: 'center',
+      padding: '2em',
     },
   });
+
   const [releasesState, setReleasesState] = React.useState({loading:true,revisions:[]});
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('revision');
@@ -44,10 +47,21 @@ export default function ReleaseDetails(props) {
   }, [setReleasesState, namespace, releaseName]);
 
   if (releasesState.loading) {
-    return <p>Sorry, still loading...</p>
+    return (
+      <Paper className={classes.spinnerWrap}>
+        <CircularProgress size="5em" />
+      </Paper>
+    )
   }
+
   return (
     <TableContainer component={Paper}>
+      <Toolbar>
+        <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+          Release History for &nbsp;
+          <code>{namespace}</code>/<code>{releaseName}</code>
+        </Typography>
+      </Toolbar>
       <Table className={classes.table} size="small" aria-label="simple table">
         <EnhancedTableHead
             headCells={headCells}
@@ -62,6 +76,7 @@ export default function ReleaseDetails(props) {
               <TableCell align="right">{row.revision}</TableCell>
               <TableCell>{row.updated.split('.')[0]}</TableCell>
               <TableCell>{row.status}</TableCell>
+              <TableCell>{row.description}</TableCell>
               <TableCell>{row.chart}</TableCell>
               <TableCell><code>{row.app_version}</code></TableCell>
               <TableCell>

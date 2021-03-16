@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Button, Table, TableBody, TableCell, TableContainer, TableRow, Paper } from '@material-ui/core';
+import { Button, Table, TableBody, TableCell, TableContainer, TableRow, Toolbar, Paper, Typography, CircularProgress } from '@material-ui/core';
 import { useTitle, setLinkProps } from 'hookrouter';
 
 import EnhancedTableHead from '../EnhancedTableHead/EnhancedTableHead.jsx';
@@ -17,6 +17,10 @@ const headCells = [
 ];
 
 const useStyles = makeStyles({
+  spinnerWrap: {
+    textAlign: 'center',
+    padding: '2em',
+  },
 });
 
 export default function ReleaseList() {
@@ -42,10 +46,20 @@ export default function ReleaseList() {
   let releases = releasesState.list;
 
   if (releasesState.loading) {
-    return <p>Sorry, still loading...</p>
+    return (
+      <Paper className={classes.spinnerWrap}>
+        <CircularProgress size="5em" />
+      </Paper>
+    )
   }
+
   return (
     <TableContainer component={Paper}>
+      <Toolbar>
+        <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+          All Helm Releases
+        </Typography>
+      </Toolbar>
       <Table className={classes.table} size="small" aria-label="simple table">
         <EnhancedTableHead
             headCells={headCells}
@@ -55,7 +69,7 @@ export default function ReleaseList() {
           />
         <TableBody>
         {stableSort(releases, getComparator(order, orderBy))
-          .map(release => (<>
+          .map(release => (
             <TableRow key={`${release.namespace}/${release.name}`} >
               <TableCell>{release.namespace}</TableCell>
               <TableCell>{release.name}</TableCell>
@@ -72,7 +86,7 @@ export default function ReleaseList() {
                 })}>🔍</Button>
               </TableCell>
             </TableRow>
-          </>))}
+          ))}
         </TableBody>
       </Table>
     </TableContainer>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Paper, Container, AppBar } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { Container } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { useRoutes } from 'hookrouter';
 
 import LoginSplash from '../LoginSplash/LoginSplash.jsx';
@@ -17,13 +17,7 @@ const routes = {
   '/rollback/:namespace/:releaseName/:revision': args => <RollBackDetails {...args} />,
 };
 
-const useStyles = makeStyles(theme => ({
-  headPaper: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-    padding: theme.spacing(2),
-    backgroundColor: theme.palette.primary.main,
-  },
+const useStyles = makeStyles({
   footerIconWrap: {
     margin: '5em 1em',
     textAlign: 'center',
@@ -32,13 +26,11 @@ const useStyles = makeStyles(theme => ({
     fontSize: '15em',
     color: 'rgba(255, 255, 255, 0.4)',
   },
-}));
+});
 
 export default function App() {
   const routeResult = useRoutes(routes);
-
-  const theme = useTheme();
-  const classes = useStyles(theme);
+  const classes = useStyles();
 
   const [userData, setUserData] = useState({});
   useEffect(() => {
@@ -48,8 +40,7 @@ export default function App() {
   const hasUser = typeof userData?.email === 'string';
 
   return (
-    <Container className="App">
-
+    <Container>
       <AppHeader userData={userData} />
 
       {hasUser ? routeResult : <LoginSplash />}
