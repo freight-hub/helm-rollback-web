@@ -163,8 +163,8 @@ func HelmListHandler(response http.ResponseWriter, request *http.Request) {
 		UnauthorizedHandler(response, request)
 		return
 	}
-	log.Info("Executing `" + helmCommand + " list -o json --all-namespaces")
-	out, err := exec.Command(helmCommand, "list", "-o", "json", "--all-namespaces").Output()
+	log.Info("Executing `" + helmCommand + " list -o json --all-namespaces --time-format 2006-01-02T15:04:05Z")
+	out, err := exec.Command(helmCommand, "list", "-o", "json", "--all-namespaces", "--time-format", "2006-01-02T15:04:05Z").Output()
 	if err != nil {
 		log.Error(err.Error())
 		ServerErrorHandler(response, request)
