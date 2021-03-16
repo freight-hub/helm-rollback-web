@@ -37,6 +37,7 @@ var (
 	log                *logger.Logger
 	sessionStorage     *sessions.CookieStore
 	helmCommand        = ""
+	kubectlCommand     = "kubectl"
 	slackClient        = slack.New(os.Getenv("SLACK_APP_HELM_OAUTH_TOKEN"))
 )
 
@@ -260,12 +261,12 @@ func HelmRollBackHandler(response http.ResponseWriter, request *http.Request) {
 		Title:      notifTitle,
 		Text:       string(out),
 	}
-	channel, err := exec.Command("kubectl", "get", "namespace", vars["namespace"], "-o", "jsonpath=\"{.metadata.annotations.slack-channel}\"").Output()
+  channel, err := exec.Command(kubectlCommand, "get", "namespace", vars["namespace"], "-o", "jsonpath=\"{.metadata.annotations.slack-channel}\"").Output()
 	if err != nil {
 		log.Error(err.Error())
 	}
 
-	slackClient.PostMessage(string(channel), slack.MsgOptionAttachments(attachment))
+  _, _, err = slackClient.PostMessage(string(channel), slack.MsgOptionAttachments(attachment))
 	if err != nil {
 		log.Error(err.Error())
 	}
