@@ -1,0 +1,4 @@
+.circleci
+build/react-frontend/build
+build/react-frontend/node_modules
+deployments
