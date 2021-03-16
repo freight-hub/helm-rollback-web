@@ -42,9 +42,6 @@ jobs:
           namespace: << parameters.namespace >>
           tag: $CIRCLE_SHA1
           values_files: "values.<< parameters.values_base >>.yaml,secrets.<< parameters.values_base >>.yaml"
-      - helm3-deploy/notify_velocity:
-          CLUSTER: << PARAMETERS.CLUSTER_NAME >>
-          VERSION: $circle_sha1
 orbs:
   gcp-gcr: circleci/gcp-gcr@0.13.0
 version: 2.1
