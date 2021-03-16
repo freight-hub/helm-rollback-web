@@ -5,9 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: gcr.io/freighthub-registry/helm-rollback-web
-  tag: 0.0-linux-amd64
-  pullPolicy: Always
+  tag: dev
 
 imagePullSecrets: []
 nameOverride: ""
@@ -33,11 +31,10 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
-secretFiles: {}
 
-service:
-  type: ClusterIP
-  port: 80
+helmrollbackweb:
+  env:
+    HELM_ROLLBACK_WEB_CALLBACK_URL: https://helm-rollback.forto.com/callback-gl
 
 ingress:
   enabled: true
