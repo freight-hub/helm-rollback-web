@@ -2,7 +2,7 @@
   "name": "helm-rollback-web-frontend",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
+  "devDependencies": {
     "@fontsource/inter": "^4.2.2",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
@@ -30,23 +30,45 @@
   "eslintConfig": {
     "extends": "react-app",
     "rules": {
-      "import/order": ["error", {
-        "alphabetize": {"order": "asc", "caseInsensitive": true},
-        "newlines-between": "always"
-      }],
-      "key-spacing": ["error", {
-        "beforeColon": false,
-        "afterColon": true
-      }],
-      "object-curly-spacing": ["error", "always"],
-      "array-bracket-spacing": ["error", "always"],
-      "comma-spacing": ["error", { "before": false, "after": true }]
+      "import/order": [
+        "error",
+        {
+          "alphabetize": {
+            "order": "asc",
+            "caseInsensitive": true
+          },
+          "newlines-between": "always"
+        }
+      ],
+      "key-spacing": [
+        "error",
+        {
+          "beforeColon": false,
+          "afterColon": true
+        }
+      ],
+      "object-curly-spacing": [
+        "error",
+        "always"
+      ],
+      "array-bracket-spacing": [
+        "error",
+        "always"
+      ],
+      "comma-spacing": [
+        "error",
+        {
+          "before": false,
+          "after": true
+        }
+      ]
     }
   },
   "browserslist": {
     "production": [
-      ">0.2%",
+      ">1%",
       "not dead",
+      "not ie <= 11",
       "not op_mini all"
     ],
     "development": [

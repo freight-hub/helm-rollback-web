@@ -115,23 +115,26 @@ export class MockRollbackApi implements RollbackApi {
     ];
   }
 
-  performRollback() {
-    return Promise.resolve(`command not run, we're in frontend mock mode`);
+  async performRollback() {
+    return `command not run, we're in frontend mock mode`;
   }
 }
 
 function getDefaultRollbackApi(): RollbackApi {
+
   const { HelmRollbackApiEndpoint } = (window as any).localStorage ?? {};
   if (typeof HelmRollbackApiEndpoint === 'string') {
     console.log('Rollback API: Using', { endpoint: HelmRollbackApiEndpoint }, 'from localStorage');
     return new HttpRollbackApi(HelmRollbackApiEndpoint);
-  } else if (window.location.hostname === "localhost") {
+  }
+
+  if (window.location.hostname === "localhost") {
     console.log('Rollback API: Using mock data, no network interactions enabled');
     return new MockRollbackApi();
-  } else {
-    const endpoint = new URL("/", window.location.href).toString();
-    console.log('Rollback API: Using default', { endpoint }, 'from our origin');
-    return new HttpRollbackApi(endpoint);
   }
+
+  const endpoint = new URL("/", window.location.href).toString();
+  console.log('Rollback API: Using default', { endpoint }, 'from our origin');
+  return new HttpRollbackApi(endpoint);
 }
 export const DefaultRollbackApi = getDefaultRollbackApi();
