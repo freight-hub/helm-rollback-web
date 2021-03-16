@@ -22,6 +22,7 @@ import (
 	"time"
 
 	logger "github.com/apsdehal/go-logger"
+	slack "github.com/slack-go/slack"
 )
 
 var (
@@ -36,6 +37,7 @@ var (
 	log                *logger.Logger
 	sessionStorage     *sessions.CookieStore
 	helmCommand        = ""
+	slackClient        = slack.New(os.Getenv("SLACK_APP_HELM_OAUTH_TOKEN"))
 )
 
 type loginStruct struct {
@@ -249,6 +251,25 @@ func HelmRollBackHandler(response http.ResponseWriter, request *http.Request) {
 		ServerErrorHandler(response, request)
 		return
 	}
+
+	notifTitle := fmt.Sprintf("helm rollback for %v by %v",
+		vars["releasename"], userEmail)
+	attachment := slack.Attachment{
+		Color:      "#3BB9FF",
+		AuthorName: userEmail,
+		Title:      notifTitle,
+		Text:       string(out),
+	}
+	channel, err := exec.Command("kubectl", "get", "namespace", vars["namespace"], "-o", "jsonpath=\"{.metadata.annotations.slack-channel}\"").Output()
+	if err != nil {
+		log.Error(err.Error())
+	}
+
+	slackClient.PostMessage(string(channel), slack.MsgOptionAttachments(attachment))
+	if err != nil {
+		log.Error(err.Error())
+	}
+
 	response.Header().Add("Content-type", "text/plain")
 	fmt.Fprint(response, string(out))
 }
@@ -286,7 +307,6 @@ func TemplateHandler(response http.ResponseWriter, request *http.Request) {
 		ClientID     string
 		BaseURI      string
 	}
-	_ = strings.ToLower("Hello")
 	if strings.Index(request.URL.Path, "/") < 0 {
 		http.Error(response, "No slashes wat - "+request.URL.Path, http.StatusInternalServerError)
 		return

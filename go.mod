@@ -3,7 +3,6 @@ module helm-rollback-web
 go 1.14
 
 replace internal/utility => ./internal/utility
-
 replace internal/webserver => ./internal/webserver
 
 require (
@@ -15,6 +14,7 @@ require (
 	github.com/gorilla/handlers v1.5.1 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/gorilla/sessions v1.2.1 // indirect
+	github.com/slack-go/slack v0.8.1
 	go.uber.org/zap v1.16.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20210220000619-9bb904979d93 // indirect
 	internal/utility v0.0.0-00010101000000-000000000000
