@@ -258,12 +258,15 @@ func HelmRollBackHandler(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	notifTitle := fmt.Sprintf("rolled back %v to revision %v",
+	title := fmt.Sprintf("rolled back %v to revision %v",
 		vars["releasename"], vars["revision"])
+	link := fmt.Sprintf("%v/rollback/%v/%v",
+		os.Getenv("HELM_ROLLBACK_WEB_HOSTNAME"), vars["namespace"], vars["releasename"])
 	attachment := slack.Attachment{
 		Color:      "#3BB9FF",
 		AuthorName: userEmail,
-		Title:      notifTitle,
+		Title:      title,
+		TitleLink:  link,
 		Text:       string(out),
 	}
 	namespace, err := clientset.CoreV1().Namespaces().Get(context.TODO(), vars["namespace"], metav1.GetOptions{})
