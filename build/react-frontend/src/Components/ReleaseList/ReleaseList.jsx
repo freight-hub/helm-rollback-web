@@ -6,6 +6,8 @@ import React, { useEffect } from 'react';
 import { DefaultRollbackApi } from "../../lib/rollback-api";
 import { stableSort, getComparator } from '../../lib/sorting.js';
 import EnhancedTableHead from '../EnhancedTableHead/EnhancedTableHead.jsx';
+import StatusIcon from '../StatusIcon/StatusIcon.tsx';
+import Timestamp from '../Timestamp/Timestamp.tsx';
 
 const headCells = [
   { id: 'namespace', numeric: false, disablePadding: false, label: 'Namespace' },
@@ -72,14 +74,13 @@ export default function ReleaseList() {
           .map(release => (
             <TableRow key={`${release.namespace}/${release.name}`} >
               <TableCell>{release.namespace}</TableCell>
-              <TableCell>{release.name}</TableCell>
-              <TableCell>{release.chart}</TableCell>
-              <TableCell>{release.updated.split('.')[0]}</TableCell>
-              <TableCell align="right">
-                #{release.revision}
-                <br/>
-                <code>{release.app_version}</code>
+              <TableCell>
+                <StatusIcon status={release.status} />
+                {release.name}
               </TableCell>
+              <TableCell>{release.chart}</TableCell>
+              <TableCell><Timestamp date={release.updated} /></TableCell>
+              <TableCell align="right">#{release.revision}</TableCell>
               <TableCell align="right">
                 <Button variant="contained" color="primary" {...setLinkProps({
                   href: `/release/${release.namespace}/${release.name}`,

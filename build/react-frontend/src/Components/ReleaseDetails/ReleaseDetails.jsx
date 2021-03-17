@@ -7,6 +7,8 @@ import React, { useEffect } from 'react';
 import { DefaultRollbackApi } from "../../lib/rollback-api";
 import { stableSort, getComparator } from '../../lib/sorting.js';
 import EnhancedTableHead from '../EnhancedTableHead/EnhancedTableHead.jsx';
+import StatusIcon from '../StatusIcon/StatusIcon.tsx';
+import Timestamp from '../Timestamp/Timestamp.tsx';
 
 const headCells = [
   { id: 'revision', numeric: true, disablePadding: false, label: 'Revision' },
@@ -74,8 +76,11 @@ export default function ReleaseDetails(props) {
           .map(row => (
             <TableRow key={row.revision} >
               <TableCell align="right">{row.revision}</TableCell>
-              <TableCell>{row.updated.split('.')[0]}</TableCell>
-              <TableCell>{row.status}</TableCell>
+              <TableCell><Timestamp date={row.updated} /></TableCell>
+              <TableCell>
+                <StatusIcon status={row.status} />
+                {row.status}
+              </TableCell>
               <TableCell>{row.description}</TableCell>
               <TableCell>{row.chart}</TableCell>
               <TableCell><code>{row.app_version}</code></TableCell>
