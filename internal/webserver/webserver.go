@@ -250,7 +250,7 @@ func HelmRollBackHandler(response http.ResponseWriter, request *http.Request) {
 		UnauthorizedHandler(response, request)
 		return
 	}
-	log.Info("Executing `" + helmCommand + " rollback --namespace " + vars["namespace"] + " " + vars["releasename"] + " " + vars["revision"])
+	log.Info("Executing `" + helmCommand + " rollback --namespace " + vars["namespace"] + " " + vars["releasename"] + " " + vars["revision"] + " (by " + userEmail + ")")
 	out, err := exec.Command(helmCommand, "rollback", "--namespace", vars["namespace"], vars["releasename"], vars["revision"]).Output()
 	if err != nil {
 		log.ErrorF("Error rolling back release %s in namespace %s to revision %s, error is %s", vars["releasename"], vars["namespace"], vars["revision"], err.Error())
