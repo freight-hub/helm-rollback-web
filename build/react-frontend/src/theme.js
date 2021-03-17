@@ -18,22 +18,12 @@ const theme = createMuiTheme({
       main: red.A400,
     },
     background: {
-      default: '#282c34',
+      default: '#122b80',
     },
   },
-  overrides: {
-    MuiPaper: {
-      root: {
-        padding: '20px 10px',
-        margin: '10px',
-        backgroundColor: '#fff', // 5d737e
-      },
-    },
-    MuiButton: {
-      root: {
-        margin: '5px',
-      },
-    },
+
+  typography: {
+    fontFamily: 'Inter, sans-serif',
   },
 });
 export default theme;
