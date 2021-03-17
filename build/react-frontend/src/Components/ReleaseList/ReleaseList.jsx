@@ -170,7 +170,7 @@ export default function ReleaseList(props) {
           <EnhancedTableHead
               headCells={[
                 { id: 'namespace', numeric: false, disablePadding: false, label: 'Namespace' },
-                { id: 'updated', numeric: false, disablePadding: false, label: 'Latest Release' },
+                { id: 'updated', numeric: false, disablePadding: false, label: 'Most Recently Deployed' },
                 { id: 'action', numeric: false, disablePadding: false, label: '' },
               ]}
               order={nsOrder.order}
@@ -184,7 +184,7 @@ export default function ReleaseList(props) {
                 <TableCell>
                   <Link color="inherit" {...setLinkProps({
                     href: `/namespace/${release.namespace}`,
-                  })} style={{ display: 'block' }}>
+                  })} style={{ display: 'block', fontWeight: 500 }}>
                     {release.namespace}
                   </Link>
                 </TableCell>
@@ -215,7 +215,7 @@ export default function ReleaseList(props) {
       <TableContainer component={Paper}>
         <Toolbar>
           <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-            Recently Deployed Charts
+            Most Recently Deployed
           </Typography>
           <div style={{ flexGrow: 1 }} />
           <Button color="inherit" {...setLinkProps({
@@ -225,8 +225,8 @@ export default function ReleaseList(props) {
         <Table className={classes.table} size="small" aria-label="simple table">
           <EnhancedTableHead
               headCells={[
+                { id: 'updated', numeric: false, disablePadding: false, label: 'Deploy Timestamp' },
                 { id: 'namespace', numeric: false, disablePadding: false, label: 'Namespace' },
-                { id: 'updated', numeric: false, disablePadding: false, label: 'Release Information' },
                 { id: 'action', numeric: false, disablePadding: false, label: '' },
               ]}
               order={'desc'}
@@ -238,17 +238,23 @@ export default function ReleaseList(props) {
             .slice(0, 10)
             .map(release => (
               <TableRow key={`${release.namespace}/${release.name}`} >
-                <TableCell>{release.namespace}</TableCell>
                 <TableCell>
                   <div className={classes.releaseSummaryGrid}>
                     <StatusIcon style={{ gridArea: 'icon', alignSelf: 'center' }} status={release.status} />
-                    <Link style={{ gridArea: 'release' }} color="inherit" {...setLinkProps({
+                    <Link style={{ gridArea: 'release', fontWeight: 500 }} color="inherit" {...setLinkProps({
                         href: `/release/${release.namespace}/${release.name}`,
                       })}>{release.name}</Link>
                     <div style={{ gridArea: 'updated' }}>
                       <Timestamp date={release.updated} />
                     </div>
                   </div>
+                </TableCell>
+                <TableCell>
+                  <Link color="inherit" {...setLinkProps({
+                    href: `/namespace/${release.namespace}`,
+                  })} style={{ display: 'block' }}>
+                    {release.namespace}
+                  </Link>
                 </TableCell>
                 <TableCell align="right">
                   <Button variant="contained" {...setLinkProps({
