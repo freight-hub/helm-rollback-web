@@ -4,7 +4,7 @@ import { useTitle, setLinkProps } from 'hookrouter';
 import React, { useEffect } from 'react';
 
 import { DefaultRollbackApi } from "../../lib/rollback-api";
-import { stableSort, getComparator } from '../../lib/sorting.js';
+import { stableSort, getComparator } from '../../lib/sorting.ts';
 import EnhancedTableHead from '../EnhancedTableHead/EnhancedTableHead.jsx';
 import StatusIcon from '../StatusIcon/StatusIcon.tsx';
 import Timestamp from '../Timestamp/Timestamp.tsx';
