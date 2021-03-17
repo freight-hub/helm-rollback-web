@@ -260,7 +260,7 @@ func HelmRollBackHandler(response http.ResponseWriter, request *http.Request) {
 
 	title := fmt.Sprintf("rolled back %v to revision %v",
 		vars["releasename"], vars["revision"])
-	link := fmt.Sprintf("%v/rollback/%v/%v",
+	link := fmt.Sprintf("%v/release/%v/%v",
 		os.Getenv("HELM_ROLLBACK_WEB_HOSTNAME"), vars["namespace"], vars["releasename"])
 	attachment := slack.Attachment{
 		Color:      "#3BB9FF",
@@ -274,9 +274,13 @@ func HelmRollBackHandler(response http.ResponseWriter, request *http.Request) {
 		log.Error(err.Error())
 	} else {
 		channel := namespace.Annotations["slack-channel"]
-		_, _, err = slackClient.PostMessage(string(channel), slack.MsgOptionAttachments(attachment))
-		if err != nil {
-			log.Error(err.Error())
+		if len(channel) > 0 {
+			_, _, err = slackClient.PostMessage(string(channel), slack.MsgOptionAttachments(attachment))
+			if err != nil {
+				log.Error(err.Error())
+			}
+		} else {
+			log.Warning(fmt.Sprintf("%v does not contain a slack-channel annotation", vars["namespace"]))
 		}
 	}
 
