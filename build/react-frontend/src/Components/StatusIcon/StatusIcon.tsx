@@ -16,28 +16,28 @@ const useStyles = makeStyles({
 });
 
 
-export default function StatusIcon({ status }: {
+export default function StatusIcon(props: {
   status: string;
 }) {
   const classes = useStyles();
 
   let Icon = InfoIcon;
   let color: string = yellow[500];
-  if (status === 'deployed') {
+  if (props.status === 'deployed') {
     Icon = CheckCircleIcon;
     color = green[500];
   }
-  if (status === 'failed') {
+  if (props.status === 'failed') {
     Icon = ErrorIcon;
     color = red[500];
   }
-  if (status === 'superseded') {
+  if (props.status === 'superseded') {
     Icon = RadioButtonUncheckedIcon;
     color = grey[300];
   }
 
   return (
-    <abbr className={classes.wrap} title={status}>
+    <abbr {...props} className={classes.wrap} title={`Release status: ${props.status}`}>
       <Icon style={{ color }} />
     </abbr>
   );

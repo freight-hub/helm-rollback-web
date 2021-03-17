@@ -1,3 +1,22 @@
+import { useState } from "react";
+
+interface SortState {
+  field: string;
+  order: 'asc' | 'desc';
+}
+export function useSortState(initial: SortState) {
+  const [ state, setState ] = useState(initial);
+
+  const handleRequestSort = (property: string) => {
+    const isAsc = state.field === property && state.order === 'asc';
+    setState({
+      field: property,
+      order: isAsc ? 'desc' : 'asc',
+    });
+  };
+
+  return [ state, handleRequestSort ];
+}
 
 export function descendingComparator<T>(
   a: T, b: T,
