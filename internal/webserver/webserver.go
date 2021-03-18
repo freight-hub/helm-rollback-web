@@ -1,6 +1,7 @@
 package webserver
 
 import (
+	"context"
 	"encoding/json"
 	"internal/utility"
 	"io/ioutil"
@@ -12,6 +13,10 @@ import (
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
+
 	"fmt"
 	"html/template"
 	"net/http"
@@ -22,6 +27,7 @@ import (
 	"time"
 
 	logger "github.com/apsdehal/go-logger"
+	slack "github.com/slack-go/slack"
 )
 
 var (
@@ -36,6 +42,8 @@ var (
 	log                *logger.Logger
 	sessionStorage     *sessions.CookieStore
 	helmCommand        = ""
+	clientset          *kubernetes.Clientset
+	slackClient        = slack.New(os.Getenv("SLACK_APP_HELM_OAUTH_TOKEN"))
 )
 
 type loginStruct struct {
@@ -249,6 +257,42 @@ func HelmRollBackHandler(response http.ResponseWriter, request *http.Request) {
 		ServerErrorHandler(response, request)
 		return
 	}
+
+	title := fmt.Sprintf("rolled back %v to revision %v",
+		vars["releasename"], vars["revision"])
+	link := fmt.Sprintf("%v/release/%v/%v",
+		os.Getenv("HELM_ROLLBACK_WEB_HOSTNAME"), vars["namespace"], vars["releasename"])
+	attachment := slack.Attachment{
+		Color:      "#3BB9FF",
+		AuthorName: userEmail,
+		Title:      title,
+		TitleLink:  link,
+		Text:       string(out),
+	}
+
+	// posts message to channel that aggregates all notications
+	_, _, err = slackClient.PostMessage(os.Getenv("HELM_ROLLBACK_WEB_NOTIFICATION_CHANNEL"), slack.MsgOptionAttachments(attachment))
+	if err != nil {
+		log.Error(err.Error())
+	}
+
+	// finds target channel in slack-channel annotation present in the namespace object
+	namespace, err := clientset.CoreV1().Namespaces().Get(context.TODO(), vars["namespace"], metav1.GetOptions{})
+	if err != nil {
+		log.Error(err.Error())
+	} else {
+		channel := namespace.Annotations["slack-channel"]
+		if len(channel) > 0 {
+			// posts message to team specific channel
+			_, _, err = slackClient.PostMessage(string(channel), slack.MsgOptionAttachments(attachment))
+			if err != nil {
+				log.Error(err.Error())
+			}
+		} else {
+			log.Warning(fmt.Sprintf("%v does not contain a slack-channel annotation", vars["namespace"]))
+		}
+	}
+
 	response.Header().Add("Content-type", "text/plain")
 	fmt.Fprint(response, string(out))
 }
@@ -286,7 +330,6 @@ func TemplateHandler(response http.ResponseWriter, request *http.Request) {
 		ClientID     string
 		BaseURI      string
 	}
-	_ = strings.ToLower("Hello")
 	if strings.Index(request.URL.Path, "/") < 0 {
 		http.Error(response, "No slashes wat - "+request.URL.Path, http.StatusInternalServerError)
 		return
@@ -346,6 +389,18 @@ func HandleHTTP(GoogleClientID string, GoogleClientSecret string, port string) {
 	if err != nil {
 		panic(err) // Check for error
 	}
+
+	// creates the in-cluster config
+	config, err := rest.InClusterConfig()
+	if err != nil {
+		panic(err.Error())
+	}
+	// creates the clientset
+	clientset, err = kubernetes.NewForConfig(config)
+	if err != nil {
+		panic(err.Error())
+	}
+
 	helmCommand = os.Getenv("HELM_ROLLBACK_WEB_HELM_COMMAND")
 	if helmCommand == "" {
 		helmCommand = "helm"
