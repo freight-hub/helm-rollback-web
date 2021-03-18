@@ -13,6 +13,8 @@ import RollBackDetails from '../RollBackDetails/RollBackDetails.jsx';
 
 const routes = {
   '/': () => <ReleaseList />,
+  '/all-releases': () => <ReleaseList allReleases={true} />,
+  '/namespace/:namespace': args => <ReleaseList {...args} />,
   '/release/:namespace/:releaseName': args => <ReleaseDetails {...args} />,
   '/rollback/:namespace/:releaseName/:revision': args => <RollBackDetails {...args} />,
 };
