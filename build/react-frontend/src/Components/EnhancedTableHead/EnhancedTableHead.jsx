@@ -5,7 +5,7 @@ import React from 'react';
 export default function EnhancedTableHead(props) {
   const { headCells, order, orderBy, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
-    onRequestSort(property);
+    onRequestSort && onRequestSort(property);
   };
 
   return (
@@ -22,6 +22,7 @@ export default function EnhancedTableHead(props) {
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
               onClick={createSortHandler(headCell.id)}
+              disabled={!onRequestSort}
             >
               {headCell.label}
             </TableSortLabel>
@@ -33,7 +34,7 @@ export default function EnhancedTableHead(props) {
 }
 EnhancedTableHead.propTypes = {
   headCells: PropTypes.arrayOf(PropTypes.object).isRequired,
-  onRequestSort: PropTypes.func.isRequired,
+  onRequestSort: PropTypes.func,
   order: PropTypes.oneOf([ 'asc', 'desc' ]).isRequired,
   orderBy: PropTypes.string.isRequired,
 };

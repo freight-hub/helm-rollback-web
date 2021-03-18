@@ -218,7 +218,7 @@ export default function ReleaseList(props) {
             Most Recently Deployed
           </Typography>
           <div style={{ flexGrow: 1 }} />
-          <Button color="inherit" {...setLinkProps({
+          <Button color="inherit" variant="outlined" {...setLinkProps({
               href: `/all-releases`,
             })}>View All Releases</Button>
         </Toolbar>
@@ -231,7 +231,6 @@ export default function ReleaseList(props) {
               ]}
               order={'desc'}
               orderBy={'updated'}
-              onRequestSort={() => {}}
             />
           <TableBody>
           {stableSort(releases, getComparator('desc', 'updated'))
