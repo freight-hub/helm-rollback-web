@@ -269,12 +269,21 @@ func HelmRollBackHandler(response http.ResponseWriter, request *http.Request) {
 		TitleLink:  link,
 		Text:       string(out),
 	}
+
+	// posts message to channel that aggregates all notications
+	_, _, err = slackClient.PostMessage(os.Getenv("HELM_ROLLBACK_WEB_NOTIFICATION_CHANNEL"), slack.MsgOptionAttachments(attachment))
+	if err != nil {
+		log.Error(err.Error())
+	}
+
+	// finds target channel in slack-channel annotation present in the namespace object
 	namespace, err := clientset.CoreV1().Namespaces().Get(context.TODO(), vars["namespace"], metav1.GetOptions{})
 	if err != nil {
 		log.Error(err.Error())
 	} else {
 		channel := namespace.Annotations["slack-channel"]
 		if len(channel) > 0 {
+			// posts message to team specific channel
 			_, _, err = slackClient.PostMessage(string(channel), slack.MsgOptionAttachments(attachment))
 			if err != nil {
 				log.Error(err.Error())

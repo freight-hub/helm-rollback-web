@@ -34,6 +34,10 @@ func main() {
 		log.Errorf("Missing required env var SLACK_APP_HELM_OAUTH_TOKEN\n")
 		os.Exit(1)
 	}
+	if os.Getenv("HELM_ROLLBACK_WEB_NOTIFICATION_CHANNEL") == "" {
+		log.Errorf("Missing required env var HELM_ROLLBACK_WEB_NOTIFICATION_CHANNEL\n")
+		os.Exit(1)
+	}
 	if os.Getenv("HELM_ROLLBACK_WEB_HELM_COMMAND") == "" {
 		log.Infof("Missing required env var HELM_ROLLBACK_WEB_HELM_COMMAND assuming `helm`\n")
 	}
