@@ -1,12 +1,6 @@
 @import "@fontsource/inter/400.css";
 @import "@fontsource/inter/500.css";
 
-body {
-  font-family: Inter;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
@@ -15,4 +9,8 @@ code {
   padding: 2px 0.5em;
   background-color: rgba(0,0,0,0.1);
   border-radius: 3px;
+}
+
+body strong {
+  font-weight: 500;
 }

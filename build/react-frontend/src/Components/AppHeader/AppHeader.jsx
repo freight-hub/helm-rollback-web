@@ -8,22 +8,44 @@ import logo from './../../forto_150.png';
 
 const useStyles = makeStyles(theme => ({
   paper: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
+    margin: theme.spacing(2, 0),
     padding: theme.spacing(2),
     backgroundColor: theme.palette.primary.main,
-    display: 'flex',
+    display: 'grid',
     alignItems: 'center',
+    gridTemplateColumns: 'min-content 1fr max-content',
+    gridGap: theme.spacing(0, 2),
+    [theme.breakpoints.down('sm')]: {
+      gridTemplateAreas: [
+        'logo title       title',
+        'logo environment logout',
+        '__   userInfo    logout',
+      ].map(x => `'${x}'`).join(' '),
+    },
+    [theme.breakpoints.up('md')]: {
+      gridTemplateAreas: [
+        'logo title       userInfo logout',
+        'logo environment userInfo logout',
+      ].map(x => `'${x}'`).join(' '),
+    },
   },
   logo: {
-    marginRight: theme.spacing(1.5),
+    gridArea: 'logo',
+    width: 64,
+    height: 64,
   },
   title: {
-    flex: '1',
+    gridArea: 'title',
+  },
+  environment: {
+    gridArea: 'environment',
+    textTransform: 'uppercase',
   },
   userInfo: {
-    marginLeft: theme.spacing(2),
-    marginRight: theme.spacing(2),
+    gridArea: 'userInfo',
+  },
+  logout: {
+    gridArea: 'logout',
   },
 }));
 
@@ -45,26 +67,26 @@ export default function AppHeader(props) {
 
       <Avatar className={classes.logo} src={logo} alt="logo" />
 
-      <div className={classes.title}>
-        <Typography variant="h4" component="h1">
-          <Link  {...setLinkProps({
-            href: `/`,
-          })} style={{ color: 'inherit' }}>
-            Helm Rollback Tool
-          </Link>
-        </Typography>
+      <Typography className={classes.title} variant="h4" component="h1">
+        <Link  {...setLinkProps({
+          href: `/`,
+        })} style={{ color: 'inherit' }}>
+          Helm Rollback Tool
+        </Link>
+      </Typography>
 
-        <Typography variant="subtitle1" style={{ textTransform: 'uppercase' }}>
-          <strong style={{ fontWeight: 500 }}>{props.environment}</strong> environment
-        </Typography>
-      </div>
+      <Typography className={classes.environment} variant="subtitle1">
+        <strong>{props.environment}</strong> environment
+      </Typography>
 
       {email ? (<>
         <Typography className={classes.userInfo} variant="subtitle1" component="p">
-          <strong style={{ fontWeight: 500 }}>{handle}</strong>@{domain}
+          <strong>{handle}</strong>@{domain}
         </Typography>
 
-        <Button variant="contained" color="secondary" onClick={doLogout}
+        <Button className={classes.logout} variant="contained"
+            color="secondary"
+            onClick={doLogout}
             disabled={isMock}
           >Log out</Button>
       </>) : null}
