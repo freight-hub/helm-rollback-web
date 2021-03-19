@@ -85,13 +85,14 @@ export class HttpRollbackApi implements RollbackApi {
 export class MockRollbackApi implements RollbackApi {
 
   async getLoginStatus() {
+    await new Promise(ok => setTimeout(ok, 150));
     return {
       email: "mock-demo-user@forto.com",
       isMock: true as const,
     };
   }
 
-  async getReleaseList() {
+  get rawReleaseList() {
     return parseDates([
       { "name": "booking-core", "namespace": "yarrrnicorns", "revision": "8", "updated": "2021-03-03T15:21:34.343751141Z", "status": "deployed", "chart": "booking-core-0.1.0", "app_version": "22b7727ddd5454a427701fb9fddf4c28e8258ce0" },
       { "name": "booking-request-core", "namespace": "nexus", "revision": "11", "updated": "2021-02-26T10:22:06.122757189Z", "status": "deployed", "chart": "booking-request-core-0.1.0", "app_version": "02f27dacc475a4e3a806eb0165faeab6310045a7" },
@@ -113,9 +114,17 @@ export class MockRollbackApi implements RollbackApi {
     ]);
   }
 
+
+  async getReleaseList() {
+    await new Promise(ok => setTimeout(ok, 1000));
+    return this.rawReleaseList;
+  }
+
   async getReleaseHistory(namespace: string, releaseName: string) {
+    await new Promise(ok => setTimeout(ok, 300));
+
     // be a bit smart about the chart name
-    const latestInfo = (await this.getReleaseList()).find(x =>
+    const latestInfo = this.rawReleaseList.find(x =>
       x.namespace === namespace && x.name === releaseName
     );
     const chart = latestInfo?.chart || `${releaseName}-0.1.0`;
