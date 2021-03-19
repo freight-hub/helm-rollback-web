@@ -15,7 +15,15 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     gridTemplateColumns: 'min-content 1fr max-content',
     gridGap: theme.spacing(0, 2),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('xs')]: {
+      gridTemplateAreas: [
+        'logo title',
+        'logo environment',
+        '__   userInfo',
+        '__   logout',
+      ].map(x => `'${x}'`).join(' '),
+    },
+    [theme.breakpoints.only('sm')]: {
       gridTemplateAreas: [
         'logo title       title',
         'logo environment logout',
@@ -36,13 +44,19 @@ const useStyles = makeStyles(theme => ({
   },
   title: {
     gridArea: 'title',
+    lineHeight: 1.1,
+    padding: theme.spacing(0.5, 0),
   },
   environment: {
     gridArea: 'environment',
     textTransform: 'uppercase',
+    lineHeight: 1.2,
+    padding: theme.spacing(0.5, 0),
   },
   userInfo: {
     gridArea: 'userInfo',
+    lineHeight: 1.2,
+    padding: theme.spacing(0.5, 0),
   },
   logout: {
     gridArea: 'logout',
