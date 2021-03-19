@@ -1,6 +1,7 @@
 import { Container } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useRoutes } from 'hookrouter';
+import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 
 import { DefaultRollbackApi } from "../../lib/rollback-api";
@@ -30,7 +31,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function App() {
+export default function App({ environment }) {
   const routeResult = useRoutes(routes);
   const classes = useStyles();
 
@@ -43,7 +44,7 @@ export default function App() {
 
   return (
     <Container>
-      <AppHeader userData={userData} />
+      <AppHeader userData={userData} environment={environment} />
 
       {hasUser ? routeResult : <LoginSplash />}
 
@@ -53,3 +54,6 @@ export default function App() {
     </Container>
   );
 }
+App.propTypes = {
+  environment: PropTypes.string.isRequired,
+};

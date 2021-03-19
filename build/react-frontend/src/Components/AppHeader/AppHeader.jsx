@@ -45,13 +45,19 @@ export default function AppHeader(props) {
 
       <Avatar className={classes.logo} src={logo} alt="logo" />
 
-      <Typography className={classes.title} variant="h4" component="h1">
-        <Link  {...setLinkProps({
-          href: `/`,
-        })} style={{ color: 'inherit' }}>
-          Helm Rollback Tool
-        </Link>
-      </Typography>
+      <div className={classes.title}>
+        <Typography variant="h4" component="h1">
+          <Link  {...setLinkProps({
+            href: `/`,
+          })} style={{ color: 'inherit' }}>
+            Helm Rollback Tool
+          </Link>
+        </Typography>
+
+        <Typography variant="subtitle1" style={{ textTransform: 'uppercase' }}>
+          <strong style={{ fontWeight: 500 }}>{props.environment}</strong> environment
+        </Typography>
+      </div>
 
       {email ? (<>
         <Typography className={classes.userInfo} variant="subtitle1" component="p">
@@ -67,6 +73,7 @@ export default function AppHeader(props) {
   );
 }
 AppHeader.propTypes = {
+  environment: PropTypes.string.isRequired,
   userData: PropTypes.shape({
     email: PropTypes.string,
     isMock: PropTypes.bool,
