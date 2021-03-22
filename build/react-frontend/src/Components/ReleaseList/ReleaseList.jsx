@@ -20,7 +20,7 @@ const headCells = [
   { id: 'action', numeric: false, disablePadding: false, label: '' },
 ];
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   spinnerWrap: {
     textAlign: 'center',
     padding: '2em',
@@ -30,14 +30,22 @@ const useStyles = makeStyles({
     gridTemplateColumns: 'min-content 1fr',
     gridTemplateAreas: "'icon release' 'icon updated'",
   },
-});
+  homeSplit: {
+    display: 'flex',
+    flexDirection: 'column',
+    [theme.breakpoints.up('md')]: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+    },
+  },
+}));
 
 export default function ReleaseList(props) {
   useTitle(`Release List - Helm Rollback`);
   const { allReleases, namespace } = props;
 
   const theme = useTheme();
-  const classes = useStyles();
+  const classes = useStyles(theme);
   const [ releaseOrder, setReleaseOrder ] = useSortState({ field: 'name', order: 'asc' });
   const [ nsOrder, setNsOrder ] = useSortState({ field: 'namespace', order: 'asc' });
 
@@ -159,7 +167,7 @@ export default function ReleaseList(props) {
   }
 
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+    <div className={classes.homeSplit}>
       <TableContainer component={Paper}>
         <Toolbar>
           <Typography className={classes.title} variant="h6" id="tableTitle" component="div">

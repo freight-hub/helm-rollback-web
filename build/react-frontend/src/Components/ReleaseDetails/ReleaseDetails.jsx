@@ -19,6 +19,7 @@ const headCells = [
   { id: 'app_version', numeric: false, disablePadding: false, label: 'Version' },
   { id: 'action', numeric: true, disablePadding: false, label: '' },
 ];
+const headCellsWithoutChart = headCells.filter(x => x.id !== 'chart');
 
 export default function ReleaseDetails(props) {
   const { namespace, releaseName } = props;
@@ -48,25 +49,43 @@ export default function ReleaseDetails(props) {
     });
   }, [ setReleasesState, namespace, releaseName ]);
 
+  const firstChart = releasesState.revisions[0]?.chart;
+  const allSameChart = firstChart && releasesState.revisions
+    .every(x => x.chart === firstChart);
+
+  const toolbar = (
+    <Toolbar>
+      <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+        Release History for &nbsp;
+        <code>{namespace}</code>/<code>{releaseName}</code>
+      </Typography>
+      <div style={{ flexGrow: 1 }} />
+      {allSameChart ? (
+        <Typography className={classes.title} variant="h6" component="div">
+          Helm chart: &nbsp;
+          <code>{firstChart}</code>
+        </Typography>
+      ) : null}
+    </Toolbar>
+  );
+
   if (releasesState.loading) {
     return (
-      <Paper className={classes.spinnerWrap}>
-        <CircularProgress size="5em" />
+      <Paper>
+        {toolbar}
+        <div className={classes.spinnerWrap}>
+          <CircularProgress size="5em" />
+        </div>
       </Paper>
     )
   }
 
   return (
     <TableContainer component={Paper}>
-      <Toolbar>
-        <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-          Release History for &nbsp;
-          <code>{namespace}</code>/<code>{releaseName}</code>
-        </Typography>
-      </Toolbar>
+      {toolbar}
       <Table className={classes.table} size="small" aria-label="simple table">
         <EnhancedTableHead
-            headCells={headCells}
+            headCells={allSameChart ? headCellsWithoutChart : headCells}
             order={order}
             orderBy={orderBy}
             onRequestSort={handleRequestSort}
@@ -82,7 +101,7 @@ export default function ReleaseDetails(props) {
                 {row.status}
               </TableCell>
               <TableCell>{row.description}</TableCell>
-              <TableCell>{row.chart}</TableCell>
+              {!allSameChart ? (<TableCell>{row.chart}</TableCell>) : null}
               <TableCell><code>{row.app_version}</code></TableCell>
               <TableCell>
                 <Button variant="contained" color="primary" {...setLinkProps({
