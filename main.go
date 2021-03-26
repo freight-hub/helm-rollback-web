@@ -44,11 +44,6 @@ func main() {
 	if os.Getenv("HELM_ROLLBACK_WEB_CALLBACK_URL") == "" {
 		log.Warningf("Missing required env var HELM_ROLLBACK_WEB_CALLBACK_URL assuming `http://localhost:8080/callback-gl` - This will almost certainly not work!\n")
 	}
-	go func() { // Background the webserver, allows for further startup afterwards.
-		log.Infof("Starting webserver on port %s\n", "8080")
-		webserver.HandleHTTP(os.Getenv("HELM_ROLLBACK_WEB_GCP_CLIENT_ID"), os.Getenv("HELM_ROLLBACK_WEB_GCP_CLIENT_SECRET"), "8080")
-	}()
-	for { // main processing is in the go func, here we sleep for 5 seconds over and over.
-		time.Sleep(5000)
-	}
+	log.Infof("Starting webserver on port %s\n", "8080")
+	webserver.HandleHTTP(os.Getenv("HELM_ROLLBACK_WEB_GCP_CLIENT_ID"), os.Getenv("HELM_ROLLBACK_WEB_GCP_CLIENT_SECRET"), "8080")
 }
