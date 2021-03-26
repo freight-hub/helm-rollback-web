@@ -1,5 +1,6 @@
 import { Button, Table, TableBody, TableCell, TableContainer, TableRow, Paper, Toolbar, Typography, CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { useTitle, setLinkProps } from 'hookrouter';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
@@ -106,7 +107,7 @@ export default function ReleaseDetails(props) {
               <TableCell>
                 <Button variant="contained" color="primary" {...setLinkProps({
                   href: `/rollback/${namespace}/${releaseName}/${row.revision}`,
-                })}>↩️</Button>
+                })}><ChevronRightIcon /></Button>
               </TableCell>
             </TableRow>
           ))}

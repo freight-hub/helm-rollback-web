@@ -1,65 +1,156 @@
-import { Paper, Button, CircularProgress, Toolbar, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Paper, Button, CircularProgress, Typography } from '@material-ui/core';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useTitle, setLinkProps } from 'hookrouter';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 
 import { DefaultRollbackApi } from "../../lib/rollback-api";
 
-const useStyles = makeStyles({
-  paper: {
-    width: '50em',
-    margin: '0 auto',
+const useStyles = makeStyles(theme => ({
+  grid: {
+    display: 'grid',
+    gridGap: theme.spacing(2),
+    [theme.breakpoints.up('md')]: {
+      gridTemplateColumns: '3fr 2fr',
+      alignItems: 'flex-start',
+    },
   },
   paperPadding: {
-    padding: '0 2em 2em',
+    padding: theme.spacing(2, 3),
   },
-});
+  buttonBox: {
+    textAlign: 'center',
+    padding: theme.spacing(1, 2, 1),
+  },
+}));
 
 export default function RollBackDetails(props) {
   const { namespace, releaseName, revision } = props;
   useTitle(`${releaseName} - ${namespace} - Helm Rollback`);
-  const classes = useStyles();
 
-  const [ commandText, setCommandText ] = React.useState(false);
+  const theme = useTheme()
+  const classes = useStyles(theme);
+
+  // idle --UI-> triggered --EFFECT-> running --API-> done
+  const [ commandState, setCommandState ] = React.useState('idle');
+  function triggerRollback() {
+    if (commandState !== 'idle') return;
+    setCommandState('triggered');
+  }
+
+  const [ commandText, setCommandText ] = React.useState('');
   useEffect(() => {
+    if (commandState !== 'triggered') return;
+    setCommandState('running');
+
     DefaultRollbackApi
       .performRollback(namespace, releaseName, revision)
       .then(setCommandText)
-  }, [ setCommandText, namespace, releaseName, revision ]);
+      .then(() => setCommandState('done'))
+  }, [
+    commandState, setCommandState,
+    setCommandText,
+    namespace, releaseName, revision,
+  ]);
 
-  const toolbar = (
-    <Toolbar>
-      <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-        Rollback of &nbsp;
-        <code>{namespace}</code>/<code>{releaseName}</code>
-      </Typography>
-    </Toolbar>
+  const sp = (
+    <span style={{ whiteSpace: 'break-spaces' }}> </span>
   );
 
-  if (commandText === false) {
-    return (
-      <Paper className={classes.paper} style={{ textAlign: 'center' }}>
-        {toolbar}
-        <div className={classes.paperPadding}>
+  function RollbackCard () { switch (commandState) {
+
+    case 'idle': {
+      return (<>
+        <p>
+          Are you sure you want to rollback to this release?
+        </p>
+        <p>
+          This action will start bringing up the desired Kubernetes Pods nearly immediately.
+        </p>
+        <div className={classes.buttonBox}>
+          <Button variant="contained" color="primary" onClick={triggerRollback}>
+            🚨 🚨 Begin rollback process now! 🚨 🚨
+          </Button>
+        </div>
+      </>);
+    }
+
+    case 'running': {
+      return (
+        <div style={{ textAlign: 'center' }}>
           <p>Waiting for helm command to finish.... This usually happens immediately.</p>
           <CircularProgress size="5em" />
         </div>
-      </Paper>
-    )
-  } else {
-    return (
+      );
+    }
+
+    case 'done': {
+      return (
+        <pre>{commandText}</pre>
+      );
+    }
+
+    default: { // triggered
+      return (
+          <p>Rollack state: {commandState}</p>
+      );
+    }
+  }}
+
+  const logParams = new URLSearchParams({
+    query: [
+      `kube_namespace:${namespace}`,
+      `kube_app_instance:${releaseName}`,
+    ].join(' '),
+    cols: [
+      'cluster_name',
+      'pod_name',
+    ].join(','),
+    live: 'true',
+    stream_sort: 'desc',
+  });
+
+  return (
+    <div className={classes.grid}>
+
       <Paper className={classes.paper}>
-        {toolbar}
         <div className={classes.paperPadding}>
-          <pre>{commandText}</pre>
-          <Button variant="contained" color="secondary" {...setLinkProps({
-            href: `/release/${namespace}/${releaseName}`,
-          })}>Back to release history</Button>
+
+        <Button variant="outlined" {...setLinkProps({
+          href: `/release/${namespace}/${releaseName}`,
+        })} style={{ float: 'right' }}>Back to release history</Button>
+
+          <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+            Rollback of &nbsp;
+            <code>{namespace}</code>/<code>{releaseName}</code>
+          </Typography>
+          {RollbackCard()}
         </div>
       </Paper>
-    )
-  }
+
+      <Paper className={classes.paper}>
+        <div className={classes.paperPadding}>
+          <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+            Information
+          </Typography>
+          <p>
+            Please note that a Helm rollback will usually be reset by the next successful deployment from CI.
+          </p>
+          <p>
+            To monitor the related pods, use a kubectl command such as:
+          </p>
+          <p style={{ whiteSpace: 'nowrap' }}>
+            <code>kubectl get pods{sp}--namespace {namespace}{sp}-l app.kubernetes.io/instance={releaseName}{sp}--watch</code>
+          </p>
+          <p>
+            <a href={`https://app.datadoghq.eu/logs?${logParams}`} target="_blank" rel="noreferrer">
+              View application logs in Datadog
+            </a>
+          </p>
+        </div>
+      </Paper>
+    </div>
+  )
 }
 RollBackDetails.propTypes = {
   namespace: PropTypes.string.isRequired,

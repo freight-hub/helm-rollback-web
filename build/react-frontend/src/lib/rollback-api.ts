@@ -147,6 +147,7 @@ export class MockRollbackApi implements RollbackApi {
   }
 
   async performRollback() {
+    await new Promise(ok => setTimeout(ok, 500));
     return `command not run, we're in frontend mock mode`;
   }
 }
