@@ -431,7 +431,8 @@ func HandleHTTP(GoogleClientID string, GoogleClientSecret string, port string) {
 	r.HandleFunc("/login-status", LoginStatusHandler)
 	r.HandleFunc("/healthz", HealthHandler)
 	r.HandleFunc("/web/{.*}", TemplateHandler)
-	r.PathPrefix("/static").Handler(http.StripPrefix("/static", http.FileServer(http.Dir("./web/react-frontend/static"))))
+	// static files - react is told that it'll be mounted at /pub
+	r.PathPrefix("/pub/").Handler(http.StripPrefix("/pub", http.FileServer(http.Dir("./web/react-frontend"))))
 	r.HandleFunc("/login", GoogleLoginHandler)
 	r.HandleFunc("/callback-gl", CallBackFromGoogleHandler)
 	r.HandleFunc("/helm-list", HelmListHandler)

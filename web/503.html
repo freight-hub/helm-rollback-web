@@ -7,12 +7,12 @@
             <meta name="description" content="Karaokards">
             <meta name="author" content="Martyn Ranyard">
             <title>The great unknown!</title>
-        
+
             <!-- Bootstrap core CSS -->
             <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
             <!-- Custom styles for this template -->
-            <link href="/cover.css" rel="stylesheet">
-        
+            <link href="/pub/error-page.css" rel="stylesheet">
+
             <style>
               .bd-placeholder-img {
                 font-size: 1.125rem;
@@ -22,13 +22,13 @@
                 -ms-user-select: none;
                 user-select: none;
               }
-        
+
               @media (min-width: 768px) {
                 .bd-placeholder-img-lg {
                   font-size: 3.5rem;
                 }
                     }
-                    
+
                     li.match-nomatch{
                         background-color: #1e2122;
                     }
@@ -84,7 +84,7 @@
                     var destination = url.protocol + "//" + url.hostname + customPort + "/" + document.getElementById("mode").value + "/" + document.getElementById("spotifyid").value
                     window.location.href = destination
                 }
-                
+
                 function toggleUnfound() {
                     var unmatched = document.getElementsByClassName('match-nomatch'), i;
                     if (document.getElementById("showhidebutton").getAttribute("tracksHidden") != "true") {

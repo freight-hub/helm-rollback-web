@@ -12,6 +12,7 @@ WORKDIR /frontend
 COPY build/react-frontend/package*.json ./
 RUN npm ci
 COPY build/react-frontend ./
+ENV PUBLIC_URL=/pub
 RUN npm run build && npm run test -- --watchAll=false
 
 FROM alpine/helm:3.5.2 AS add_helm
