@@ -3,7 +3,7 @@ package webserver
 import (
 	"context"
 	"encoding/json"
-	"internal/utility"
+	"helm-rollback-web/internal/utility"
 	"io/ioutil"
 
 	"github.com/gorilla/handlers"
