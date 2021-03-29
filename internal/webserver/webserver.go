@@ -237,10 +237,6 @@ func HelmHistoryHandler(response http.ResponseWriter, request *http.Request) {
 }
 
 func HelmRollBackHandler(response http.ResponseWriter, request *http.Request) {
-	if request.Method != "POST" {
-		MethodNotAllowedHandler(response, request)
-		return
-	}
 	vars := mux.Vars(request)
 	session, _ := sessionStorage.Get(request, "session-name")
 	if session.Values["userEmail"] == nil {
@@ -372,13 +368,6 @@ func UnauthorizedHandler(response http.ResponseWriter, request *http.Request) {
 	tmpl.Execute(response, nil)
 }
 
-func MethodNotAllowedHandler(response http.ResponseWriter, request *http.Request) {
-	response.Header().Add("X-Template-File", "web/404.html")
-	response.WriteHeader(405)
-	tmpl := template.Must(template.ParseFiles("web/404.html"))
-	tmpl.Execute(response, nil)
-}
-
 func ServerErrorHandler(response http.ResponseWriter, request *http.Request) {
 	response.Header().Add("X-Template-File", "web/503.html")
 	response.WriteHeader(503)
@@ -396,7 +385,7 @@ func ReactIndexHandler(entrypoint string) func(w http.ResponseWriter, r *http.Re
 
 func HandleHTTP(GoogleClientID string, GoogleClientSecret string, port string) {
 	err := error(nil)
-	log, err = logger.New("hrw-webserver", 1, os.Stderr)
+	log, err = logger.New("helm-rollback", 1, os.Stderr)
 	if err != nil {
 		panic(err) // Check for error
 	}
@@ -428,17 +417,32 @@ func HandleHTTP(GoogleClientID string, GoogleClientSecret string, port string) {
 	r := mux.NewRouter()
 	loggedRouter := handlers.LoggingHandler(os.Stdout, r)
 	r.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
-	r.HandleFunc("/login-status", LoginStatusHandler)
+
+	// Utility routes
 	r.HandleFunc("/healthz", HealthHandler)
-	r.HandleFunc("/web/{.*}", TemplateHandler)
-	// static files - react is told that it'll be mounted at /pub
-	r.PathPrefix("/pub/").Handler(http.StripPrefix("/pub", http.FileServer(http.Dir("./web/react-frontend"))))
+
+	// Session handling
 	r.HandleFunc("/login", GoogleLoginHandler)
 	r.HandleFunc("/callback-gl", CallBackFromGoogleHandler)
+
+	// API routes that we will serve
+	r.HandleFunc("/login-status", LoginStatusHandler)
 	r.HandleFunc("/helm-list", HelmListHandler)
 	r.HandleFunc("/helm-history/{namespace}/{releasename}", HelmHistoryHandler)
-	r.HandleFunc("/dorollback/{namespace}/{releasename}/{revision}", HelmRollBackHandler)
-	r.PathPrefix("/").HandlerFunc(ReactIndexHandler("./web/react-frontend/index.html"))
+	r.HandleFunc("/dorollback/{namespace}/{releasename}/{revision}", HelmRollBackHandler).Methods("POST")
+
+	// SPA routes, roughly, doesn't need to be exact
+	spaHandler := ReactIndexHandler("./web/react-frontend/index.html")
+	r.HandleFunc("/", spaHandler)
+	r.HandleFunc("/all-releases", spaHandler)
+	r.HandleFunc("/namespace/{.+}", spaHandler)
+	r.HandleFunc("/releases/{.+}", spaHandler)
+	r.HandleFunc("/rollback/{.+}", spaHandler)
+
+	// Static content
+	// react is told that it'll be mounted at /pub
+	r.PathPrefix("/pub/").Handler(http.StripPrefix("/pub", http.FileServer(http.Dir("./web/react-frontend"))))
+
 	http.Handle("/", r)
 	srv := &http.Server{
 		Handler:      loggedRouter,
