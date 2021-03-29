@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	webserver "internal/webserver"
+	"helm-rollback-web/internal/webserver"
 
 	logger "github.com/apsdehal/go-logger"
 )

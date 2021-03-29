@@ -4,56 +4,18 @@
           <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-            <meta name="description" content="Karaokards">
-            <meta name="author" content="Martyn Ranyard">
             <title>The great unknown!</title>
-        
+
             <!-- Bootstrap core CSS -->
             <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
             <!-- Custom styles for this template -->
-            <link href="/cover.css" rel="stylesheet">
-        
-            <style>
-              .bd-placeholder-img {
-                font-size: 1.125rem;
-                text-anchor: middle;
-                -webkit-user-select: none;
-                -moz-user-select: none;
-                -ms-user-select: none;
-                user-select: none;
-              }
-        
-              @media (min-width: 768px) {
-                .bd-placeholder-img-lg {
-                  font-size: 3.5rem;
-                }
-                    }
-                    
-                    li.match-nomatch{
-                        background-color: #1e2122;
-                    }
-                    li.match-matchtrack{
-                        background-color: #E9B000;
-                    }
-                    li.match-fullmatch{
-                        background-color: #008F95;
-                    }
-                    li.match-matchtrackfuzzt{
-                        background-color: darkgray;
-                    }
-                    li.match-fullmatchfuzzy{
-                        background-color: darkgray;
-                    }
-                    a{
-                        text-decoration-line: underline;
-                    }
-            </style>
+            <link href="/pub/error-page.css" rel="stylesheet">
           </head>
           <body class="text-center">
                 <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
                 <header class="masthead mb-auto">
                 <div class="inner">
-                  <h3 class="masthead-brand">k8s-zoo</h3>
+                  <h3 class="masthead-brand">helm-rollback</h3>
                   <nav class="nav nav-masthead justify-content-center">
                     <a class="nav-link active" href="/">Home</a>
                   </nav>
@@ -63,7 +25,7 @@
                         <h1 class="cover-heading">Ooops!</h1>
                         <p>It seems you've gone somewhere you shouldn't!  404 NOT FOUND!</p>
                         <p/>
-                        <p>I'm not quite sure how you got here to be honest, if it was via a link on the site, let me know via slack DM, if it was from someone else, let them know.</p>
+                        <p>I'm not quite sure how you got here to be honest, if this link came from someone else, let them know.</p>
                       </main>
         <footer class="mastfoot mt-auto">
                 <div class="inner">
@@ -71,34 +33,6 @@
                 </div>
                 </footer>
                 </div>
-                <script>
-                function directToResults() {
-                    var url = document.createElement('a');
-                    url.setAttribute("href", window.location.href);
-                    if ((url.port != 80) && (url.port != 443)) {
-                        customPort = ":"+url.port
-                    } else {
-                        customPort = ""
-                    }
-                    var destination = url.protocol + "//" + url.hostname + customPort + "/" + document.getElementById("mode").value + "/" + document.getElementById("spotifyid").value
-                    window.location.href = destination
-                }
-                
-                function toggleUnfound() {
-                    var unmatched = document.getElementsByClassName('match-nomatch'), i;
-                    if (document.getElementById("showhidebutton").getAttribute("tracksHidden") != "true") {
-                        document.getElementById("showhidebutton").setAttribute("tracksHidden","true")
-                        for (i = 0; i < unmatched.length; i += 1) {
-                                unmatched[i].style.display = 'none';
-                        }
-                    } else {
-                        document.getElementById("showhidebutton").setAttribute("tracksHidden","false")
-                        for (i = 0; i < unmatched.length; i += 1) {
-                                unmatched[i].style.display = 'list-item';
-                        }
-                    }
-                }
-                </script>
                 </body>
                 </html>
     </body>

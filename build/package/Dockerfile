@@ -1,23 +1,25 @@
 FROM golang:1.16.0-alpine AS builder
-RUN apk add --no-cache git make ca-certificates
-COPY main.go go.mod go.sum /src/
-COPY internal/ /src/internal/
-COPY Makefile /src/
+RUN apk add --no-cache make ca-certificates
 WORKDIR /src
-RUN make deps && make static
+COPY Makefile go.mod go.sum ./
+RUN make deps
+COPY internal/ ./internal/
+COPY *.go ./
+RUN make static
 
 FROM node:14.16.0-alpine3.13 AS frontend
-COPY build/react-frontend /frontend
 WORKDIR /frontend
-RUN npm ci && npm run build && npm run test -- --watchAll=false
+COPY build/react-frontend/package*.json ./
+RUN npm ci
+COPY build/react-frontend ./
+ENV PUBLIC_URL=/pub
+RUN npm run build && npm run test -- --watchAll=false
 
-FROM alpine/helm:3.5.2 AS add_helm
-
-FROM scratch
+FROM scratch AS final
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /src/helm-rollback-web /app/
 COPY web/ /app/web/
 COPY --from=frontend /frontend/build /app/web/react-frontend
-COPY --from=add_helm /usr/bin/helm /usr/bin/helm3
+COPY --from=alpine/helm:3.5.2 /usr/bin/helm /usr/bin/helm3
 WORKDIR /app
 CMD ["/app/helm-rollback-web"]
