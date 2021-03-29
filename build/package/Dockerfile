@@ -1,5 +1,5 @@
 FROM golang:1.16.0-alpine AS builder
-RUN apk add --no-cache git make ca-certificates
+RUN apk add --no-cache make ca-certificates
 WORKDIR /src
 COPY Makefile go.mod go.sum ./
 RUN make deps
@@ -15,13 +15,11 @@ COPY build/react-frontend ./
 ENV PUBLIC_URL=/pub
 RUN npm run build && npm run test -- --watchAll=false
 
-FROM alpine/helm:3.5.2 AS add_helm
-
-FROM scratch
+FROM scratch AS final
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /src/helm-rollback-web /app/
 COPY web/ /app/web/
 COPY --from=frontend /frontend/build /app/web/react-frontend
-COPY --from=add_helm /usr/bin/helm /usr/bin/helm3
+COPY --from=alpine/helm:3.5.2 /usr/bin/helm /usr/bin/helm3
 WORKDIR /app
 CMD ["/app/helm-rollback-web"]
