@@ -2,6 +2,8 @@ export interface RollbackApi {
 
   getLoginStatus(): Promise<{
     email: string | null;
+    environment: string;
+    theme: string;
     isMock?: true;
   }>;
 
@@ -89,7 +91,9 @@ export class MockRollbackApi implements RollbackApi {
   async getLoginStatus() {
     await new Promise(ok => setTimeout(ok, 150));
     return {
-      email: "mock-demo-user@forto.com",
+      email: "demo-user@forto.com",
+      environment: 'local mock',
+      theme: 'teal',
       isMock: true as const,
     };
   }
