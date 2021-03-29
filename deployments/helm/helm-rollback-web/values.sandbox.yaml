@@ -38,6 +38,9 @@ helmrollbackweb:
     HELM_ROLLBACK_WEB_HOSTNAME: https://helm-rollback.forto.io
     HELM_ROLLBACK_WEB_NOTIFICATION_CHANNEL: "#sre-notifs"
 
+    HELM_ROLLBACK_WEB_ENVIRONMENT: sandbox
+    HELM_ROLLBACK_WEB_THEME: blue
+
 ingress:
   enabled: true
   annotations: 

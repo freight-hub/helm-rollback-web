@@ -1,16 +1,18 @@
 import { Container } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { useRoutes } from 'hookrouter';
-import PropTypes from 'prop-types';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
+import { useRoutes, A } from 'hookrouter';
 import React, { useEffect, useState } from 'react';
 
 import { DefaultRollbackApi } from "../../lib/rollback-api";
+import { getTheme } from '../../lib/theme';
 import AppHeader from '../AppHeader/AppHeader.jsx';
 import TechEnabledOperationsIcon from "../Icons/TechEnabledOperationsIcon.jsx";
 import LoginSplash from '../LoginSplash/LoginSplash.jsx';
 import ReleaseDetails from '../ReleaseDetails/ReleaseDetails.jsx';
 import ReleaseList from '../ReleaseList/ReleaseList.jsx';
 import RollBackDetails from '../RollBackDetails/RollBackDetails.jsx';
+import TextPage from '../TextPage/TextPage.jsx';
 
 const routes = {
   '/': () => <ReleaseList />,
@@ -31,7 +33,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function App({ environment }) {
+export default function App() {
   const routeResult = useRoutes(routes);
   const classes = useStyles();
 
@@ -42,18 +44,26 @@ export default function App({ environment }) {
 
   const hasUser = typeof userData?.email === 'string';
 
+  const mainComponent = !hasUser
+    ? <LoginSplash />
+    : (routeResult || (
+      <TextPage title="Page Not Found">
+        Maybe you'd like to <A href="/">go to the homepage</A> and try again.
+      </TextPage>
+    ));
+
   return (
-    <Container>
-      <AppHeader userData={userData} environment={environment} />
+    <ThemeProvider theme={getTheme(userData.theme)} >
+      <CssBaseline />
+      <Container>
+        <AppHeader userData={userData} />
 
-      {hasUser ? routeResult : <LoginSplash />}
+        {mainComponent}
 
-      <div className={classes.footerIconWrap}>
-        <TechEnabledOperationsIcon className={classes.footerIcon} />
-      </div>
-    </Container>
+        <div className={classes.footerIconWrap}>
+          <TechEnabledOperationsIcon className={classes.footerIcon} />
+        </div>
+      </Container>
+    </ThemeProvider>
   );
 }
-App.propTypes = {
-  environment: PropTypes.string.isRequired,
-};

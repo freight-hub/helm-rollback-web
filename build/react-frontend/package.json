@@ -31,7 +31,7 @@
     "extends": "react-app",
     "rules": {
       "import/order": [
-        "error",
+        "warn",
         {
           "alphabetize": {
             "order": "asc",
@@ -41,22 +41,22 @@
         }
       ],
       "key-spacing": [
-        "error",
+        "warn",
         {
           "beforeColon": false,
           "afterColon": true
         }
       ],
       "object-curly-spacing": [
-        "error",
+        "warn",
         "always"
       ],
       "array-bracket-spacing": [
-        "error",
+        "warn",
         "always"
       ],
       "comma-spacing": [
-        "error",
+        "warn",
         {
           "before": false,
           "after": true

@@ -64,7 +64,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function AppHeader(props) {
-  const { email, isMock } = props?.userData ?? {};
+  const { email, environment, isMock } = props?.userData ?? {};
   const [ handle, domain ] = email?.split('@') ?? [];
 
   const theme = useTheme();
@@ -90,7 +90,7 @@ export default function AppHeader(props) {
       </Typography>
 
       <Typography className={classes.environment} variant="subtitle1">
-        <strong>{props.environment}</strong> environment
+        <strong>{environment || 'unknown'}</strong> environment
       </Typography>
 
       {email ? (<>
@@ -112,6 +112,7 @@ AppHeader.propTypes = {
   environment: PropTypes.string.isRequired,
   userData: PropTypes.shape({
     email: PropTypes.string,
+    environment: PropTypes.string,
     isMock: PropTypes.bool,
   }).isRequired,
 };

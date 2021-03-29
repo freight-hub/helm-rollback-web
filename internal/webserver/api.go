@@ -18,13 +18,19 @@ import (
 )
 
 func LoginStatusHandler(response http.ResponseWriter, request *http.Request) {
-	response.Header().Add("Content-type", "application/json")
+	out := map[string]interface{}{
+		"user":        nil,
+		"theme":       os.Getenv("HELM_ROLLBACK_WEB_THEME"),
+		"environment": os.Getenv("HELM_ROLLBACK_WEB_ENVIRONMENT"),
+	}
+
 	session, _ := sessionStorage.Get(request, "session-name")
 	if session.Values["userEmail"] != nil {
-		fmt.Fprintf(response, `{"email":"%s"}`, session.Values["userEmail"])
-	} else {
-		fmt.Fprintf(response, `{"email":null}`)
+		out["email"] = session.Values["userEmail"]
 	}
+
+	response.Header().Add("Content-type", "application/json")
+	json.NewEncoder(response).Encode(out)
 }
 
 func HelmListHandler(response http.ResponseWriter, request *http.Request) {
