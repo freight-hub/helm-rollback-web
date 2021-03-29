@@ -76,7 +76,9 @@ export class HttpRollbackApi implements RollbackApi {
   }
 
   async performRollback(namespace: string, releaseName: string, targetRevision: number) {
-    const resp = await this.fetch(`dorollback/${namespace}/${releaseName}/${targetRevision}`);
+    const resp = await this.fetch(`dorollback/${namespace}/${releaseName}/${targetRevision}`, {
+      method: 'POST',
+    });
     return await resp.text();
   }
 
@@ -145,6 +147,7 @@ export class MockRollbackApi implements RollbackApi {
   }
 
   async performRollback() {
+    await new Promise(ok => setTimeout(ok, 500));
     return `command not run, we're in frontend mock mode`;
   }
 }

@@ -237,6 +237,10 @@ func HelmHistoryHandler(response http.ResponseWriter, request *http.Request) {
 }
 
 func HelmRollBackHandler(response http.ResponseWriter, request *http.Request) {
+	if request.Method != "POST" {
+		MethodNotAllowedHandler(response, request)
+		return
+	}
 	vars := mux.Vars(request)
 	session, _ := sessionStorage.Get(request, "session-name")
 	if session.Values["userEmail"] == nil {
@@ -303,7 +307,7 @@ func HealthHandler(response http.ResponseWriter, request *http.Request) {
 }
 
 func NotFoundHandler(response http.ResponseWriter, request *http.Request) {
-	response.Header().Add("X-Template-File", "html"+request.URL.Path)
+	response.Header().Add("X-Template-File", "web/404.html")
 	response.WriteHeader(404)
 	tmpl := template.Must(template.ParseFiles("web/404.html"))
 	tmpl.Execute(response, nil)
@@ -362,14 +366,21 @@ func LeaveHandler(response http.ResponseWriter, request *http.Request) {
 }
 
 func UnauthorizedHandler(response http.ResponseWriter, request *http.Request) {
-	response.Header().Add("X-Template-File", "html"+request.URL.Path)
+	response.Header().Add("X-Template-File", "web/401.html")
 	response.WriteHeader(401)
 	tmpl := template.Must(template.ParseFiles("web/401.html"))
 	tmpl.Execute(response, nil)
 }
 
+func MethodNotAllowedHandler(response http.ResponseWriter, request *http.Request) {
+	response.Header().Add("X-Template-File", "web/404.html")
+	response.WriteHeader(405)
+	tmpl := template.Must(template.ParseFiles("web/404.html"))
+	tmpl.Execute(response, nil)
+}
+
 func ServerErrorHandler(response http.ResponseWriter, request *http.Request) {
-	response.Header().Add("X-Template-File", "html"+request.URL.Path)
+	response.Header().Add("X-Template-File", "web/503.html")
 	response.WriteHeader(503)
 	tmpl := template.Must(template.ParseFiles("web/503.html"))
 	tmpl.Execute(response, nil)
