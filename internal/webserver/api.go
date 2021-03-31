@@ -18,6 +18,8 @@ import (
 )
 
 func LoginStatusHandler(response http.ResponseWriter, request *http.Request) {
+	response.Header().Add("Cache-Control", "no-store")
+
 	out := map[string]interface{}{
 		"user":        nil,
 		"theme":       os.Getenv("HELM_ROLLBACK_WEB_THEME"),
@@ -34,6 +36,8 @@ func LoginStatusHandler(response http.ResponseWriter, request *http.Request) {
 }
 
 func HelmListHandler(response http.ResponseWriter, request *http.Request) {
+	response.Header().Add("Cache-Control", "no-store")
+
 	session, _ := sessionStorage.Get(request, "session-name")
 	if session.Values["userEmail"] == nil {
 		UnauthorizedHandler(response, request)
@@ -72,6 +76,8 @@ func HelmListHandler(response http.ResponseWriter, request *http.Request) {
 }
 
 func HelmHistoryHandler(response http.ResponseWriter, request *http.Request) {
+	response.Header().Add("Cache-Control", "no-store")
+
 	vars := mux.Vars(request)
 	session, _ := sessionStorage.Get(request, "session-name")
 	if session.Values["userEmail"] == nil {
@@ -110,6 +116,8 @@ func HelmHistoryHandler(response http.ResponseWriter, request *http.Request) {
 }
 
 func HelmRollBackHandler(response http.ResponseWriter, request *http.Request) {
+	response.Header().Add("Cache-Control", "no-store")
+
 	vars := mux.Vars(request)
 	session, _ := sessionStorage.Get(request, "session-name")
 	if session.Values["userEmail"] == nil {

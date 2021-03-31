@@ -1,6 +1,8 @@
 package webserver
 
 import (
+	"helm-rollback-web/internal/utility"
+
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
@@ -43,6 +45,10 @@ func HealthHandler(response http.ResponseWriter, request *http.Request) {
 
 func ReactIndexHandler(entrypoint string) func(w http.ResponseWriter, r *http.Request) {
 	fn := func(w http.ResponseWriter, r *http.Request) {
+
+		// require caches to be revalidated w/ server before reuse
+		w.Header().Add("Cache-Control", "public, no-cache")
+
 		http.ServeFile(w, r, entrypoint)
 	}
 
@@ -101,13 +107,27 @@ func HandleHTTP(GoogleClientID string, GoogleClientSecret string, port string) {
 	spaHandler := ReactIndexHandler("./web/react-frontend/index.html")
 	r.HandleFunc("/", spaHandler)
 	r.HandleFunc("/all-releases", spaHandler)
-	r.HandleFunc("/namespace/{.+}", spaHandler)
-	r.HandleFunc("/releases/{.+}", spaHandler)
-	r.HandleFunc("/rollback/{.+}", spaHandler)
+	r.PathPrefix("/namespace/").HandlerFunc(spaHandler)
+	r.PathPrefix("/release/").HandlerFunc(spaHandler)
+	r.PathPrefix("/rollback/").HandlerFunc(spaHandler)
 
 	// Static content
 	// react is told that it'll be mounted at /pub
-	r.PathPrefix("/pub/").Handler(http.StripPrefix("/pub", http.FileServer(http.Dir("./web/react-frontend"))))
+	staticServer := http.StripPrefix("/pub", http.FileServer(http.Dir("./web/react-frontend")))
+	r.PathPrefix("/pub/static/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// All files inside static are keyed by hash
+		w.Header().Add("Cache-Control", "public, max-age=604800, immutable")
+		// Also loosen caching on 404 to prevent mixed-fleet poisoning
+		staticServer.ServeHTTP(&utility.UncachedErrorWriter{
+			Original:     w,
+			ErrorCaching: "public, no-cache, max-age=60",
+		}, r)
+	})
+	r.PathPrefix("/pub/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// icons etc aren't hashed
+		w.Header().Add("Cache-Control", "public, max-age=300")
+		staticServer.ServeHTTP(w, r)
+	})
 
 	http.Handle("/", r)
 	srv := &http.Server{
