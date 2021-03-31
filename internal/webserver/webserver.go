@@ -1,6 +1,8 @@
 package webserver
 
 import (
+	"strings"
+
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
@@ -43,6 +45,10 @@ func HealthHandler(response http.ResponseWriter, request *http.Request) {
 
 func ReactIndexHandler(entrypoint string) func(w http.ResponseWriter, r *http.Request) {
 	fn := func(w http.ResponseWriter, r *http.Request) {
+
+		// require caches to be revalidated w/ server before reuse
+		w.Header().Add("Cache-Control", "public, no-cache")
+
 		http.ServeFile(w, r, entrypoint)
 	}
 
@@ -107,7 +113,18 @@ func HandleHTTP(GoogleClientID string, GoogleClientSecret string, port string) {
 
 	// Static content
 	// react is told that it'll be mounted at /pub
-	r.PathPrefix("/pub/").Handler(http.StripPrefix("/pub", http.FileServer(http.Dir("./web/react-frontend"))))
+	staticServer := http.StripPrefix("/pub", http.FileServer(http.Dir("./web/react-frontend")))
+	r.PathPrefix("/pub/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		// All files inside static are keyed by hash
+		if strings.HasPrefix(r.RequestURI, "/pub/static/") {
+			w.Header().Add("Cache-Control", "public, max-age=604800, immutable")
+		} else {
+			w.Header().Add("Cache-Control", "public, max-age=300")
+		}
+
+		staticServer.ServeHTTP(w, r)
+	})
 
 	http.Handle("/", r)
 	srv := &http.Server{
