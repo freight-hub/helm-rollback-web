@@ -101,9 +101,9 @@ func HandleHTTP(GoogleClientID string, GoogleClientSecret string, port string) {
 	spaHandler := ReactIndexHandler("./web/react-frontend/index.html")
 	r.HandleFunc("/", spaHandler)
 	r.HandleFunc("/all-releases", spaHandler)
-	r.HandleFunc("/namespace/{.+}", spaHandler)
-	r.HandleFunc("/releases/{.+}", spaHandler)
-	r.HandleFunc("/rollback/{.+}", spaHandler)
+	r.PathPrefix("/namespace/").HandlerFunc(spaHandler)
+	r.PathPrefix("/releases/").HandlerFunc(spaHandler)
+	r.PathPrefix("/rollback/").HandlerFunc(spaHandler)
 
 	// Static content
 	// react is told that it'll be mounted at /pub
