@@ -108,7 +108,7 @@ func HandleHTTP(GoogleClientID string, GoogleClientSecret string, port string) {
 	r.HandleFunc("/", spaHandler)
 	r.HandleFunc("/all-releases", spaHandler)
 	r.PathPrefix("/namespace/").HandlerFunc(spaHandler)
-	r.PathPrefix("/releases/").HandlerFunc(spaHandler)
+	r.PathPrefix("/release/").HandlerFunc(spaHandler)
 	r.PathPrefix("/rollback/").HandlerFunc(spaHandler)
 
 	// Static content
