@@ -1,6 +1,8 @@
 package webserver
 
 import (
+	"helm-rollback-web/internal/utility"
+
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
@@ -115,7 +117,11 @@ func HandleHTTP(GoogleClientID string, GoogleClientSecret string, port string) {
 	r.PathPrefix("/pub/static/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// All files inside static are keyed by hash
 		w.Header().Add("Cache-Control", "public, max-age=604800, immutable")
-		staticServer.ServeHTTP(w, r)
+		// Also loosen caching on 404 to prevent mixed-fleet poisoning
+		staticServer.ServeHTTP(&utility.UncachedErrorWriter{
+			Original:     w,
+			ErrorCaching: "public, no-cache, max-age=60",
+		}, r)
 	})
 	r.PathPrefix("/pub/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// icons etc aren't hashed
