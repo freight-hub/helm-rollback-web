@@ -1,7 +1,7 @@
 version: 2.1
 orbs:
   gcp-gcr: circleci/gcp-gcr@0.13
-  helm3-deploy: freighthub/helm3-deploy@dev:2f2ec5d
+  helm3-deploy: freighthub/helm3-deploy@dev:fde766f
 executors:
   cimg:
     docker:
@@ -34,7 +34,7 @@ workflows:
 
       - helm3-deploy/main-deploy:
           name: Deploy Sandbox From PR
-          chart_name: helm/helm-rollback-web
+          chart_path: deployments/helm/helm-rollback-web
           values_base: sandbox
           release_name: $CIRCLE_PROJECT_REPONAME
           cluster_name: $PLAYGROUND
@@ -46,7 +46,7 @@ workflows:
 
       - helm3-deploy/main-deploy:
           name: Deploy Production from main branch
-          chart_name: helm/helm-rollback-web
+          chart_path: deployments/helm/helm-rollback-web
           values_base: production
           release_name: $CIRCLE_PROJECT_REPONAME
           cluster_name: $GCLOUD_CLUSTER_NAME
