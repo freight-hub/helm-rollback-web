@@ -1,7 +1,7 @@
 version: 2.1
 orbs:
   gcp-gcr: circleci/gcp-gcr@0.13
-  helm3-deploy: freighthub/helm3-deploy@1.3
+  helm3-deploy: freighthub/helm3-deploy@dev:2f2ec5d
 executors:
   cimg:
     docker:
@@ -17,36 +17,10 @@ references:
       ignore:
         - main
 
-jobs:
-  deploy:
-    description: Deploy using helm
-    executor: cimg
-    parameters:
-      namespace:
-        type: string
-      cluster_name:
-        type: string
-      project_name:
-        default: $CIRCLE_PROJECT_REPONAME
-        type: string
-      values_base:
-        type: string
-    steps:
-      - checkout
-      # - restore_cache: *restore_cache
-      - helm3-deploy/deploy_with_helm:
-          path_to_helm_chart: deployments/helm/helm-rollback-web
-          update_release_name: << parameters.project_name >>
-          sops_aws_access_key_id: $SOPS_AWS_ACCESS_KEY_ID
-          sops_aws_secret_access_key: $SOPS_AWS_SECRET_ACCESS_KEY
-          cluster: << parameters.cluster_name >>
-          namespace: << parameters.namespace >>
-          tag: $CIRCLE_SHA1
-          values_files: "values.<< parameters.values_base >>.yaml,secrets.<< parameters.values_base >>.yaml"
-
 workflows:
   build-deploy:
     jobs:
+
       - gcp-gcr/build-and-push-image:
           executor: cimg
           context: gcloud-registry
@@ -57,20 +31,24 @@ workflows:
           remote-docker-version: 19.03.14 #https://discuss.circleci.com/t/docker-build-fails-with-nonsensical-eperm-operation-not-permitted-copyfile/37364
           setup-remote-docker: true
           use-docker-layer-caching: true
-      - deploy:
+
+      - helm3-deploy/main-deploy:
           name: Deploy Sandbox From PR
+          chart_name: helm/helm-rollback-web
           values_base: sandbox
-          project_name: $CIRCLE_PROJECT_REPONAME
+          release_name: $CIRCLE_PROJECT_REPONAME
           cluster_name: $PLAYGROUND
           namespace: sre-tooling
           context: gcloud-sandbox
           requires:
             - gcp-gcr/build-and-push-image
           filters: *feature_branches
-      - deploy:
+
+      - helm3-deploy/main-deploy:
           name: Deploy Production from main branch
+          chart_name: helm/helm-rollback-web
           values_base: production
-          project_name: $CIRCLE_PROJECT_REPONAME
+          release_name: $CIRCLE_PROJECT_REPONAME
           cluster_name: $GCLOUD_CLUSTER_NAME
           namespace: sre-tooling
           context: gcloud-production
