@@ -41,7 +41,6 @@ workflows:
           context: gcloud-sandbox
           requires:
             - gcp-gcr/build-and-push-image
-          filters: *feature_branches
 
       - helm3-deploy/main-deploy:
           name: Deploy Production from main branch
