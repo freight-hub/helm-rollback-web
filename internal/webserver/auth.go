@@ -3,9 +3,8 @@ package webserver
 import (
 	"context"
 	"encoding/hex"
-	"encoding/json"
-	"io/ioutil"
 
+	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/gorilla/securecookie"
 	"golang.org/x/oauth2"
 
@@ -14,15 +13,17 @@ import (
 	"strings"
 )
 
-type loginStruct struct {
-	Id            string `json:"id"` // Go has no int128 type. I've seen this before.
-	Email         string `json:"email"`
-	VerifiedEmail bool   `json:"verified_email"`
-	PictureUrl    string `json:"picture"`
-	HD            string `json:"hd"`
-}
+var (
+	oidcInfo    *oidc.Provider
+	oauthConfGl = &oauth2.Config{
+		ClientID:     "",
+		ClientSecret: "",
+		RedirectURL:  "http://localhost:8080/callback-gl",
+		Scopes:       []string{oidc.ScopeOpenID, "email"},
+	}
+)
 
-func GoogleLoginHandler(response http.ResponseWriter, request *http.Request) {
+func OidcLoginHandler(response http.ResponseWriter, request *http.Request) {
 	LoginHandler(response, request, oauthConfGl)
 }
 
@@ -97,38 +98,27 @@ func CallBackFromGoogleHandler(response http.ResponseWriter, request *http.Reque
 		log.Info("TOKEN>> Expiration Time>> " + token.Expiry.String())
 		log.Info("TOKEN>> RefreshToken>> " + token.RefreshToken)
 
-		resp, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + url.QueryEscape(token.AccessToken))
+		userInfo, err := oidcInfo.UserInfo(context.TODO(), oauth2.StaticTokenSource(token))
 		if err != nil {
-			log.Error("Get: " + err.Error() + "\n")
-			http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
-			return
-		}
-		defer resp.Body.Close()
-
-		respBytes, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Error("ReadAll: " + err.Error() + "\n")
+			log.Error("UserInfo: " + err.Error() + "\n")
 			http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
 			return
 		}
 
-		log.Info("parseResponseBody: " + string(respBytes) + "\n")
-
-		var loginData loginStruct
-		err = json.Unmarshal([]byte(respBytes), &loginData)
-		if err != nil {
-			log.Error("Unmarshal: " + err.Error() + "\n")
+		if !userInfo.EmailVerified {
+			log.Error("UserInfo EmailVerified was not true\n")
 			http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
 			return
 		}
-		session.Values["userEmail"] = loginData.Email
+
+		session.Values["userEmail"] = userInfo.Email
 		err = session.Save(request, response)
 		if err != nil {
 			log.Error("Session save error: " + err.Error() + "\n")
 			http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
 			return
 		}
-		log.InfoF("Successfully logged in user %s", loginData.Email)
+		log.InfoF("Successfully logged in user %s", userInfo.Email)
 		http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
 		return
 	}
