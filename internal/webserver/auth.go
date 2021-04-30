@@ -14,18 +14,27 @@ import (
 var (
 	oidcInfo    *oidc.Provider
 	oauthConfGl = &oauth2.Config{
-		ClientID:     "",
-		ClientSecret: "",
-		RedirectURL:  "http://localhost:8080/callback-gl",
-		Scopes:       []string{oidc.ScopeOpenID, "email"},
+		Scopes: []string{oidc.ScopeOpenID, "email"},
 	}
 )
 
-func OidcLoginHandler(response http.ResponseWriter, request *http.Request) {
-	LoginHandler(response, request, oauthConfGl)
+func ConfigureOidc(ctx context.Context, issuer string, clientID string, clientSecret string, redirectURL string) error {
+	var err error
+	oidcInfo, err = oidc.NewProvider(ctx, issuer)
+	if err != nil {
+		return err
+	}
+
+	oauthConfGl.Endpoint = oidcInfo.Endpoint()
+	oauthConfGl.RedirectURL = redirectURL
+	oauthConfGl.ClientID = clientID
+	oauthConfGl.ClientSecret = clientSecret
+
+	return nil
 }
 
-func LoginHandler(response http.ResponseWriter, request *http.Request, oauthConf *oauth2.Config) {
+// LoginHandler redirects the user to the identity provider
+func LoginHandler(response http.ResponseWriter, request *http.Request) {
 	session, _ := sessionStorage.Get(request, "session-name")
 
 	authState, ok := session.Values["authState"].(string)
@@ -42,14 +51,12 @@ func LoginHandler(response http.ResponseWriter, request *http.Request, oauthConf
 		}
 	}
 
-	url := oauthConf.AuthCodeURL(authState)
+	url := oauthConfGl.AuthCodeURL(authState)
 	http.Redirect(response, request, url, http.StatusTemporaryRedirect)
 }
 
-/*
-CallBackFromGoogleHandler Function
-*/
-func CallBackFromGoogleHandler(response http.ResponseWriter, request *http.Request) {
+// OidcCallBackHandler handles redeeming the OIDC code from the Issuer
+func OidcCallBackHandler(response http.ResponseWriter, request *http.Request) {
 	session, _ := sessionStorage.Get(request, "session-name")
 	log.Info("Callback-gl..")
 
@@ -71,8 +78,6 @@ func CallBackFromGoogleHandler(response http.ResponseWriter, request *http.Reque
 		if reason == "user_denied" {
 			response.Write([]byte("User has denied Permission.."))
 		}
-		// User has denied access..
-		// http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
 		return
 	}
 
@@ -94,7 +99,7 @@ func CallBackFromGoogleHandler(response http.ResponseWriter, request *http.Reque
 		return
 	}
 
-	// Actually 'log in' the user in our viewpoint
+	// Finally 'log in' the user (from our viewpoint at least)
 	session.Values["userEmail"] = userInfo.Email
 	err = session.Save(request, response)
 	if err != nil {

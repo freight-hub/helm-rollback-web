@@ -1,10 +1,8 @@
 package webserver
 
 import (
-	"context"
 	"helm-rollback-web/internal/utility"
 
-	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
@@ -47,7 +45,7 @@ func ReactIndexHandler(entrypoint string) func(w http.ResponseWriter, r *http.Re
 	return http.HandlerFunc(fn)
 }
 
-func HandleHTTP(OidcServer string, OidcClientID string, OidcClientSecret string, port string) {
+func HandleHTTP(port string) {
 	err := error(nil)
 	log, err = logger.New("helm-rollback", 1, os.Stderr)
 	if err != nil {
@@ -71,18 +69,6 @@ func HandleHTTP(OidcServer string, OidcClientID string, OidcClientSecret string,
 	}
 	sessionStorage = sessions.NewCookieStore([]byte(securecookie.GenerateRandomKey(32)))
 
-	oidcInfo, err = oidc.NewProvider(context.TODO(), OidcServer)
-	if err != nil {
-		panic(err.Error())
-	}
-	oauthConfGl.Endpoint = oidcInfo.Endpoint()
-
-	if os.Getenv("HELM_ROLLBACK_WEB_CALLBACK_URL") != "" {
-		oauthConfGl.RedirectURL = os.Getenv("HELM_ROLLBACK_WEB_CALLBACK_URL")
-	}
-	oauthConfGl.ClientID = OidcClientID
-	oauthConfGl.ClientSecret = OidcClientSecret
-
 	log.InfoF("Inside Go Func...\n")
 	r := mux.NewRouter()
 	loggedRouter := handlers.LoggingHandler(os.Stdout, r)
@@ -92,8 +78,8 @@ func HandleHTTP(OidcServer string, OidcClientID string, OidcClientSecret string,
 	r.HandleFunc("/healthz", HealthHandler)
 
 	// Session handling
-	r.HandleFunc("/login", OidcLoginHandler)
-	r.HandleFunc("/callback-gl", CallBackFromGoogleHandler)
+	r.HandleFunc("/login", LoginHandler)
+	r.HandleFunc("/callback-gl", OidcCallBackHandler)
 
 	// API routes that we will serve
 	r.HandleFunc("/login-status", LoginStatusHandler)
