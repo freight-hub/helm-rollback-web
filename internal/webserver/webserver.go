@@ -80,7 +80,7 @@ func HandleHTTP(port string) {
 
 	// Session handling
 	r.HandleFunc("/login", LoginHandler)
-	r.HandleFunc("/callback-gl", OidcCallBackHandler)
+	r.HandleFunc(callbackURL.Path, OidcCallBackHandler)
 
 	// API routes that we will serve
 	r.HandleFunc("/login-status", LoginStatusHandler)

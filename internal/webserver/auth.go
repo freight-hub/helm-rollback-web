@@ -3,17 +3,20 @@ package webserver
 import (
 	"context"
 	"encoding/hex"
+	"fmt"
 
 	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/gorilla/securecookie"
 	"golang.org/x/oauth2"
 
 	"net/http"
+	"net/url"
 )
 
 var (
-	oidcInfo  *oidc.Provider
-	oauthConf = &oauth2.Config{
+	oidcInfo    *oidc.Provider
+	callbackURL *url.URL
+	oauthConf   = &oauth2.Config{
 		Scopes: []string{oidc.ScopeOpenID, "email"},
 	}
 )
@@ -25,11 +28,18 @@ func ConfigureOidc(ctx context.Context, issuer string, clientID string, clientSe
 		return err
 	}
 
+	callbackURL, err = url.Parse(redirectURL)
+	if err != nil {
+		return fmt.Errorf("couldn't parse callback URL '%s': %w", redirectURL, err)
+	}
+	if len(callbackURL.Path) < 3 || callbackURL.Path[0] != '/' {
+		return fmt.Errorf("redirect URL requires a path (such as /callback)")
+	}
+
 	oauthConf.Endpoint = oidcInfo.Endpoint()
 	oauthConf.RedirectURL = redirectURL
 	oauthConf.ClientID = clientID
 	oauthConf.ClientSecret = clientSecret
-
 	return nil
 }
 
