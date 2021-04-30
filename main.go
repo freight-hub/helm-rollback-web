@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"math/rand"
 	"os"
 	"time"
@@ -24,26 +25,29 @@ func main() {
 	log.Infof("Starting helm-rollback-web server build %s\n", buildDate)
 	rand.Seed(time.Now().UnixNano())
 
+	port := "8080"
+
 	// Auth / OpenID Connect configuration
 	oidcIssuer := os.Getenv("HELM_ROLLBACK_WEB_OIDC_ISSUER")
 	if oidcIssuer == "" {
 		log.Warning("Tip: To use Google Accounts, set the issuer value 'https://accounts.google.com'")
 		log.Fatal("Missing required env var HELM_ROLLBACK_WEB_OIDC_ISSUER")
 	}
-	oidcClientId := os.Getenv("HELM_ROLLBACK_WEB_OIDC_CLIENT_ID")
-	if oidcClientId == "" {
+	clientId := os.Getenv("HELM_ROLLBACK_WEB_OIDC_CLIENT_ID")
+	if clientId == "" {
 		log.Fatal("Missing required env var HELM_ROLLBACK_WEB_OIDC_CLIENT_ID")
 	}
-	oidcClientSecret := os.Getenv("HELM_ROLLBACK_WEB_OIDC_CLIENT_SECRET")
-	if oidcClientSecret == "" {
+	clientSecret := os.Getenv("HELM_ROLLBACK_WEB_OIDC_CLIENT_SECRET")
+	if clientSecret == "" {
 		log.Fatal("Missing required env var HELM_ROLLBACK_WEB_OIDC_CLIENT_SECRET")
 	}
-	oidcRedirectURL := os.Getenv("HELM_ROLLBACK_WEB_CALLBACK_URL")
-	if oidcRedirectURL == "" {
-		oidcRedirectURL = "http://localhost:8080/callback-gl"
-		log.Warningf("Missing env var HELM_ROLLBACK_WEB_CALLBACK_URL. Assuming `%s` - This only works locally!", oidcRedirectURL)
+	callbackURL := os.Getenv("HELM_ROLLBACK_WEB_CALLBACK_URL")
+	if callbackURL == "" {
+		callbackURL = fmt.Sprintf("http://localhost:%s/callback-gl", port)
+		log.Warningf("Missing env var HELM_ROLLBACK_WEB_CALLBACK_URL. Assuming `%s` - This only works locally!", callbackURL)
 	}
-	if err := webserver.ConfigureOidc(context.TODO(), oidcIssuer, oidcClientId, oidcClientSecret, oidcRedirectURL); err != nil {
+	// This function fetches the configuration from the issuer
+	if err := webserver.ConfigureOidc(context.Background(), oidcIssuer, clientId, clientSecret, callbackURL); err != nil {
 		log.Fatalf("OpenID Connect auto-configuration failed: %s", err.Error())
 	}
 
@@ -57,7 +61,6 @@ func main() {
 		log.Info("Missing required env var HELM_ROLLBACK_WEB_HELM_COMMAND assuming `helm`")
 	}
 
-	port := "8080"
 	log.Infof("Starting webserver on port %s", port)
 	webserver.HandleHTTP(port)
 }

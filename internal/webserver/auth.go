@@ -80,13 +80,13 @@ func OidcCallBackHandler(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	token, err := oauthConf.Exchange(context.TODO(), code)
+	token, err := oauthConf.Exchange(request.Context(), code)
 	if err != nil {
 		log.Errorf("oauthConf.Exchange() failed with %s", err.Error())
 		return
 	}
 
-	userInfo, err := oidcInfo.UserInfo(context.TODO(), oauth2.StaticTokenSource(token))
+	userInfo, err := oidcInfo.UserInfo(request.Context(), oauth2.StaticTokenSource(token))
 	if err != nil {
 		log.Errorf("UserInfo: %s", err.Error())
 		http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
