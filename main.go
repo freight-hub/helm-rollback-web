@@ -22,7 +22,7 @@ func main() {
 	if err != nil {
 		panic(err) // Check for error
 	}
-	log.Infof("Starting helm-rollback-web server build %s\n", buildDate)
+	log.Infof("Starting helm-rollback-web server build %s", buildDate)
 	rand.Seed(time.Now().UnixNano())
 
 	port := "8080"

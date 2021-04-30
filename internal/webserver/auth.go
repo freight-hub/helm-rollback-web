@@ -56,7 +56,7 @@ func LoginHandler(response http.ResponseWriter, request *http.Request) {
 		err := session.Save(request, response)
 		if err != nil {
 			log.Errorf("Session save error: %s", err.Error())
-			http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
+			ServerErrorHandler(response, request)
 			return
 		}
 	}
@@ -78,8 +78,6 @@ func OidcCallBackHandler(response http.ResponseWriter, request *http.Request) {
 	}
 
 	code := request.FormValue("code")
-	log.Info(code)
-
 	if code == "" {
 		response.Write([]byte("OIDC error. No OAuth code was given from the issuer.\n"))
 		reason := request.FormValue("error_reason")
@@ -104,8 +102,13 @@ func OidcCallBackHandler(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	if !userInfo.EmailVerified {
-		response.Write([]byte("OIDC error. Is your email address verified?\n"))
+	if userOk, err := confirmUserAuthorized(request.Context(), userInfo); err != nil {
+		log.Errorf("confirmAccessByEmail: %s", err.Error())
+		ServerErrorHandler(response, request)
+		return
+	} else if !userOk {
+		log.Errorf("Denying login to user %s", userInfo.Email)
+		UnauthorizedHandler(response, request)
 		return
 	}
 
@@ -114,7 +117,7 @@ func OidcCallBackHandler(response http.ResponseWriter, request *http.Request) {
 	err = session.Save(request, response)
 	if err != nil {
 		log.Errorf("Session save error: %s", err.Error())
-		http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
+		ServerErrorHandler(response, request)
 		return
 	}
 	log.Infof("Successfully logged in user %s", userInfo.Email)
