@@ -71,7 +71,6 @@ func HandleHTTP(port string) {
 	}
 	sessionStorage = sessions.NewCookieStore([]byte(securecookie.GenerateRandomKey(32)))
 
-	log.InfoF("Inside Go Func...\n")
 	r := mux.NewRouter()
 	loggedRouter := handlers.LoggingHandler(os.Stdout, r)
 	r.NotFoundHandler = http.HandlerFunc(NotFoundHandler)

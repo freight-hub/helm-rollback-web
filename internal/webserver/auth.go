@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	oidcInfo    *oidc.Provider
-	oauthConfGl = &oauth2.Config{
+	oidcInfo  *oidc.Provider
+	oauthConf = &oauth2.Config{
 		Scopes: []string{oidc.ScopeOpenID, "email"},
 	}
 )
@@ -25,10 +25,10 @@ func ConfigureOidc(ctx context.Context, issuer string, clientID string, clientSe
 		return err
 	}
 
-	oauthConfGl.Endpoint = oidcInfo.Endpoint()
-	oauthConfGl.RedirectURL = redirectURL
-	oauthConfGl.ClientID = clientID
-	oauthConfGl.ClientSecret = clientSecret
+	oauthConf.Endpoint = oidcInfo.Endpoint()
+	oauthConf.RedirectURL = redirectURL
+	oauthConf.ClientID = clientID
+	oauthConf.ClientSecret = clientSecret
 
 	return nil
 }
@@ -45,25 +45,24 @@ func LoginHandler(response http.ResponseWriter, request *http.Request) {
 		session.Values["authState"] = authState
 		err := session.Save(request, response)
 		if err != nil {
-			log.Error("Session save error: " + err.Error() + "\n")
+			log.Errorf("Session save error: %s", err.Error())
 			http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
 			return
 		}
 	}
 
-	url := oauthConfGl.AuthCodeURL(authState)
+	url := oauthConf.AuthCodeURL(authState)
 	http.Redirect(response, request, url, http.StatusTemporaryRedirect)
 }
 
 // OidcCallBackHandler handles redeeming the OIDC code from the Issuer
 func OidcCallBackHandler(response http.ResponseWriter, request *http.Request) {
 	session, _ := sessionStorage.Get(request, COOKIE_NAME)
-	log.Info("Callback-gl..")
 
 	knownState, hasKnownState := session.Values["authState"].(string)
 	givenState := request.FormValue("state")
 	if !hasKnownState || knownState != givenState {
-		log.Info("invalid oauth state, expected " + knownState + ", got " + givenState + "\n")
+		log.Infof("invalid oauth state, expected %s, got %s", knownState, givenState)
 		http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
 		return
 	}
@@ -81,15 +80,15 @@ func OidcCallBackHandler(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	token, err := oauthConfGl.Exchange(context.TODO(), code)
+	token, err := oauthConf.Exchange(context.TODO(), code)
 	if err != nil {
-		log.Error("oauthConfGl.Exchange() failed with " + err.Error() + "\n")
+		log.Errorf("oauthConf.Exchange() failed with %s", err.Error())
 		return
 	}
 
 	userInfo, err := oidcInfo.UserInfo(context.TODO(), oauth2.StaticTokenSource(token))
 	if err != nil {
-		log.Error("UserInfo: " + err.Error() + "\n")
+		log.Errorf("UserInfo: %s", err.Error())
 		http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
 		return
 	}
@@ -103,10 +102,10 @@ func OidcCallBackHandler(response http.ResponseWriter, request *http.Request) {
 	session.Values["userEmail"] = userInfo.Email
 	err = session.Save(request, response)
 	if err != nil {
-		log.Error("Session save error: " + err.Error() + "\n")
+		log.Errorf("Session save error: %s", err.Error())
 		http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
 		return
 	}
-	log.InfoF("Successfully logged in user %s", userInfo.Email)
+	log.Infof("Successfully logged in user %s", userInfo.Email)
 	http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
 }

@@ -32,11 +32,11 @@ func main() {
 	}
 	oidcClientId := os.Getenv("HELM_ROLLBACK_WEB_OIDC_CLIENT_ID")
 	if oidcClientId == "" {
-		log.Fatal("Missing required env var HELM_ROLLBACK_WEB_OIDC_CLIENT_ID\n")
+		log.Fatal("Missing required env var HELM_ROLLBACK_WEB_OIDC_CLIENT_ID")
 	}
 	oidcClientSecret := os.Getenv("HELM_ROLLBACK_WEB_OIDC_CLIENT_SECRET")
 	if oidcClientSecret == "" {
-		log.Fatal("Missing required env var HELM_ROLLBACK_WEB_OIDC_CLIENT_SECRET\n")
+		log.Fatal("Missing required env var HELM_ROLLBACK_WEB_OIDC_CLIENT_SECRET")
 	}
 	oidcRedirectURL := os.Getenv("HELM_ROLLBACK_WEB_CALLBACK_URL")
 	if oidcRedirectURL == "" {
@@ -48,15 +48,16 @@ func main() {
 	}
 
 	if os.Getenv("SLACK_APP_HELM_OAUTH_TOKEN") == "" {
-		log.Fatal("Missing required env var SLACK_APP_HELM_OAUTH_TOKEN\n")
+		log.Fatal("Missing required env var SLACK_APP_HELM_OAUTH_TOKEN")
 	}
 	if os.Getenv("HELM_ROLLBACK_WEB_NOTIFICATION_CHANNEL") == "" {
-		log.Fatal("Missing required env var HELM_ROLLBACK_WEB_NOTIFICATION_CHANNEL\n")
+		log.Fatal("Missing required env var HELM_ROLLBACK_WEB_NOTIFICATION_CHANNEL")
 	}
 	if os.Getenv("HELM_ROLLBACK_WEB_HELM_COMMAND") == "" {
-		log.Info("Missing required env var HELM_ROLLBACK_WEB_HELM_COMMAND assuming `helm`\n")
+		log.Info("Missing required env var HELM_ROLLBACK_WEB_HELM_COMMAND assuming `helm`")
 	}
 
-	log.Infof("Starting webserver on port %s\n", "8080")
-	webserver.HandleHTTP("8080")
+	port := "8080"
+	log.Infof("Starting webserver on port %s", port)
+	webserver.HandleHTTP(port)
 }
