@@ -9,8 +9,6 @@ import (
 	"golang.org/x/oauth2"
 
 	"net/http"
-	"net/url"
-	"strings"
 )
 
 var (
@@ -44,20 +42,7 @@ func LoginHandler(response http.ResponseWriter, request *http.Request, oauthConf
 		}
 	}
 
-	URL, err := url.Parse(oauthConf.Endpoint.AuthURL)
-	if err != nil {
-		log.Error("Parse: " + err.Error())
-	}
-	log.Info(URL.String())
-	parameters := url.Values{}
-	parameters.Add("client_id", oauthConf.ClientID)
-	parameters.Add("scope", strings.Join(oauthConf.Scopes, " "))
-	parameters.Add("redirect_uri", oauthConf.RedirectURL)
-	parameters.Add("response_type", "code")
-	parameters.Add("state", authState)
-	URL.RawQuery = parameters.Encode()
-	url := URL.String()
-	log.Info(url)
+	url := oauthConf.AuthCodeURL(authState)
 	http.Redirect(response, request, url, http.StatusTemporaryRedirect)
 }
 
@@ -88,38 +73,35 @@ func CallBackFromGoogleHandler(response http.ResponseWriter, request *http.Reque
 		}
 		// User has denied access..
 		// http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
-	} else {
-		token, err := oauthConfGl.Exchange(context.TODO(), code)
-		if err != nil {
-			log.Error("oauthConfGl.Exchange() failed with " + err.Error() + "\n")
-			return
-		}
-		log.Info("TOKEN>> AccessToken>> " + token.AccessToken)
-		log.Info("TOKEN>> Expiration Time>> " + token.Expiry.String())
-		log.Info("TOKEN>> RefreshToken>> " + token.RefreshToken)
+		return
+	}
 
-		userInfo, err := oidcInfo.UserInfo(context.TODO(), oauth2.StaticTokenSource(token))
-		if err != nil {
-			log.Error("UserInfo: " + err.Error() + "\n")
-			http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
-			return
-		}
+	token, err := oauthConfGl.Exchange(context.TODO(), code)
+	if err != nil {
+		log.Error("oauthConfGl.Exchange() failed with " + err.Error() + "\n")
+		return
+	}
 
-		if !userInfo.EmailVerified {
-			log.Error("UserInfo EmailVerified was not true\n")
-			http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
-			return
-		}
-
-		session.Values["userEmail"] = userInfo.Email
-		err = session.Save(request, response)
-		if err != nil {
-			log.Error("Session save error: " + err.Error() + "\n")
-			http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
-			return
-		}
-		log.InfoF("Successfully logged in user %s", userInfo.Email)
+	userInfo, err := oidcInfo.UserInfo(context.TODO(), oauth2.StaticTokenSource(token))
+	if err != nil {
+		log.Error("UserInfo: " + err.Error() + "\n")
 		http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
 		return
 	}
+
+	if !userInfo.EmailVerified {
+		response.Write([]byte("OIDC error. Is your email address verified?\n"))
+		return
+	}
+
+	// Actually 'log in' the user in our viewpoint
+	session.Values["userEmail"] = userInfo.Email
+	err = session.Save(request, response)
+	if err != nil {
+		log.Error("Session save error: " + err.Error() + "\n")
+		http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
+		return
+	}
+	log.InfoF("Successfully logged in user %s", userInfo.Email)
+	http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
 }
