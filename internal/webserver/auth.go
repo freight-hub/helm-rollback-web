@@ -35,7 +35,7 @@ func ConfigureOidc(ctx context.Context, issuer string, clientID string, clientSe
 
 // LoginHandler redirects the user to the identity provider
 func LoginHandler(response http.ResponseWriter, request *http.Request) {
-	session, _ := sessionStorage.Get(request, "session-name")
+	session, _ := sessionStorage.Get(request, COOKIE_NAME)
 
 	authState, ok := session.Values["authState"].(string)
 	if !ok {
@@ -57,7 +57,7 @@ func LoginHandler(response http.ResponseWriter, request *http.Request) {
 
 // OidcCallBackHandler handles redeeming the OIDC code from the Issuer
 func OidcCallBackHandler(response http.ResponseWriter, request *http.Request) {
-	session, _ := sessionStorage.Get(request, "session-name")
+	session, _ := sessionStorage.Get(request, COOKIE_NAME)
 	log.Info("Callback-gl..")
 
 	knownState, hasKnownState := session.Values["authState"].(string)

@@ -20,6 +20,8 @@ import (
 	slack "github.com/slack-go/slack"
 )
 
+const COOKIE_NAME = "helm-rollback-web"
+
 var (
 	log            *logger.Logger
 	sessionStorage *sessions.CookieStore
