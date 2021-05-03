@@ -30,12 +30,11 @@ var (
 		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
 		Endpoint:     google.Endpoint,
 	}
-	oauthStateStringGl = ""
-	log                *logger.Logger
-	sessionStorage     *sessions.CookieStore
-	helmCommand        = ""
-	clientset          *kubernetes.Clientset
-	slackClient        = slack.New(os.Getenv("SLACK_APP_HELM_OAUTH_TOKEN"))
+	log            *logger.Logger
+	sessionStorage *sessions.CookieStore
+	helmCommand    = ""
+	clientset      *kubernetes.Clientset
+	slackClient    = slack.New(os.Getenv("SLACK_APP_HELM_OAUTH_TOKEN"))
 )
 
 func HealthHandler(response http.ResponseWriter, request *http.Request) {
@@ -84,7 +83,6 @@ func HandleHTTP(GoogleClientID string, GoogleClientSecret string, port string) {
 	}
 	oauthConfGl.ClientID = GoogleClientID
 	oauthConfGl.ClientSecret = GoogleClientSecret
-	oauthStateStringGl = ""
 	log.InfoF("Inside Go Func...\n")
 	r := mux.NewRouter()
 	loggedRouter := handlers.LoggingHandler(os.Stdout, r)

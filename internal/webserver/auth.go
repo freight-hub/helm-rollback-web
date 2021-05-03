@@ -1,9 +1,12 @@
 package webserver
 
 import (
+	"context"
+	"encoding/hex"
 	"encoding/json"
 	"io/ioutil"
 
+	"github.com/gorilla/securecookie"
 	"golang.org/x/oauth2"
 
 	"net/http"
@@ -20,10 +23,26 @@ type loginStruct struct {
 }
 
 func GoogleLoginHandler(response http.ResponseWriter, request *http.Request) {
-	LoginHandler(response, request, oauthConfGl, oauthStateStringGl)
+	LoginHandler(response, request, oauthConfGl)
 }
 
-func LoginHandler(response http.ResponseWriter, request *http.Request, oauthConf *oauth2.Config, oauthStateString string) {
+func LoginHandler(response http.ResponseWriter, request *http.Request, oauthConf *oauth2.Config) {
+	session, _ := sessionStorage.Get(request, "session-name")
+
+	authState, ok := session.Values["authState"].(string)
+	if !ok {
+		// Generate an initial CSRF token for the user
+		authState = hex.EncodeToString(securecookie.GenerateRandomKey(16))
+		// Save it into the session
+		session.Values["authState"] = authState
+		err := session.Save(request, response)
+		if err != nil {
+			log.Error("Session save error: " + err.Error() + "\n")
+			http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
+			return
+		}
+	}
+
 	URL, err := url.Parse(oauthConf.Endpoint.AuthURL)
 	if err != nil {
 		log.Error("Parse: " + err.Error())
@@ -34,7 +53,7 @@ func LoginHandler(response http.ResponseWriter, request *http.Request, oauthConf
 	parameters.Add("scope", strings.Join(oauthConf.Scopes, " "))
 	parameters.Add("redirect_uri", oauthConf.RedirectURL)
 	parameters.Add("response_type", "code")
-	parameters.Add("state", oauthStateString)
+	parameters.Add("state", authState)
 	URL.RawQuery = parameters.Encode()
 	url := URL.String()
 	log.Info(url)
@@ -48,10 +67,10 @@ func CallBackFromGoogleHandler(response http.ResponseWriter, request *http.Reque
 	session, _ := sessionStorage.Get(request, "session-name")
 	log.Info("Callback-gl..")
 
-	state := request.FormValue("state")
-	log.Info(state)
-	if state != oauthStateStringGl {
-		log.Info("invalid oauth state, expected " + oauthStateStringGl + ", got " + state + "\n")
+	knownState, hasKnownState := session.Values["authState"].(string)
+	givenState := request.FormValue("state")
+	if !hasKnownState || knownState != givenState {
+		log.Info("invalid oauth state, expected " + knownState + ", got " + givenState + "\n")
 		http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
 		return
 	}
@@ -69,7 +88,7 @@ func CallBackFromGoogleHandler(response http.ResponseWriter, request *http.Reque
 		// User has denied access..
 		// http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
 	} else {
-		token, err := oauthConfGl.Exchange(oauth2.NoContext, code)
+		token, err := oauthConfGl.Exchange(context.TODO(), code)
 		if err != nil {
 			log.Error("oauthConfGl.Exchange() failed with " + err.Error() + "\n")
 			return
