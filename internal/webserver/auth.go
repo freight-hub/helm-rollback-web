@@ -3,31 +3,49 @@ package webserver
 import (
 	"context"
 	"encoding/hex"
-	"encoding/json"
-	"io/ioutil"
+	"fmt"
 
+	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/gorilla/securecookie"
 	"golang.org/x/oauth2"
 
 	"net/http"
 	"net/url"
-	"strings"
 )
 
-type loginStruct struct {
-	Id            string `json:"id"` // Go has no int128 type. I've seen this before.
-	Email         string `json:"email"`
-	VerifiedEmail bool   `json:"verified_email"`
-	PictureUrl    string `json:"picture"`
-	HD            string `json:"hd"`
+var (
+	oidcInfo    *oidc.Provider
+	callbackURL *url.URL
+	oauthConf   = &oauth2.Config{
+		Scopes: []string{oidc.ScopeOpenID, "email"},
+	}
+)
+
+func ConfigureOidc(ctx context.Context, issuer string, clientID string, clientSecret string, redirectURL string) error {
+	var err error
+	oidcInfo, err = oidc.NewProvider(ctx, issuer)
+	if err != nil {
+		return err
+	}
+
+	callbackURL, err = url.Parse(redirectURL)
+	if err != nil {
+		return fmt.Errorf("couldn't parse callback URL '%s': %w", redirectURL, err)
+	}
+	if len(callbackURL.Path) < 2 || callbackURL.Path[0] != '/' {
+		return fmt.Errorf("redirect URL must include a path (such as /callback)")
+	}
+
+	oauthConf.Endpoint = oidcInfo.Endpoint()
+	oauthConf.RedirectURL = redirectURL
+	oauthConf.ClientID = clientID
+	oauthConf.ClientSecret = clientSecret
+	return nil
 }
 
-func GoogleLoginHandler(response http.ResponseWriter, request *http.Request) {
-	LoginHandler(response, request, oauthConfGl)
-}
-
-func LoginHandler(response http.ResponseWriter, request *http.Request, oauthConf *oauth2.Config) {
-	session, _ := sessionStorage.Get(request, "session-name")
+// LoginHandler redirects the user to the identity provider
+func LoginHandler(response http.ResponseWriter, request *http.Request) {
+	session, _ := sessionStorage.Get(request, COOKIE_NAME)
 
 	authState, ok := session.Values["authState"].(string)
 	if !ok {
@@ -37,41 +55,25 @@ func LoginHandler(response http.ResponseWriter, request *http.Request, oauthConf
 		session.Values["authState"] = authState
 		err := session.Save(request, response)
 		if err != nil {
-			log.Error("Session save error: " + err.Error() + "\n")
+			log.Errorf("Session save error: %s", err.Error())
 			http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
 			return
 		}
 	}
 
-	URL, err := url.Parse(oauthConf.Endpoint.AuthURL)
-	if err != nil {
-		log.Error("Parse: " + err.Error())
-	}
-	log.Info(URL.String())
-	parameters := url.Values{}
-	parameters.Add("client_id", oauthConf.ClientID)
-	parameters.Add("scope", strings.Join(oauthConf.Scopes, " "))
-	parameters.Add("redirect_uri", oauthConf.RedirectURL)
-	parameters.Add("response_type", "code")
-	parameters.Add("state", authState)
-	URL.RawQuery = parameters.Encode()
-	url := URL.String()
-	log.Info(url)
+	url := oauthConf.AuthCodeURL(authState)
 	http.Redirect(response, request, url, http.StatusTemporaryRedirect)
 }
 
-/*
-CallBackFromGoogleHandler Function
-*/
-func CallBackFromGoogleHandler(response http.ResponseWriter, request *http.Request) {
-	session, _ := sessionStorage.Get(request, "session-name")
-	log.Info("Callback-gl..")
+// OidcCallBackHandler handles redeeming the OIDC code from the Issuer
+func OidcCallBackHandler(response http.ResponseWriter, request *http.Request) {
+	session, _ := sessionStorage.Get(request, COOKIE_NAME)
 
 	knownState, hasKnownState := session.Values["authState"].(string)
 	givenState := request.FormValue("state")
 	if !hasKnownState || knownState != givenState {
-		log.Info("invalid oauth state, expected " + knownState + ", got " + givenState + "\n")
-		http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
+		log.Infof("invalid oauth state, expected %s, got %s", knownState, givenState)
+		response.Write([]byte("OIDC error. The OAuth state value doesn't match expectations.\n"))
 		return
 	}
 
@@ -79,57 +81,42 @@ func CallBackFromGoogleHandler(response http.ResponseWriter, request *http.Reque
 	log.Info(code)
 
 	if code == "" {
-		log.Warning("Code not found..")
-		response.Write([]byte("Code Not Found to provide AccessToken..\n"))
+		response.Write([]byte("OIDC error. No OAuth code was given from the issuer.\n"))
 		reason := request.FormValue("error_reason")
 		if reason == "user_denied" {
-			response.Write([]byte("User has denied Permission.."))
+			reason = "User denied the login."
 		}
-		// User has denied access..
-		// http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
-	} else {
-		token, err := oauthConfGl.Exchange(context.TODO(), code)
-		if err != nil {
-			log.Error("oauthConfGl.Exchange() failed with " + err.Error() + "\n")
-			return
-		}
-		log.Info("TOKEN>> AccessToken>> " + token.AccessToken)
-		log.Info("TOKEN>> Expiration Time>> " + token.Expiry.String())
-		log.Info("TOKEN>> RefreshToken>> " + token.RefreshToken)
+		response.Write([]byte(fmt.Sprintf("Reason: %s", reason)))
+		return
+	}
 
-		resp, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + url.QueryEscape(token.AccessToken))
-		if err != nil {
-			log.Error("Get: " + err.Error() + "\n")
-			http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
-			return
-		}
-		defer resp.Body.Close()
+	token, err := oauthConf.Exchange(request.Context(), code)
+	if err != nil {
+		log.Errorf("oauthConf.Exchange() failed with %s", err.Error())
+		response.Write([]byte("OIDC error. Failed to redeem the OAuth code.\n"))
+		return
+	}
 
-		respBytes, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Error("ReadAll: " + err.Error() + "\n")
-			http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
-			return
-		}
+	userInfo, err := oidcInfo.UserInfo(request.Context(), oauth2.StaticTokenSource(token))
+	if err != nil {
+		log.Errorf("UserInfo() failed with %s", err.Error())
+		response.Write([]byte("OIDC error. Failed to fetch the user info from the issuer.\n"))
+		return
+	}
 
-		log.Info("parseResponseBody: " + string(respBytes) + "\n")
+	if !userInfo.EmailVerified {
+		response.Write([]byte("OIDC error. Is your email address verified?\n"))
+		return
+	}
 
-		var loginData loginStruct
-		err = json.Unmarshal([]byte(respBytes), &loginData)
-		if err != nil {
-			log.Error("Unmarshal: " + err.Error() + "\n")
-			http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
-			return
-		}
-		session.Values["userEmail"] = loginData.Email
-		err = session.Save(request, response)
-		if err != nil {
-			log.Error("Session save error: " + err.Error() + "\n")
-			http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
-			return
-		}
-		log.InfoF("Successfully logged in user %s", loginData.Email)
+	// Finally 'log in' the user (from our viewpoint at least)
+	session.Values["userEmail"] = userInfo.Email
+	err = session.Save(request, response)
+	if err != nil {
+		log.Errorf("Session save error: %s", err.Error())
 		http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
 		return
 	}
+	log.Infof("Successfully logged in user %s", userInfo.Email)
+	http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
 }

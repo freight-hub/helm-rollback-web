@@ -26,7 +26,7 @@ func LoginStatusHandler(response http.ResponseWriter, request *http.Request) {
 		"environment": os.Getenv("HELM_ROLLBACK_WEB_ENVIRONMENT"),
 	}
 
-	session, _ := sessionStorage.Get(request, "session-name")
+	session, _ := sessionStorage.Get(request, COOKIE_NAME)
 	if session.Values["userEmail"] != nil {
 		out["email"] = session.Values["userEmail"]
 	}
@@ -38,7 +38,7 @@ func LoginStatusHandler(response http.ResponseWriter, request *http.Request) {
 func HelmListHandler(response http.ResponseWriter, request *http.Request) {
 	response.Header().Add("Cache-Control", "no-store")
 
-	session, _ := sessionStorage.Get(request, "session-name")
+	session, _ := sessionStorage.Get(request, COOKIE_NAME)
 	if session.Values["userEmail"] == nil {
 		UnauthorizedHandler(response, request)
 		return
@@ -79,7 +79,7 @@ func HelmHistoryHandler(response http.ResponseWriter, request *http.Request) {
 	response.Header().Add("Cache-Control", "no-store")
 
 	vars := mux.Vars(request)
-	session, _ := sessionStorage.Get(request, "session-name")
+	session, _ := sessionStorage.Get(request, COOKIE_NAME)
 	if session.Values["userEmail"] == nil {
 		UnauthorizedHandler(response, request)
 		return
@@ -119,7 +119,7 @@ func HelmRollBackHandler(response http.ResponseWriter, request *http.Request) {
 	response.Header().Add("Cache-Control", "no-store")
 
 	vars := mux.Vars(request)
-	session, _ := sessionStorage.Get(request, "session-name")
+	session, _ := sessionStorage.Get(request, COOKIE_NAME)
 	if session.Values["userEmail"] == nil {
 		log.Warning("No user session provided")
 		UnauthorizedHandler(response, request)

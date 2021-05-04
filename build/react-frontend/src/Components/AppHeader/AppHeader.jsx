@@ -72,7 +72,7 @@ export default function AppHeader(props) {
 
   const doLogout = () => {
     // works because the cookie isn't HttpOnly (as of writing)
-    document.cookie = "session-name= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
+    document.cookie = "helm-rollback-web= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
     document.location.reload();
   };
 

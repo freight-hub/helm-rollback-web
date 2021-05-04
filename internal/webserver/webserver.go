@@ -7,8 +7,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
 
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
@@ -22,14 +20,9 @@ import (
 	slack "github.com/slack-go/slack"
 )
 
+const COOKIE_NAME = "helm-rollback-web"
+
 var (
-	oauthConfGl = &oauth2.Config{
-		ClientID:     "",
-		ClientSecret: "",
-		RedirectURL:  "http://localhost:8080/callback-gl",
-		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
-		Endpoint:     google.Endpoint,
-	}
 	log            *logger.Logger
 	sessionStorage *sessions.CookieStore
 	helmCommand    = ""
@@ -54,7 +47,7 @@ func ReactIndexHandler(entrypoint string) func(w http.ResponseWriter, r *http.Re
 	return http.HandlerFunc(fn)
 }
 
-func HandleHTTP(GoogleClientID string, GoogleClientSecret string, port string) {
+func HandleHTTP(port string) {
 	err := error(nil)
 	log, err = logger.New("helm-rollback", 1, os.Stderr)
 	if err != nil {
@@ -78,12 +71,6 @@ func HandleHTTP(GoogleClientID string, GoogleClientSecret string, port string) {
 	}
 	sessionStorage = sessions.NewCookieStore([]byte(securecookie.GenerateRandomKey(32)))
 
-	if os.Getenv("HELM_ROLLBACK_WEB_CALLBACK_URL") != "" {
-		oauthConfGl.RedirectURL = os.Getenv("HELM_ROLLBACK_WEB_CALLBACK_URL")
-	}
-	oauthConfGl.ClientID = GoogleClientID
-	oauthConfGl.ClientSecret = GoogleClientSecret
-	log.InfoF("Inside Go Func...\n")
 	r := mux.NewRouter()
 	loggedRouter := handlers.LoggingHandler(os.Stdout, r)
 	r.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
@@ -92,8 +79,8 @@ func HandleHTTP(GoogleClientID string, GoogleClientSecret string, port string) {
 	r.HandleFunc("/healthz", HealthHandler)
 
 	// Session handling
-	r.HandleFunc("/login", GoogleLoginHandler)
-	r.HandleFunc("/callback-gl", CallBackFromGoogleHandler)
+	r.HandleFunc("/login", LoginHandler)
+	r.HandleFunc(callbackURL.Path, OidcCallBackHandler)
 
 	// API routes that we will serve
 	r.HandleFunc("/login-status", LoginStatusHandler)

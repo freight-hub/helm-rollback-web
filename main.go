@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"math/rand"
 	"os"
 	"time"
@@ -22,28 +24,43 @@ func main() {
 	}
 	log.Infof("Starting helm-rollback-web server build %s\n", buildDate)
 	rand.Seed(time.Now().UnixNano())
-	if os.Getenv("HELM_ROLLBACK_WEB_GCP_CLIENT_ID") == "" {
-		log.Errorf("Missing required env var HELM_ROLLBACK_WEB_GCP_CLIENT_ID\n")
-		os.Exit(1)
+
+	port := "8080"
+
+	// Auth / OpenID Connect configuration
+	oidcIssuer := os.Getenv("HELM_ROLLBACK_WEB_OIDC_ISSUER")
+	if oidcIssuer == "" {
+		log.Warning("Tip: To use Google Accounts, set the issuer value 'https://accounts.google.com'")
+		log.Fatal("Missing required env var HELM_ROLLBACK_WEB_OIDC_ISSUER")
 	}
-	if os.Getenv("HELM_ROLLBACK_WEB_GCP_CLIENT_SECRET") == "" {
-		log.Errorf("Missing required env var HELM_ROLLBACK_WEB_GCP_CLIENT_SECRET\n")
-		os.Exit(1)
+	clientId := os.Getenv("HELM_ROLLBACK_WEB_OIDC_CLIENT_ID")
+	if clientId == "" {
+		log.Fatal("Missing required env var HELM_ROLLBACK_WEB_OIDC_CLIENT_ID")
 	}
+	clientSecret := os.Getenv("HELM_ROLLBACK_WEB_OIDC_CLIENT_SECRET")
+	if clientSecret == "" {
+		log.Fatal("Missing required env var HELM_ROLLBACK_WEB_OIDC_CLIENT_SECRET")
+	}
+	callbackURL := os.Getenv("HELM_ROLLBACK_WEB_CALLBACK_URL")
+	if callbackURL == "" {
+		callbackURL = fmt.Sprintf("http://localhost:%s/callback-gl", port)
+		log.Warningf("Missing env var HELM_ROLLBACK_WEB_CALLBACK_URL. Assuming `%s` - This only works locally!", callbackURL)
+	}
+	// This function fetches the configuration from the issuer
+	if err := webserver.ConfigureOidc(context.Background(), oidcIssuer, clientId, clientSecret, callbackURL); err != nil {
+		log.Fatalf("OpenID Connect auto-configuration failed: %s", err.Error())
+	}
+
 	if os.Getenv("SLACK_APP_HELM_OAUTH_TOKEN") == "" {
-		log.Errorf("Missing required env var SLACK_APP_HELM_OAUTH_TOKEN\n")
-		os.Exit(1)
+		log.Fatal("Missing required env var SLACK_APP_HELM_OAUTH_TOKEN")
 	}
 	if os.Getenv("HELM_ROLLBACK_WEB_NOTIFICATION_CHANNEL") == "" {
-		log.Errorf("Missing required env var HELM_ROLLBACK_WEB_NOTIFICATION_CHANNEL\n")
-		os.Exit(1)
+		log.Fatal("Missing required env var HELM_ROLLBACK_WEB_NOTIFICATION_CHANNEL")
 	}
 	if os.Getenv("HELM_ROLLBACK_WEB_HELM_COMMAND") == "" {
-		log.Infof("Missing required env var HELM_ROLLBACK_WEB_HELM_COMMAND assuming `helm`\n")
+		log.Info("Missing required env var HELM_ROLLBACK_WEB_HELM_COMMAND assuming `helm`")
 	}
-	if os.Getenv("HELM_ROLLBACK_WEB_CALLBACK_URL") == "" {
-		log.Warningf("Missing required env var HELM_ROLLBACK_WEB_CALLBACK_URL assuming `http://localhost:8080/callback-gl` - This will almost certainly not work!\n")
-	}
-	log.Infof("Starting webserver on port %s\n", "8080")
-	webserver.HandleHTTP(os.Getenv("HELM_ROLLBACK_WEB_GCP_CLIENT_ID"), os.Getenv("HELM_ROLLBACK_WEB_GCP_CLIENT_SECRET"), "8080")
+
+	log.Infof("Starting webserver on port %s", port)
+	webserver.HandleHTTP(port)
 }
