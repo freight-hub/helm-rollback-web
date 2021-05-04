@@ -32,8 +32,8 @@ func ConfigureOidc(ctx context.Context, issuer string, clientID string, clientSe
 	if err != nil {
 		return fmt.Errorf("couldn't parse callback URL '%s': %w", redirectURL, err)
 	}
-	if len(callbackURL.Path) < 3 || callbackURL.Path[0] != '/' {
-		return fmt.Errorf("redirect URL requires a path (such as /callback)")
+	if len(callbackURL.Path) < 2 || callbackURL.Path[0] != '/' {
+		return fmt.Errorf("redirect URL must include a path (such as /callback)")
 	}
 
 	oauthConf.Endpoint = oidcInfo.Endpoint()
@@ -73,7 +73,7 @@ func OidcCallBackHandler(response http.ResponseWriter, request *http.Request) {
 	givenState := request.FormValue("state")
 	if !hasKnownState || knownState != givenState {
 		log.Infof("invalid oauth state, expected %s, got %s", knownState, givenState)
-		http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
+		response.Write([]byte("OIDC error. The OAuth state value doesn't match expectations.\n"))
 		return
 	}
 
@@ -81,25 +81,26 @@ func OidcCallBackHandler(response http.ResponseWriter, request *http.Request) {
 	log.Info(code)
 
 	if code == "" {
-		log.Warning("Code not found..")
-		response.Write([]byte("Code Not Found to provide AccessToken..\n"))
+		response.Write([]byte("OIDC error. No OAuth code was given from the issuer.\n"))
 		reason := request.FormValue("error_reason")
 		if reason == "user_denied" {
-			response.Write([]byte("User has denied Permission.."))
+			reason = "User denied the login."
 		}
+		response.Write([]byte(fmt.Sprintf("Reason: %s", reason)))
 		return
 	}
 
 	token, err := oauthConf.Exchange(request.Context(), code)
 	if err != nil {
 		log.Errorf("oauthConf.Exchange() failed with %s", err.Error())
+		response.Write([]byte("OIDC error. Failed to redeem the OAuth code.\n"))
 		return
 	}
 
 	userInfo, err := oidcInfo.UserInfo(request.Context(), oauth2.StaticTokenSource(token))
 	if err != nil {
-		log.Errorf("UserInfo: %s", err.Error())
-		http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
+		log.Errorf("UserInfo() failed with %s", err.Error())
+		response.Write([]byte("OIDC error. Failed to fetch the user info from the issuer.\n"))
 		return
 	}
 
