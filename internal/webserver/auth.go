@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
+	"os"
 
 	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/gorilla/securecookie"
@@ -34,6 +35,11 @@ func ConfigureOidc(ctx context.Context, issuer string, clientID string, clientSe
 	}
 	if len(callbackURL.Path) < 2 || callbackURL.Path[0] != '/' {
 		return fmt.Errorf("redirect URL must include a path (such as /callback)")
+	}
+
+	// The google groups authz feature depends on google groups API access
+	if os.Getenv("HELM_ROLLBACK_WEB_GOOGLE_GROUP_PASSLIST") != "" {
+		oauthConf.Scopes = append(oauthConf.Scopes, "https://www.googleapis.com/auth/cloud-identity.groups.readonly")
 	}
 
 	oauthConf.Endpoint = oidcInfo.Endpoint()
@@ -94,15 +100,16 @@ func OidcCallBackHandler(response http.ResponseWriter, request *http.Request) {
 		response.Write([]byte("OIDC error. Failed to redeem the OAuth code.\n"))
 		return
 	}
+	tokenSource := oauth2.StaticTokenSource(token)
 
-	userInfo, err := oidcInfo.UserInfo(request.Context(), oauth2.StaticTokenSource(token))
+	userInfo, err := oidcInfo.UserInfo(request.Context(), tokenSource)
 	if err != nil {
 		log.Errorf("UserInfo() failed with %s", err.Error())
 		response.Write([]byte("OIDC error. Failed to fetch the user info from the issuer.\n"))
 		return
 	}
 
-	if userOk, err := confirmUserAuthorized(request.Context(), userInfo); err != nil {
+	if userOk, err := confirmUserAuthorized(request.Context(), userInfo, tokenSource); err != nil {
 		log.Errorf("confirmAccessByEmail: %s", err.Error())
 		ServerErrorHandler(response, request)
 		return
