@@ -19,40 +19,49 @@ func confirmUserAuthorized(ctx context.Context, user *oidc.UserInfo, tokens oaut
 	}
 
 	// Google Group membership (in at least one listed group)
-	// The proper API for this (CheckTransitiveMembership) is paywalled
-	// behind G Suite Enterprise so we do a less exhaustive check here.
 	groupPasslist := os.Getenv("HELM_ROLLBACK_WEB_GOOGLE_GROUP_PASSLIST")
 	if groupPasslist != "" {
-		cloudidentityService, err := cloudidentity.NewService(ctx, option.WithTokenSource(tokens))
+		groupList := strings.Split(groupPasslist, ",")
+		ok, err = confirmGoogleGroupMembership(ctx, user, tokens, groupList)
+		if !ok || err != nil {
+			return
+		}
+	}
+
+	return true, nil
+}
+
+// confirmGoogleGroupMembership checks that the user is in at least one listed group.
+// The proper API for this (CheckTransitiveMembership) is paywalled
+//   behind G Suite Enterprise so we do a less exhaustive check here.
+func confirmGoogleGroupMembership(ctx context.Context, user *oidc.UserInfo, tokens oauth2.TokenSource, groupList []string) (ok bool, err error) {
+	cloudidentityService, err := cloudidentity.NewService(ctx, option.WithTokenSource(tokens))
+	if err != nil {
+		return false, err
+	}
+
+	for _, groupName := range groupList {
+		groupInfo, err := cloudidentityService.Groups.Lookup().GroupKeyId(groupName).Context(ctx).Do()
 		if err != nil {
 			return false, err
 		}
 
-		groupList := strings.Split(groupPasslist, ",")
-		for _, groupName := range groupList {
-			groupInfo, err := cloudidentityService.Groups.Lookup().GroupKeyId(groupName).Context(ctx).Do()
-			if err != nil {
-				return false, err
+		membership, err := cloudidentityService.Groups.Memberships.List(groupInfo.Name).Context(ctx).Do()
+		if err != nil {
+			if strings.Contains(err.Error(), "Permission denied") {
+				continue // check next group
 			}
+			return false, err
+		}
 
-			membership, err := cloudidentityService.Groups.Memberships.List(groupInfo.Name).Context(ctx).Do()
-			if err != nil {
-				if strings.Contains(err.Error(), "Permission denied") {
-					continue // check next group
-				}
-				return false, err
-			}
-
-			// TODO: does not follow pagination; will become problematic at 200 members
-			for _, member := range membership.Memberships {
-				if member.PreferredMemberKey.Id == user.Email {
-					log.Infof("Found %s in group %s", user.Email, groupName)
-					return true, nil
-				}
+		// TODO: does not follow pagination; will become problematic at 200 members
+		for _, member := range membership.Memberships {
+			if member.PreferredMemberKey.Id == user.Email {
+				log.Infof("Found %s in group %s", user.Email, groupName)
+				return true, nil
 			}
 		}
-		return false, nil
 	}
 
-	return true, nil
+	return false, nil
 }
