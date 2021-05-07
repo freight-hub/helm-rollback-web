@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
+	"os"
 
 	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/gorilla/securecookie"
@@ -36,6 +37,11 @@ func ConfigureOidc(ctx context.Context, issuer string, clientID string, clientSe
 		return fmt.Errorf("redirect URL must include a path (such as /callback)")
 	}
 
+	// The google groups authz feature depends on google groups API access
+	if os.Getenv("HELM_ROLLBACK_WEB_GOOGLE_GROUP_PASSLIST") != "" {
+		oauthConf.Scopes = append(oauthConf.Scopes, "https://www.googleapis.com/auth/cloud-identity.groups.readonly")
+	}
+
 	oauthConf.Endpoint = oidcInfo.Endpoint()
 	oauthConf.RedirectURL = redirectURL
 	oauthConf.ClientID = clientID
@@ -56,7 +62,7 @@ func LoginHandler(response http.ResponseWriter, request *http.Request) {
 		err := session.Save(request, response)
 		if err != nil {
 			log.Errorf("Session save error: %s", err.Error())
-			http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
+			ServerErrorHandler(response, request)
 			return
 		}
 	}
@@ -78,8 +84,6 @@ func OidcCallBackHandler(response http.ResponseWriter, request *http.Request) {
 	}
 
 	code := request.FormValue("code")
-	log.Info(code)
-
 	if code == "" {
 		response.Write([]byte("OIDC error. No OAuth code was given from the issuer.\n"))
 		reason := request.FormValue("error_reason")
@@ -96,16 +100,22 @@ func OidcCallBackHandler(response http.ResponseWriter, request *http.Request) {
 		response.Write([]byte("OIDC error. Failed to redeem the OAuth code.\n"))
 		return
 	}
+	tokenSource := oauth2.StaticTokenSource(token)
 
-	userInfo, err := oidcInfo.UserInfo(request.Context(), oauth2.StaticTokenSource(token))
+	userInfo, err := oidcInfo.UserInfo(request.Context(), tokenSource)
 	if err != nil {
 		log.Errorf("UserInfo() failed with %s", err.Error())
 		response.Write([]byte("OIDC error. Failed to fetch the user info from the issuer.\n"))
 		return
 	}
 
-	if !userInfo.EmailVerified {
-		response.Write([]byte("OIDC error. Is your email address verified?\n"))
+	if userOk, err := confirmUserAuthorized(request.Context(), userInfo, tokenSource); err != nil {
+		log.Errorf("confirmAccessByEmail: %s", err.Error())
+		ServerErrorHandler(response, request)
+		return
+	} else if !userOk {
+		log.Errorf("Denying login to user %s", userInfo.Email)
+		UnauthorizedHandler(response, request)
 		return
 	}
 
@@ -114,7 +124,7 @@ func OidcCallBackHandler(response http.ResponseWriter, request *http.Request) {
 	err = session.Save(request, response)
 	if err != nil {
 		log.Errorf("Session save error: %s", err.Error())
-		http.Redirect(response, request, "/", http.StatusTemporaryRedirect)
+		ServerErrorHandler(response, request)
 		return
 	}
 	log.Infof("Successfully logged in user %s", userInfo.Email)
