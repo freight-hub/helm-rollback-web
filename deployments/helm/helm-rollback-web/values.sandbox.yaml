@@ -44,16 +44,13 @@ helmrollbackweb:
 ingress:
   enabled: true
   annotations: 
-    kubernetes.io/ingress.class: traefik
-    cert-manager.io/cluster-issuer: letsencrypt
+    kubernetes.io/ingress.class: kong-public
+    konghq.com/protocols: "https"
+    konghq.com/https-redirect-status-code: "301"
   hosts:
     - host: helm-rollback.forto.io
       paths:
       - /
-  tls: 
-    - secretName: helm-rollback-tls
-      hosts:
-        - helm-rollback.forto.io
 
 resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
