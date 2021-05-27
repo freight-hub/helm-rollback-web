@@ -38,7 +38,11 @@ service:
   port: 80
 
 ingress:
-  enabled: false
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: kong-public
+    konghq.com/protocols: "https"
+    konghq.com/https-redirect-status-code: "301"
 
 helmrollbackweb:
   env:

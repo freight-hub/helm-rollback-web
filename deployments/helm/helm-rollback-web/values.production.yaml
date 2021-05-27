@@ -42,9 +42,6 @@ helmrollbackweb:
     HELM_ROLLBACK_WEB_THEME: red
 
 ingress:
-  enabled: true
-  annotations: 
-    kubernetes.io/ingress.class: traefik
   hosts:
     - host: helm-rollback.forto.com
       paths:

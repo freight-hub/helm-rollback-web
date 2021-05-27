@@ -42,11 +42,6 @@ helmrollbackweb:
     HELM_ROLLBACK_WEB_THEME: blue
 
 ingress:
-  enabled: true
-  annotations: 
-    kubernetes.io/ingress.class: kong-public
-    konghq.com/protocols: "https"
-    konghq.com/https-redirect-status-code: "301"
   hosts:
     - host: helm-rollback.forto.io
       paths:
