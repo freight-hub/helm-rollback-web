@@ -55,11 +55,10 @@ helmrollbackweb:
 resources:
   limits:
     cpu: 1000m
-    memory: 128Mi
+    memory: 256Mi
   requests:
     cpu: 10m
-    # this should be ~64Mi, but leaving equal to limits for now:
-    memory: 128Mi
+    memory: 256Mi
 
 nodeSelector: {}
 
