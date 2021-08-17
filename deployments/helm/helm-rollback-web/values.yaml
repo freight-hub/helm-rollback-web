@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: gcr.io/freighthub-registry/helm-rollback-web
+  repository: eu.gcr.io/freighthub-registry/helm-rollback-web
   tag: 0.0-linux-amd64
   pullPolicy: Always
 
