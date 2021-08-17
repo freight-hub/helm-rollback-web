@@ -25,6 +25,7 @@ workflows:
           executor: build
           context: gcloud-registry
           dockerfile: build/package/Dockerfile
+          registry-url: eu.gcr.io
           image: ${CIRCLE_PROJECT_REPONAME}
           tag: ${CIRCLE_SHA1}
           remote-docker-version: 19.03.14 #https://discuss.circleci.com/t/docker-build-fails-with-nonsensical-eperm-operation-not-permitted-copyfile/37364
