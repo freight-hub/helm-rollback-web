@@ -7,7 +7,7 @@ COPY internal/ ./internal/
 COPY *.go ./
 RUN make static
 
-FROM node:14.16.0-alpine3.13 AS frontend
+FROM node:17.0.1-alpine3.13 AS frontend
 WORKDIR /frontend
 COPY build/react-frontend/package*.json ./
 RUN npm ci
