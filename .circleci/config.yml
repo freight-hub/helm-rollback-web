@@ -5,17 +5,7 @@ orbs:
 executors:
   build:
     docker:
-      - image: cimg/base:2021.03
-
-references:
-  main_branch: &main_branch
-    branches:
-      only:
-        - main
-  feature_branches: &feature_branches
-    branches:
-      ignore:
-        - main
+      - image: cimg/base:2021.10
 
 workflows:
   ci-cd:
