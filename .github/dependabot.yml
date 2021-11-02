@@ -1,0 +1,27 @@
+version: 2
+updates:
+
+  - package-ecosystem: gomod
+    directory: /
+    schedule:
+      interval: weekly
+    labels:
+      - golang
+      - dependencies
+
+  - package-ecosystem: npm
+    directory: /build/react-frontend/
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 25
+    labels:
+      - npm
+      - dependencies
+
+  - package-ecosystem: docker
+    directory: /build/package/
+    schedule:
+      interval: weekly
+    labels:
+      - dockerfile
+      - dependencies
