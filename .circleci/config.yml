@@ -18,22 +18,24 @@ references:
         - main
 
 workflows:
-  build-deploy:
+  ci-cd:
     jobs:
 
       - gcp-gcr/build-and-push-image:
+          name: Build Image
           executor: build
           context: gcloud-registry
           dockerfile: build/package/Dockerfile
           registry-url: eu.gcr.io
           image: ${CIRCLE_PROJECT_REPONAME}
           tag: ${CIRCLE_SHA1}
-          remote-docker-version: 19.03.14 #https://discuss.circleci.com/t/docker-build-fails-with-nonsensical-eperm-operation-not-permitted-copyfile/37364
+          # https://circleci.com/docs/2.0/building-docker-images/#docker-version
+          remote-docker-version: 20.10.7
           setup-remote-docker: true
           use-docker-layer-caching: true
 
       - helm3-deploy/main-deploy:
-          name: Deploy Sandbox From PR
+          name: Deploy Sandbox
           chart_path: deployments/helm/helm-rollback-web
           values_base: sandbox
           release_name: $CIRCLE_PROJECT_REPONAME
@@ -41,10 +43,14 @@ workflows:
           namespace: sre-tooling
           context: gcloud-sandbox
           requires:
-            - gcp-gcr/build-and-push-image
+            - Build Image
+          filters:
+            branches:
+              ignore:
+                - /dependabot\/.+/
 
       - helm3-deploy/main-deploy:
-          name: Deploy Production from main branch
+          name: Deploy Production
           chart_path: deployments/helm/helm-rollback-web
           values_base: production
           release_name: $CIRCLE_PROJECT_REPONAME
@@ -52,5 +58,8 @@ workflows:
           namespace: sre-tooling
           context: gcloud-production
           requires:
-            - gcp-gcr/build-and-push-image
-          filters: *main_branch
+            - Build Image
+          filters:
+            branches:
+              only:
+                - main
