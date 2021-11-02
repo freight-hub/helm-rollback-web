@@ -7,13 +7,13 @@ COPY internal/ ./internal/
 COPY *.go ./
 RUN make static
 
-FROM node:14.16.0-alpine3.13 AS frontend
+FROM node:17.0.1-alpine3.13 AS frontend
 WORKDIR /frontend
-COPY build/react-frontend/package*.json ./
-RUN npm ci
+COPY build/react-frontend/package.json build/react-frontend/yarn.lock ./
+RUN yarn
 COPY build/react-frontend ./
 ENV PUBLIC_URL=/pub
-RUN npm run build && npm run test -- --watchAll=false
+RUN yarn build && yarn test -- --watchAll=false
 
 FROM scratch AS final
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
