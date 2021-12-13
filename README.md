@@ -14,8 +14,13 @@ Requires a client-id and client-secret from google to allow logins.  These are p
 
 Helm command is configurable but defaults to `helm`, env var is `HELM_ROLLBACK_WEB_HELM_COMMAND`
 
-TODO:
+## TODO:
+
 - Security Groups (right now, basic "are you forto" only.)
 - Stream the helm command output
 - Neaten frontend
 - Add service account
+
+## License
+
+GPLv2 or Later.
