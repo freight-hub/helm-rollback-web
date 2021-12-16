@@ -55,10 +55,10 @@ helmrollbackweb:
 resources:
   limits:
     cpu: 1000m
-    memory: 256Mi
+    memory: 356Mi
   requests:
     cpu: 10m
-    memory: 256Mi
+    memory: 356Mi
 
 nodeSelector: {}
 
