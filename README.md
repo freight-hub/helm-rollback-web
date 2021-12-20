@@ -1,12 +1,18 @@
 # helm-rollback-web
 
-Web tool with react frontend and go backend to do rollbacks of helm releases without necessarily the user having production access.
+Web tool (with react frontend and go backend) to do rollbacks of Helm releases without the user necessarily having production access.
 
-To dev on frontend, you want to run npm/yarn start in `build/react-frontend`
+[View the announcement blog post on Forto's Tech Blog](https://medium.com/forto-tech-blog/rollback-faster-without-deploy-access-9610acb43d68)
+
+## Development
+
+To work on the frontend, you want to run npm/yarn start in `build/react-frontend`
 
 `make build-frontend` will build a production-ready copy of this into the `web/react-frontend` folder (gitignored)
 
 `docker build -f ./build/package/Dockerfile` builds a docker image
+
+## Configuration
 
 Listens on port `8080`
 
@@ -16,9 +22,8 @@ Helm command is configurable but defaults to `helm`, env var is `HELM_ROLLBACK_W
 
 ## TODO:
 
-- Security Groups (right now, basic "are you forto" only.)
+- Security Groups (Google Groups access is implemented, but not documented)
 - Stream the helm command output
-- Neaten frontend
 - Add service account
 
 ## License
