@@ -49,7 +49,7 @@ func HelmListHandler(response http.ResponseWriter, request *http.Request) {
 		UnauthorizedHandler(response, request)
 		return
 	}
-	helmArgs := "list -a -o json --all-namespaces --time-format 2006-01-02T15:04:05Z"
+	helmArgs := "list -a -o json --all-namespaces --max 1024 --time-format 2006-01-02T15:04:05Z"
 	log.Info("Executing `" + helmCommand + " " + helmArgs + "`")
 	sliceArgs := strings.Fields(helmArgs)
 	out, err := exec.Command(helmCommand, sliceArgs...).Output()
