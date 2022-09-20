@@ -6,8 +6,10 @@ metadata:
   annotations:
     checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
     checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+    k8s.forto.com/repository: https://github.com/freight-hub/helm-rollback-web
   labels:
     {{- include "helmrollbackweb.labels" . | nindent 4 }}
+    k8s.forto.com/team: SRE
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
