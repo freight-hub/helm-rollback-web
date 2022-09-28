@@ -9,7 +9,7 @@ metadata:
     k8s.forto.com/repository: https://github.com/freight-hub/helm-rollback-web
   labels:
     {{- include "helmrollbackweb.labels" . | nindent 4 }}
-    k8s.forto.com/team: SRE
+    k8s.forto.com/team: sre
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
