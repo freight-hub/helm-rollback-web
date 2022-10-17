@@ -10,8 +10,8 @@ require (
 	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/sessions v1.2.1
 	github.com/slack-go/slack v0.11.3
-	golang.org/x/oauth2 v0.0.0-20220822191816-0ebed06d0094
-	google.golang.org/api v0.98.0
+	golang.org/x/oauth2 v0.0.0-20221006150949-b44042a4b9c1
+	google.golang.org/api v0.99.0
 	k8s.io/apimachinery v0.25.3
 	k8s.io/client-go v0.25.3
 )
