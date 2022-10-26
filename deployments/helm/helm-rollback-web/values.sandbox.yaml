@@ -1,66 +1,15 @@
-# Default values for helmrollbackweb.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-replicaCount: 1
-
-image:
-  tag: dev
-
-imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
-
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
-  # Annotations to add to the service account
-  annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name:
-
-podSecurityContext: {}
-  # fsGroup: 2000
-
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
-
-
-helmrollbackweb:
-  env:
-    HELM_ROLLBACK_WEB_CALLBACK_URL: https://helm-rollback.forto.io/callback-gl
-    HELM_ROLLBACK_WEB_HOSTNAME: https://helm-rollback.forto.io
-    HELM_ROLLBACK_WEB_NOTIFICATION_CHANNEL: "#sre-notifs"
-
-    HELM_ROLLBACK_WEB_ENVIRONMENT: sandbox
-    HELM_ROLLBACK_WEB_THEME: blue
-
-ingress:
-  hosts:
-    - host: helm-rollback.forto.io
-      paths:
-      - /
-
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 256Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 256Mi
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
+forto-app:
+  app:
+    env: {}
+    deployments:
+      api:
+        replicaCount: 1
+        ingress:
+          hosts:
+          - host: helm-rollback.forto.io
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: null
+  datadog:
+    environment: sandbox
