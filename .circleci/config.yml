@@ -24,6 +24,39 @@ workflows:
           setup-remote-docker: true
           use-docker-layer-caching: true
 
+      - helm3-deploy/diff-deploy:
+          name: Diff against Sandbox
+          context:
+              - gcloud-sandbox
+              - github
+          cluster_name: $PLAYGROUND
+          namespace: sre-tooling
+          values_base: sandbox
+          chart_path: deployments/helm/helm-rollback-web
+          filters:
+            branches:
+              ignore:
+                - /dependabot\/.+/
+
+      - helm3-deploy/diff-deploy:
+          name: Diff against Production
+          context:
+              - gcloud-production
+              - github
+          cluster_name: $GCLOUD_CLUSTER_NAME
+          namespace: sre-tooling
+          values_base: production
+          chart_path: deployments/helm/helm-rollback-web
+          filters:
+            branches:
+              ignore:
+                - /dependabot\/.+/
+
+      # - hold:
+      #     type: approval
+      #     requires:
+      #       - gcp-gcr/build-and-push-image
+
       - helm3-deploy/main-deploy:
           name: Deploy Sandbox
           chart_path: deployments/helm/helm-rollback-web
