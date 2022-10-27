@@ -15,5 +15,5 @@ forto-app:
           hosts:
           - host: helm-rollback.forto.io
 serviceAccount:
-  # Specifies whether a service account should be created
   create: true
+  annotations: eks.amazonaws.com/role-arn: arn:aws:iam::389345400137:role/kubernetes/cores/helm-rollback-web
