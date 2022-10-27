@@ -25,6 +25,7 @@ forto-app:
           memLimit: 356Mi
           cpuRequest: 10m
           memRequest: 356Mi
+          containerPort: 8080
         ingress:
           enabled: true
         service:

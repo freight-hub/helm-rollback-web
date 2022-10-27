@@ -51,7 +51,9 @@ workflows:
           release_name: $CIRCLE_PROJECT_REPONAME
           cluster_name: $PLAYGROUND
           namespace: sre-tooling
-          context: gcloud-sandbox
+          context:
+              - gcloud-sandbox
+              - github
           requires:
             - Build Image
           filters:
@@ -66,7 +68,9 @@ workflows:
           release_name: $CIRCLE_PROJECT_REPONAME
           cluster_name: $GCLOUD_CLUSTER_NAME
           namespace: sre-tooling
-          context: gcloud-production
+          context:
+              - gcloud-sandbox
+              - github
           requires:
             - Build Image
           filters:
