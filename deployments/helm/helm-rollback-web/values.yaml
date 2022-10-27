@@ -1,5 +1,8 @@
 forto-app:
   nameOverride: helm-rollback-web
+  forto:
+    team: sre
+    repository: https://github.com/freight-hub/helm-rollback-web
   image:
     repository: eu.gcr.io/freighthub-registry/helm-rollback-web
     tag: 0.0-linux-amd64
