@@ -17,7 +17,11 @@ forto-app:
       api:
         replicaCount: 1
         containers:
-        - cpuLimit: 1000m
+        - probes:
+            enabled: true
+            probePathReadiness: "/"
+            probePathLiveness: "/"
+          cpuLimit: 1000m
           memLimit: 356Mi
           cpuRequest: 10m
           memRequest: 356Mi
