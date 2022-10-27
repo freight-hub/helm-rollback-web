@@ -32,3 +32,5 @@ forto-app:
           enabled: true
 serviceAccount:
   create: true
+  awsIdentity:
+    enabled: true
