@@ -14,8 +14,6 @@ forto-app:
         ingress:
           hosts:
           - host: helm-rollback.forto.io
-  datadog:
-    environment: sandbox
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
