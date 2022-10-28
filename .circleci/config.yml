@@ -69,7 +69,7 @@ workflows:
           cluster_name: $GCLOUD_CLUSTER_NAME
           namespace: sre-tooling
           context:
-              - gcloud-sandbox
+              - gcloud-production
               - github
           requires:
             - Build Image
