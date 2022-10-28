@@ -34,3 +34,7 @@ serviceAccount:
   create: true
   awsIdentity:
     enabled: false
+datadog:
+  features:
+    runtimeMetrics: false
+    logInjection: false
