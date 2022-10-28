@@ -1,67 +1,45 @@
-# Default values for helmrollbackweb.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+forto-app:
+  datadog:
+    environment: sandbox
+    features:
+      runtimeMetrics: false
+      logInjection: false
+  nameOverride: helm-rollback-web
+  forto:
+    team: sre
+    repository: https://github.com/freight-hub/helm-rollback-web
+  image:
+    repository: eu.gcr.io/freighthub-registry/helm-rollback-web
+    tag: 0.0-linux-amd64
+    pullPolicy: Always
+  app:
+    env: 
+      HELM_ROLLBACK_WEB_OIDC_ISSUER: https://accounts.google.com
+      HELM_ROLLBACK_WEB_OIDC_CLIENT_ID: 827794444486-s7n1oqbcscctg6r0g0j9ub1ut1etm576.apps.googleusercontent.com
+      HELM_ROLLBACK_WEB_GOOGLE_GROUP_PASSLIST: terraformed-authz-engineers@forto.com,terraformed-authz-product-managers@forto.com
+      HELM_ROLLBACK_WEB_HELM_COMMAND: /usr/bin/helm3
+    deployments:
+      api:
+        replicaCount: 1
+        containers:
+        - probes:
+            enabled: true
+            probePathReadiness: "/"
+            probePathLiveness: "/"
+          cpuLimit: 1000m
+          memLimit: 356Mi
+          cpuRequest: 10m
+          memRequest: 356Mi
+          containerPort: 8080
+        ingress:
+          enabled: true
+        service:
+          enabled: true
+  serviceAccount:
+    create: true
+    awsIdentity:
+      enabled: false
 
-replicaCount: 1
-
-image:
-  repository: eu.gcr.io/freighthub-registry/helm-rollback-web
-  tag: 0.0-linux-amd64
-  pullPolicy: Always
-
-imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
-
+#local Chart referencec
 serviceAccount:
-  # Specifies whether a service account should be created
   create: true
-  # Annotations to add to the service account
-  annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name:
-
-podSecurityContext: {}
-  # fsGroup: 2000
-
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
-
-service:
-  type: ClusterIP
-  port: 80
-
-ingress:
-  enabled: true
-  annotations:
-    kubernetes.io/ingress.class: kong-public
-    konghq.com/protocols: "https"
-    konghq.com/https-redirect-status-code: "301"
-
-helmrollbackweb:
-  env:
-    HELM_ROLLBACK_WEB_OIDC_ISSUER: https://accounts.google.com
-    HELM_ROLLBACK_WEB_OIDC_CLIENT_ID: 827794444486-s7n1oqbcscctg6r0g0j9ub1ut1etm576.apps.googleusercontent.com
-    HELM_ROLLBACK_WEB_GOOGLE_GROUP_PASSLIST: terraformed-authz-engineers@forto.com,terraformed-authz-product-managers@forto.com
-    HELM_ROLLBACK_WEB_HELM_COMMAND: /usr/bin/helm3
-  secretenv:
-
-resources:
-  limits:
-    cpu: 1000m
-    memory: 356Mi
-  requests:
-    cpu: 10m
-    memory: 356Mi
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
