@@ -15,4 +15,4 @@ forto-app:
 serviceAccount:
   create: true
   awsIdentity:
-    enabled: true
+    enabled: false
