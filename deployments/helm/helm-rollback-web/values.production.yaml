@@ -1,4 +1,8 @@
 forto-app:
+  datadog:
+    features:
+      runtimeMetrics: false
+      logInjection: false
   app:
     env: 
       HELM_ROLLBACK_WEB_CALLBACK_URL: https://helm-rollback.forto.com/callback-gl
@@ -12,11 +16,12 @@ forto-app:
         ingress:
           hosts:
           - host: helm-rollback.forto.com
+  serviceAccount:
+    awsIdentity:
+      enabled: false
+
+#local Chart referencec
 serviceAccount:
   create: true
   awsIdentity:
     enabled: false
-datadog:
-  features:
-    runtimeMetrics: false
-    logInjection: false

@@ -1,4 +1,8 @@
 forto-app:
+  datadog:
+    features:
+      runtimeMetrics: false
+      logInjection: false
   image:
     tag: dev
   app:
@@ -14,11 +18,12 @@ forto-app:
         ingress:
           hosts:
           - host: helm-rollback.forto.io
+  serviceAccount: 
+    awsIdentity:
+      enabled: false
+
+#local Chart referencec
 serviceAccount:
   create: true
   awsIdentity:
     enabled: false
-datadog:
-  features:
-    runtimeMetrics: false
-    logInjection: false

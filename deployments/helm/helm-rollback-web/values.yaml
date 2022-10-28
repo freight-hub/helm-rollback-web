@@ -1,4 +1,8 @@
 forto-app:
+  datadog:
+    features:
+      runtimeMetrics: false
+      logInjection: false
   nameOverride: helm-rollback-web
   forto:
     team: sre
@@ -30,11 +34,12 @@ forto-app:
           enabled: true
         service:
           enabled: true
+  serviceAccount:
+    awsIdentity:
+      enabled: false
+
+#local Chart referencec
 serviceAccount:
   create: true
   awsIdentity:
     enabled: false
-datadog:
-  features:
-    runtimeMetrics: false
-    logInjection: false
