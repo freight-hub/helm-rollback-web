@@ -1,5 +1,6 @@
 forto-app:
   datadog:
+    environment: sandbox
     features:
       runtimeMetrics: false
       logInjection: false
@@ -35,11 +36,10 @@ forto-app:
         service:
           enabled: true
   serviceAccount:
+    create: true
     awsIdentity:
       enabled: false
 
 #local Chart referencec
 serviceAccount:
   create: true
-  awsIdentity:
-    enabled: false

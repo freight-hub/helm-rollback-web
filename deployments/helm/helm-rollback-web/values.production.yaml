@@ -1,5 +1,6 @@
 forto-app:
   datadog:
+    environment: production
     features:
       runtimeMetrics: false
       logInjection: false
