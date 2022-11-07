@@ -21,6 +21,8 @@ forto-app:
     deployments:
       api:
         replicaCount: 1
+        verticalPodAutoscaler:
+          enabled: true
         containers:
         - probes:
             enabled: true
