@@ -11,7 +11,7 @@ require (
 	github.com/gorilla/sessions v1.2.1
 	github.com/slack-go/slack v0.12.0
 	golang.org/x/oauth2 v0.0.0-20221014153046-6fdb5e3db783
-	google.golang.org/api v0.104.0
+	google.golang.org/api v0.105.0
 	k8s.io/apimachinery v0.26.0
 	k8s.io/client-go v0.26.0
 )
