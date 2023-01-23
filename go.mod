@@ -12,6 +12,6 @@ require (
 	github.com/slack-go/slack v0.12.1
 	golang.org/x/oauth2 v0.4.0
 	google.golang.org/api v0.107.0
-	k8s.io/apimachinery v0.26.0
-	k8s.io/client-go v0.26.0
+	k8s.io/apimachinery v0.26.1
+	k8s.io/client-go v0.26.1
 )
