@@ -18,7 +18,7 @@ var log *logger.Logger
 var buildDate string
 
 func main() {
-	tracer.Start(tracer.WithTraceEnabled(true))
+	tracer.Start()
 	defer tracer.Stop()
 	err := error(nil)
 	log, err = logger.New("hrw-webserver", 1, os.Stderr)
