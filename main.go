@@ -19,6 +19,7 @@ var buildDate string
 
 func main() {
 	tracer.Start(tracer.WithTraceEnabled(true))
+	defer tracer.Stop()
 	err := error(nil)
 	log, err = logger.New("hrw-webserver", 1, os.Stderr)
 	if err != nil {
@@ -65,5 +66,4 @@ func main() {
 
 	log.Infof("Starting webserver on port %s", port)
 	webserver.HandleHTTP(port)
-	defer tracer.Stop()
 }
