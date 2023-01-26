@@ -10,6 +10,7 @@ import (
 	"helm-rollback-web/internal/webserver"
 
 	logger "github.com/apsdehal/go-logger"
+	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 )
 
 var log *logger.Logger
@@ -17,6 +18,8 @@ var log *logger.Logger
 var buildDate string
 
 func main() {
+	tracer.Start()
+	defer tracer.Stop()
 	err := error(nil)
 	log, err = logger.New("hrw-webserver", 1, os.Stderr)
 	if err != nil {
