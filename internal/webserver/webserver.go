@@ -4,7 +4,6 @@ import (
 	"helm-rollback-web/internal/utility"
 
 	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 
@@ -18,6 +17,7 @@ import (
 
 	logger "github.com/apsdehal/go-logger"
 	slack "github.com/slack-go/slack"
+	muxtrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/gorilla/mux"
 )
 
 const COOKIE_NAME = "helm-rollback-web"
@@ -71,7 +71,7 @@ func HandleHTTP(port string) {
 	}
 	sessionStorage = sessions.NewCookieStore([]byte(securecookie.GenerateRandomKey(32)))
 
-	r := mux.NewRouter()
+	r := muxtrace.NewRouter()
 	loggedRouter := handlers.LoggingHandler(os.Stdout, r)
 	r.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
 
