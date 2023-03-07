@@ -26,6 +26,7 @@ forto-app:
             enabled: true
             probePathReadiness: "/"
             probePathLiveness: "/"
+          preStopSleepDelay: 0
           cpuLimit: 1000m
           memLimit: 356Mi
           cpuRequest: 10m
