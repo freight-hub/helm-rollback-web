@@ -2,7 +2,7 @@ forto-app:
   datadog:
     environment: production
   app:
-    env: 
+    env:
       HELM_ROLLBACK_WEB_CALLBACK_URL: https://helm-rollback.forto.com/callback-gl
       HELM_ROLLBACK_WEB_HOSTNAME: https://helm-rollback.forto.com
       HELM_ROLLBACK_WEB_NOTIFICATION_CHANNEL: "#sre-notifs"
@@ -10,7 +10,6 @@ forto-app:
       HELM_ROLLBACK_WEB_THEME: red
     deployments:
       api:
-        replicaCount: 1
         ingress:
           hosts:
           - host: helm-rollback.forto.com

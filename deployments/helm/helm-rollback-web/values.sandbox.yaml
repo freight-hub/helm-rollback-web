@@ -4,7 +4,7 @@ forto-app:
   image:
     tag: dev
   app:
-    env: 
+    env:
       HELM_ROLLBACK_WEB_CALLBACK_URL: https://helm-rollback.forto.io/callback-gl
       HELM_ROLLBACK_WEB_HOSTNAME: https://helm-rollback.forto.io
       HELM_ROLLBACK_WEB_NOTIFICATION_CHANNEL: "#sre-notifs"
@@ -12,7 +12,6 @@ forto-app:
       HELM_ROLLBACK_WEB_THEME: blue
     deployments:
       api:
-        replicaCount: 1
         ingress:
           hosts:
           - host: helm-rollback.forto.io
