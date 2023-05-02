@@ -1,6 +1,6 @@
 module helm-rollback-web
 
-go 1.16
+go 1.20
 
 require (
 	github.com/DataDog/datadog-go v4.8.2+incompatible // indirect
