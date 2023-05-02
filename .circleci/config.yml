@@ -1,11 +1,11 @@
 version: 2.1
 orbs:
-  gcp-gcr: circleci/gcp-gcr@0.13
+  gcp-gcr: circleci/gcp-gcr@0.15
   helm3-deploy: freighthub/helm3-deploy@1.3
 executors:
   build:
     docker:
-      - image: cimg/base:2021.10
+      - image: cimg/base:2023.04
 
 workflows:
   ci-cd:
@@ -17,10 +17,10 @@ workflows:
           context: gcloud-registry
           dockerfile: build/package/Dockerfile
           registry-url: eu.gcr.io
-          image: ${CIRCLE_PROJECT_REPONAME}
+          image: helm-rollback-web
           tag: ${CIRCLE_SHA1}
           # https://circleci.com/docs/2.0/building-docker-images/#docker-version
-          remote-docker-version: 20.10.7
+          remote-docker-version: 20.10.18
           setup-remote-docker: true
           use-docker-layer-caching: true
 
