@@ -11,7 +11,7 @@ require (
 	github.com/gorilla/sessions v1.2.1
 	github.com/slack-go/slack v0.12.2
 	golang.org/x/oauth2 v0.10.0
-	google.golang.org/api v0.131.0
+	google.golang.org/api v0.132.0
 	gopkg.in/DataDog/dd-trace-go.v1 v1.52.0
 	k8s.io/apimachinery v0.27.4
 	k8s.io/client-go v0.27.4
@@ -72,7 +72,7 @@ require (
 	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20230706204954-ccb25ca9f130 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20230711160842-782d3b101e98 // indirect
 	google.golang.org/grpc v1.56.2 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
