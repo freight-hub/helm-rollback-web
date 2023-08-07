@@ -1737,10 +1737,10 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@fontsource/inter@^5.0.5":
-  version "5.0.5"
-  resolved "https://registry.yarnpkg.com/@fontsource/inter/-/inter-5.0.5.tgz#bd3e923660cc4632d09b1882d104b0cb9430dec6"
-  integrity sha512-RE1JmWRB6Kxo+1nXUnORSSH5uKgUZ2QEQE+h/nsNt758C+17G9y26E9QiAsIqsG13NpKhwn22EeECfyC+da5ew==
+"@fontsource/inter@^5.0.8":
+  version "5.0.8"
+  resolved "https://registry.yarnpkg.com/@fontsource/inter/-/inter-5.0.8.tgz#61b50cb0eb72b14ae1938d47c4a9a91546d2a50c"
+  integrity sha512-28knWH1BfOiRalfLs90U4sge5mpQ8ZH6FS0PTT+IZMKrZ7wNHDHRuKa1kQJg+uHcc6axBppnxll+HXM4c7zo/Q==
 
 "@humanwhocodes/config-array@^0.9.2":
   version "0.9.2"
