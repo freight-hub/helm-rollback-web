@@ -13,10 +13,14 @@ updates:
     directory: /build/react-frontend/
     schedule:
       interval: weekly
-    open-pull-requests-limit: 25
+    open-pull-requests-limit: 10
     labels:
       - npm
       - dependencies
+
+    groups:
+      dev-deps:
+        dependency-type: development
 
   - package-ecosystem: docker
     directory: /build/package/
