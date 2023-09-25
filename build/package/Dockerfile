@@ -1,4 +1,4 @@
-FROM golang:1.21.1-alpine3.17 AS builder
+FROM golang:1.21.1-alpine AS builder
 RUN apk add --no-cache make ca-certificates
 WORKDIR /src
 COPY Makefile go.mod go.sum ./
@@ -7,7 +7,7 @@ COPY internal/ ./internal/
 COPY *.go ./
 RUN make static
 
-FROM node:20.7.0-alpine3.17 AS frontend
+FROM node:20.7.0-alpine AS frontend
 WORKDIR /frontend
 COPY build/react-frontend/package.json build/react-frontend/yarn.lock ./
 RUN yarn
