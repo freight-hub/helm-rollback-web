@@ -1,4 +1,4 @@
-FROM golang:1.21.2-alpine AS builder
+FROM golang:1.21.3-alpine AS builder
 RUN apk add --no-cache make ca-certificates
 WORKDIR /src
 COPY Makefile go.mod go.sum ./
