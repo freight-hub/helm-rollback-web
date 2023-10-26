@@ -1,19 +1,12 @@
 forto-app:
-  datadog:
-    environment: sandbox
-    features:
-      runtimeMetrics: false
-      logInjection: false
   nameOverride: helm-rollback-web
   forto:
     team: sre
     repository: https://github.com/freight-hub/helm-rollback-web
   image:
     repository: eu.gcr.io/freighthub-registry/helm-rollback-web
-    tag: 0.0-linux-amd64
-    pullPolicy: Always
   app:
-    env: 
+    env:
       HELM_ROLLBACK_WEB_OIDC_ISSUER: https://accounts.google.com
       HELM_ROLLBACK_WEB_OIDC_CLIENT_ID: 827794444486-s7n1oqbcscctg6r0g0j9ub1ut1etm576.apps.googleusercontent.com
       HELM_ROLLBACK_WEB_GOOGLE_GROUP_PASSLIST: terraformed-authz-engineers@forto.com,terraformed-authz-product-managers@forto.com,terraformed-authz-engineering-leads@forto.com
@@ -32,10 +25,9 @@ forto-app:
           cpuRequest: 10m
           memRequest: 512Mi
           containerPort: 8080
-        ingress:
+        edgeStack:
           enabled: true
-        service:
-          enabled: true
+          prefix: /
   serviceAccount:
     create: true
     awsIdentity:

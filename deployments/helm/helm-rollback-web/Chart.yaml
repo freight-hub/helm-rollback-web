@@ -23,5 +23,4 @@ appVersion: 0.1.0
 dependencies:
   - name: forto-app
     repository: "oci://ghcr.io/freight-hub/helm-charts"
-    version: "~1.0.0"
-
+    version: "^1.0.0"
