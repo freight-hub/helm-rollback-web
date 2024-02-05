@@ -11,7 +11,7 @@ require (
 	github.com/gorilla/sessions v1.2.2
 	github.com/slack-go/slack v0.12.3
 	golang.org/x/oauth2 v0.16.0
-	google.golang.org/api v0.159.0
+	google.golang.org/api v0.161.0
 	gopkg.in/DataDog/dd-trace-go.v1 v1.59.1
 	k8s.io/apimachinery v0.29.1
 	k8s.io/client-go v0.29.1
