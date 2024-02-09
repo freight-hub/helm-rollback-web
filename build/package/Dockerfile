@@ -15,11 +15,14 @@ COPY build/react-frontend ./
 ENV PUBLIC_URL=/pub
 RUN yarn build && yarn test -- --watchAll=false
 
+# https://hub.docker.com/r/alpine/helm/tags
+FROM alpine/helm:3.13.3 AS helm
+
 FROM scratch AS final
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /src/helm-rollback-web /app/
 COPY web/ /app/web/
 COPY --from=frontend /frontend/build /app/web/react-frontend
-COPY --from=alpine/helm:3.5.2 /usr/bin/helm /usr/bin/helm3
+COPY --from=helm /usr/bin/helm /usr/bin/helm3
 WORKDIR /app
 CMD ["/app/helm-rollback-web"]
