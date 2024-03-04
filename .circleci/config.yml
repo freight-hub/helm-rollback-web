@@ -20,7 +20,7 @@ workflows:
           image: helm-rollback-web
           tag: ${CIRCLE_SHA1}
           # https://circleci.com/docs/2.0/building-docker-images/#docker-version
-          remote-docker-version: 20.10.18
+          remote-docker-version: default
           setup-remote-docker: true
           use-docker-layer-caching: true
 
