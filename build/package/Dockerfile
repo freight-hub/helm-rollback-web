@@ -16,7 +16,7 @@ ENV PUBLIC_URL=/pub
 RUN yarn build && yarn test -- --watchAll=false
 
 # https://hub.docker.com/r/alpine/helm/tags
-FROM alpine/helm:3.14.2 AS helm
+FROM alpine/helm:3.14.3 AS helm
 
 FROM scratch AS final
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
