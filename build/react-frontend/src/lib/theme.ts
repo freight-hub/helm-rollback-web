@@ -1,5 +1,5 @@
 import { red, grey, lightBlue, teal, purple, orange } from '@material-ui/core/colors';
-import { createMuiTheme, Theme } from '@material-ui/core/styles';
+import { createTheme, Theme } from '@material-ui/core/styles';
 import type { PaletteOptions } from '@material-ui/core/styles/createPalette';
 
 const palette: PaletteOptions = {
@@ -13,7 +13,7 @@ const typography = {
 };
 
 function createColorTheme(color: Record<string, string>) {
-  return createMuiTheme({
+  return createTheme({
     palette: {
       ...palette,
       primary: {
