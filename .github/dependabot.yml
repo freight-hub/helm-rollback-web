@@ -18,6 +18,11 @@ updates:
       - npm
       - dependencies
 
+    ignore:
+    # Packages requiring ESM imports
+    - dependency-name: 'camelcase'
+      versions:
+      - '>= 7'
     groups:
       dev-deps:
         dependency-type: development
