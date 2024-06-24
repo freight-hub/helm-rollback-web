@@ -13,7 +13,7 @@ require (
 	github.com/slack-go/slack v0.13.0
 	golang.org/x/oauth2 v0.21.0
 	google.golang.org/api v0.185.0
-	gopkg.in/DataDog/dd-trace-go.v1 v1.65.0
+	gopkg.in/DataDog/dd-trace-go.v1 v1.65.1
 	k8s.io/apimachinery v0.30.2
 	k8s.io/client-go v0.30.2
 )
