@@ -5,7 +5,7 @@ orbs:
 executors:
   build:
     docker:
-      - image: cimg/base:2023.04
+      - image: cimg/base:2024.06
 
 workflows:
   ci-cd:
