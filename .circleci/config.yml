@@ -14,11 +14,11 @@ workflows:
       - gcp-gcr/build-and-push-image:
           name: Build Image
           executor: build
-          context: gcp-oidc-docker-registry
+          context: gcp-oidc-artifact-registry
           dockerfile: build/package/Dockerfile
-          registry-url: eu.gcr.io
+          registry-url: europe-west1-docker.pkg.dev
           use_oidc: true
-          image: helm-rollback-web
+          image: docker/helm-rollback-web
           tag: ${CIRCLE_SHA1}
           # https://circleci.com/docs/2.0/building-docker-images/#docker-version
           remote-docker-version: default
