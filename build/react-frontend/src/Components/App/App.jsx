@@ -1,7 +1,7 @@
 import { Container } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
-import { useRoutes, A } from 'hookrouter';
+import { useRoutes, Link } from 'raviger';
 import React, { useEffect, useState } from 'react';
 
 import { DefaultRollbackApi } from "../../lib/rollback-api";
@@ -48,7 +48,7 @@ export default function App() {
     ? <LoginSplash />
     : (routeResult || (
       <TextPage title="Page Not Found">
-        Maybe you'd like to <A href="/">go to the homepage</A> and try again.
+        Maybe you'd like to <Link href="/">go to the homepage</Link> and try again.
       </TextPage>
     ));
 

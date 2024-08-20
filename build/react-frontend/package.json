@@ -14,11 +14,11 @@
     "@types/node": "^22.4.1",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
-    "hookrouter": "^1.2.5",
     "jest-environment-jsdom": "^29.7.0",
-    "react": "^18.3.1",
+    "raviger": "^4.1.2",
     "react-dom": "^18.3.1",
     "react-google-button": "^0.8.0",
+    "react": "^18.3.1",
     "typescript": "^5.5.4"
   },
   "resolutions": {
