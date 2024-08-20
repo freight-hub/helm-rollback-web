@@ -1,10 +1,11 @@
 import { Button, Table, TableBody, TableCell, TableContainer, TableRow, Paper, Toolbar, Typography, CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { useTitle, setLinkProps } from 'hookrouter';
+import { Link as RouterLink } from 'raviger';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 
+import { useTitle } from "../../lib/use-title";
 import { DefaultRollbackApi } from "../../lib/rollback-api";
 import { stableSort, getComparator } from '../../lib/sorting.ts';
 import EnhancedTableHead from '../EnhancedTableHead/EnhancedTableHead.jsx';
@@ -105,9 +106,9 @@ export default function ReleaseDetails(props) {
               {!allSameChart ? (<TableCell>{row.chart}</TableCell>) : null}
               <TableCell><code>{row.app_version}</code></TableCell>
               <TableCell>
-                <Button variant="contained" color="primary" {...setLinkProps({
-                  href: `/rollback/${namespace}/${releaseName}/${row.revision}`,
-                })}><ChevronRightIcon /></Button>
+                <Button variant="contained" color="primary" component={RouterLink}
+                    href={`/rollback/${namespace}/${releaseName}/${row.revision}`}
+                  ><ChevronRightIcon /></Button>
               </TableCell>
             </TableRow>
           ))}
@@ -120,5 +121,3 @@ ReleaseDetails.propTypes = {
   namespace: PropTypes.string.isRequired,
   releaseName: PropTypes.string.isRequired,
 };
-
-

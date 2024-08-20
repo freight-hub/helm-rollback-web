@@ -1,9 +1,10 @@
 import { Paper, Button, CircularProgress, Typography } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { useTitle, setLinkProps } from 'hookrouter';
+import { Link as RouterLink } from 'raviger';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 
+import { useTitle } from "../../lib/use-title";
 import { DefaultRollbackApi } from "../../lib/rollback-api";
 
 const useStyles = makeStyles(theme => ({
@@ -116,9 +117,9 @@ export default function RollBackDetails(props) {
       <Paper className={classes.paper}>
         <div className={classes.paperPadding}>
 
-        <Button variant="outlined" {...setLinkProps({
-          href: `/release/${namespace}/${releaseName}`,
-        })} style={{ float: 'right' }}>Back to release history</Button>
+        <Button variant="outlined" component={RouterLink}
+            href={`/release/${namespace}/${releaseName}`}
+            style={{ float: 'right' }}>Back to release history</Button>
 
           <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
             Rollback of &nbsp;
@@ -157,5 +158,3 @@ RollBackDetails.propTypes = {
   releaseName: PropTypes.string.isRequired,
   revision: PropTypes.string.isRequired,
 };
-
-

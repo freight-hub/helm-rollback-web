@@ -1,6 +1,6 @@
 import { Avatar, Paper, Button, Typography, Link } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { setLinkProps } from 'hookrouter';
+import { Link as RouterLink } from 'raviger';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -82,9 +82,9 @@ export default function AppHeader(props) {
       <Avatar className={classes.logo} src={logo} alt="logo" />
 
       <Typography className={classes.title} variant="h4" component="h1">
-        <Link  {...setLinkProps({
-          href: `/`,
-        })} style={{ color: 'inherit' }}>
+        <Link component={RouterLink}
+            href="/"
+            style={{ color: 'inherit' }}>
           Helm Rollback Tool
         </Link>
       </Typography>

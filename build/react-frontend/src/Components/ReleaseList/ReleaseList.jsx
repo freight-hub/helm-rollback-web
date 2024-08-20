@@ -1,11 +1,12 @@
 import { Button, Table, TableBody, TableCell, TableContainer, TableRow, Toolbar, Paper, Typography, CircularProgress, Link } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { useTitle, setLinkProps } from 'hookrouter';
+import { Link as RouterLink } from 'raviger';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 
 import { DefaultRollbackApi } from "../../lib/rollback-api";
+import { useTitle } from "../../lib/use-title";
 import { stableSort, getComparator, useSortState } from '../../lib/sorting.ts';
 import EnhancedTableHead from '../EnhancedTableHead/EnhancedTableHead.jsx';
 import StatusIcon from '../StatusIcon/StatusIcon.tsx';
@@ -99,9 +100,10 @@ export default function ReleaseList(props) {
             .map(release => (
               <TableRow key={`${release.namespace}/${release.name}`} >
                 <TableCell>
-                  <Link color="inherit" {...setLinkProps({
-                      href: `/release/${release.namespace}/${release.name}`,
-                    })} style={{ display: 'block' }}>
+                  <Link component={RouterLink}
+                      color="inherit"
+                      href={`/release/${release.namespace}/${release.name}`}
+                      style={{ display: 'block' }}>
                     <StatusIcon status={release.status} />
                     {release.name}
                   </Link>
@@ -110,9 +112,9 @@ export default function ReleaseList(props) {
                 <TableCell><Timestamp date={release.updated} /></TableCell>
                 <TableCell align="right">#{release.revision}</TableCell>
                 <TableCell align="right">
-                  <Button variant="contained" {...setLinkProps({
-                    href: `/release/${release.namespace}/${release.name}`,
-                  })}><ChevronRightIcon /></Button>
+                  <Button variant="contained" component={RouterLink}
+                      href={`/release/${release.namespace}/${release.name}`}
+                    ><ChevronRightIcon /></Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -143,9 +145,9 @@ export default function ReleaseList(props) {
               <TableRow key={`${release.namespace}/${release.name}`} >
                 <TableCell>{release.namespace}</TableCell>
                 <TableCell>
-                  <Link color="inherit" {...setLinkProps({
-                      href: `/release/${release.namespace}/${release.name}`,
-                    })} style={{ display: 'block' }}>
+                  <Link color="inherit" component={RouterLink}
+                      href={`/release/${release.namespace}/${release.name}`}
+                      style={{ display: 'block' }}>
                     <StatusIcon status={release.status} />
                     {release.name}
                   </Link>
@@ -154,9 +156,9 @@ export default function ReleaseList(props) {
                 <TableCell><Timestamp date={release.updated} /></TableCell>
                 <TableCell align="right">#{release.revision}</TableCell>
                 <TableCell align="right">
-                  <Button variant="contained" {...setLinkProps({
-                    href: `/release/${release.namespace}/${release.name}`,
-                  })}><ChevronRightIcon /></Button>
+                  <Button variant="contained" component={RouterLink}
+                      href={`/release/${release.namespace}/${release.name}`}
+                    ><ChevronRightIcon /></Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -190,27 +192,27 @@ export default function ReleaseList(props) {
             .map(release => (
               <TableRow key={`${release.namespace}/${release.name}`} >
                 <TableCell>
-                  <Link color="inherit" {...setLinkProps({
-                    href: `/namespace/${release.namespace}`,
-                  })} style={{ display: 'block', fontWeight: 500 }}>
+                  <Link color="inherit" component={RouterLink}
+                      href={`/namespace/${release.namespace}`}
+                      style={{ display: 'block', fontWeight: 500 }}>
                     {release.namespace}
                   </Link>
                 </TableCell>
                 <TableCell>
                   <div className={classes.releaseSummaryGrid}>
                     <StatusIcon style={{ gridArea: 'icon', alignSelf: 'center' }} status={release.status} />
-                    <Link style={{ gridArea: 'release' }} color="inherit" {...setLinkProps({
-                        href: `/release/${release.namespace}/${release.name}`,
-                      })}>{release.name}</Link>
+                    <Link style={{ gridArea: 'release' }} color="inherit" component={RouterLink}
+                          href={`/release/${release.namespace}/${release.name}`}
+                        >{release.name}</Link>
                     <div style={{ gridArea: 'updated' }}>
                       <Timestamp date={release.updated} />
                     </div>
                   </div>
                 </TableCell>
                 <TableCell align="right">
-                  <Button variant="contained" {...setLinkProps({
-                    href: `/namespace/${release.namespace}`,
-                  })}><ChevronRightIcon /></Button>
+                  <Button variant="contained" component={RouterLink}
+                      href={`/namespace/${release.namespace}`}
+                    ><ChevronRightIcon /></Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -226,9 +228,9 @@ export default function ReleaseList(props) {
             Most Recently Deployed
           </Typography>
           <div style={{ flexGrow: 1 }} />
-          <Button color="inherit" variant="outlined" {...setLinkProps({
-              href: `/all-releases`,
-            })}>View All Releases</Button>
+          <Button color="inherit" variant="outlined" component={RouterLink}
+                href={`/all-releases`}
+              >View All Releases</Button>
         </Toolbar>
         <Table className={classes.table} size="small" aria-label="simple table">
           <EnhancedTableHead
@@ -248,25 +250,26 @@ export default function ReleaseList(props) {
                 <TableCell>
                   <div className={classes.releaseSummaryGrid}>
                     <StatusIcon style={{ gridArea: 'icon', alignSelf: 'center' }} status={release.status} />
-                    <Link style={{ gridArea: 'release', fontWeight: 500 }} color="inherit" {...setLinkProps({
-                        href: `/release/${release.namespace}/${release.name}`,
-                      })}>{release.name}</Link>
+                    <Link style={{ gridArea: 'release', fontWeight: 500 }} color="inherit"
+                        component={RouterLink}
+                        href={`/release/${release.namespace}/${release.name}`}
+                      >{release.name}</Link>
                     <div style={{ gridArea: 'updated' }}>
                       <Timestamp date={release.updated} />
                     </div>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Link color="inherit" {...setLinkProps({
-                    href: `/namespace/${release.namespace}`,
-                  })} style={{ display: 'block' }}>
+                  <Link color="inherit" component={RouterLink}
+                      href={`/namespace/${release.namespace}`}
+                      style={{ display: 'block' }}>
                     {release.namespace}
                   </Link>
                 </TableCell>
                 <TableCell align="right">
-                  <Button variant="contained" {...setLinkProps({
-                    href: `/release/${release.namespace}/${release.name}`,
-                  })}><ChevronRightIcon /></Button>
+                  <Button variant="contained" component={RouterLink}
+                      href={`/release/${release.namespace}/${release.name}`}
+                    ><ChevronRightIcon /></Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -280,5 +283,3 @@ ReleaseList.propTypes = {
   namespace: PropTypes.string,
   allReleases: PropTypes.bool,
 };
-
-
