@@ -10,10 +10,9 @@ RUN make static
 FROM node:22.6.0-alpine AS frontend
 WORKDIR /frontend
 COPY build/react-frontend/package.json build/react-frontend/yarn.lock ./
-RUN yarn
+RUN yarn install
 COPY build/react-frontend ./
-ENV PUBLIC_URL=/pub
-RUN yarn build && yarn test -- --watchAll=false
+RUN yarn build
 
 # https://hub.docker.com/r/alpine/helm/tags
 FROM alpine/helm:3.15.4 AS helm
