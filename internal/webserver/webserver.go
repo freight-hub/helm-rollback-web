@@ -97,9 +97,9 @@ func HandleHTTP(port string) {
 	r.PathPrefix("/rollback/").HandlerFunc(spaHandler)
 
 	// Static content
-	// react is told that it'll be mounted at /pub
-	staticServer := http.StripPrefix("/pub", http.FileServer(http.Dir("./web/react-frontend")))
-	r.PathPrefix("/pub/static/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// react is told that it'll be mounted at /assets
+	staticServer := http.StripPrefix("/assets", http.FileServer(http.Dir("./web/react-frontend")))
+	r.PathPrefix("/assets/static/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// All files inside static are keyed by hash
 		w.Header().Add("Cache-Control", "public, max-age=604800, immutable")
 		// Also loosen caching on 404 to prevent mixed-fleet poisoning
@@ -108,7 +108,7 @@ func HandleHTTP(port string) {
 			ErrorCaching: "public, no-cache, max-age=60",
 		}, r)
 	})
-	r.PathPrefix("/pub/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	r.PathPrefix("/assets/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// icons etc aren't hashed
 		w.Header().Add("Cache-Control", "public, max-age=300")
 		staticServer.ServeHTTP(w, r)
