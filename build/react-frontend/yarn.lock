@@ -2345,10 +2345,10 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.57.0.tgz#a5417ae8427873f1dd08b70b3574b453e67b5f7f"
   integrity sha512-Ys+3g2TaW7gADOJzPt83SJtCDhMjndcDMFVQ/Tj9iA1BfJzFKD9mAUXT3OenpuPHbI6P/myECxRJrofUsDx/5g==
 
-"@fontsource/inter@^5.0.20":
-  version "5.0.20"
-  resolved "https://registry.yarnpkg.com/@fontsource/inter/-/inter-5.0.20.tgz#968436ab21f05d3b3cb3191fa0958d91e37dde43"
-  integrity sha512-rtw2F7xfM7rJmmnncXnR4ADr5wXsp4GyN1O1jmQJ1PMjAK+bm620/ZkQkeOYOkGoa09OksGinOeMA+Mkt6K9PQ==
+"@fontsource/inter@^5.0.21":
+  version "5.0.21"
+  resolved "https://registry.yarnpkg.com/@fontsource/inter/-/inter-5.0.21.tgz#8689ff651fa53d00bd8837e4766dbd2e227bfede"
+  integrity sha512-Y4Ph0bYD5IfW8r9PSeiNjLvM6D/Bh5+YT9jOKiBqW3YS+AEBlmy8v74TpTNeZAvL3zHmikHCnzaKw7ob8LZiKQ==
 
 "@humanwhocodes/config-array@^0.11.14":
   version "0.11.14"
@@ -3252,10 +3252,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/node@*", "@types/node@^22.5.2":
-  version "22.5.2"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.5.2.tgz#e42344429702e69e28c839a7e16a8262a8086793"
-  integrity sha512-acJsPTEqYqulZS/Yp/S3GgeE6GZ0qYODUR8aVr/DkhHQ8l9nd4j5x1/ZJy9/gHrRlFMqkO6i0I3E27Alu4jjPg==
+"@types/node@*", "@types/node@^22.5.4":
+  version "22.5.4"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.5.4.tgz#83f7d1f65bc2ed223bdbf57c7884f1d5a4fa84e8"
+  integrity sha512-FDuKUJQm/ju9fT/SeX/6+gBzoPzlVCzfzmGkwKvRHQVxi4BntVbyIwf6a4Xn62mrvndLiml6z/UBXIdEVjQLXg==
   dependencies:
     undici-types "~6.19.2"
 
