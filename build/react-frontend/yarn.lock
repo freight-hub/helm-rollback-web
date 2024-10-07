@@ -4057,10 +4057,10 @@ batch@0.6.1:
   resolved "https://registry.yarnpkg.com/batch/-/batch-0.6.1.tgz#dc34314f4e679318093fc760272525f94bf25c16"
   integrity sha1-3DQxT05nkxgJP8dgJyUl+UvyXBY=
 
-bfj@^9.0.1:
-  version "9.0.1"
-  resolved "https://registry.yarnpkg.com/bfj/-/bfj-9.0.1.tgz#b30b5b2ab2187cf6725d20b531813b0dbc66f220"
-  integrity sha512-5Xb3/Z+rw8InGqlU92rtWVozkQ5M57UhjgM+I5FPzQdzp3KHgwV1tNxTI4owCMK1UJIDCCRjAQ4oQH3KtBBCQw==
+bfj@^9.0.2:
+  version "9.0.2"
+  resolved "https://registry.yarnpkg.com/bfj/-/bfj-9.0.2.tgz#f3db575a874591efc50fb9d8d24fb25bdf15ce3a"
+  integrity sha512-+8ROGCje0fgRVoH6EqQfUOBL9Jm0bLTXgKhkRxL1bEpbx5ZH+2BTy7GdzDXJop6kP9kMWLC+AcEfw0D2X/nfJQ==
   dependencies:
     check-types "^11.2.3"
     hoopy "^0.1.4"
