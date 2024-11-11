@@ -12,14 +12,14 @@ require (
 	github.com/gorilla/sessions v1.4.0
 	github.com/slack-go/slack v0.15.0
 	golang.org/x/oauth2 v0.23.0
-	google.golang.org/api v0.204.0
+	google.golang.org/api v0.205.0
 	gopkg.in/DataDog/dd-trace-go.v1 v1.69.1
 	k8s.io/apimachinery v0.31.2
 	k8s.io/client-go v0.31.2
 )
 
 require (
-	cloud.google.com/go/auth v0.10.0 // indirect
+	cloud.google.com/go/auth v0.10.1 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.5 // indirect
 	cloud.google.com/go/compute/metadata v0.5.2 // indirect
 	github.com/DataDog/appsec-internal-go v1.8.0 // indirect
