@@ -21,9 +21,9 @@ forto-app:
             probePathLiveness: "/"
           preStopSleepDelay: 0
           cpuLimit: 1000m
-          memLimit: 512Mi
+          memLimit: 768Mi
           cpuRequest: 10m
-          memRequest: 512Mi
+          memRequest: 768Mi
           containerPort: 8080
         edgeStack:
           enabled: true
