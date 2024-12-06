@@ -34,6 +34,10 @@ workflows:
           namespace: sre-tooling
           values_base: sandbox
           chart_path: deployments/helm/helm-rollback-web
+          filters:
+            branches:
+              ignore:
+                - main
 
       - helm3-deploy/diff-deploy:
           name: Diff against Production
@@ -44,6 +48,10 @@ workflows:
           namespace: sre-tooling
           values_base: production
           chart_path: deployments/helm/helm-rollback-web
+          filters:
+            branches:
+              ignore:
+                - main
 
       - helm3-deploy/main-deploy:
           name: Deploy Sandbox
