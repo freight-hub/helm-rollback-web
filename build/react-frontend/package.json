@@ -117,7 +117,7 @@
     "react-app-polyfill": "^3.0.0",
     "react-dev-utils": "^12.0.1",
     "react-refresh": "^0.16.0",
-    "resolve": "^1.22.9",
+    "resolve": "^1.22.10",
     "resolve-url-loader": "^5.0.0",
     "sass-loader": "^16.0.4",
     "semver": "^7.6.3",
