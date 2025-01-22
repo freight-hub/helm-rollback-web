@@ -23,6 +23,20 @@ updates:
     - dependency-name: 'camelcase'
       versions:
       - '>= 7'
+
+    - dependency-name: 'react'
+      versions:
+        - '>= 19'
+    - dependency-name: 'react-dom'
+      versions:
+        - '>= 19'
+    - dependency-name: '@types/react'
+      versions:
+        - '>= 19'
+    - dependency-name: '@types/react-dom'
+      versions:
+        - '>= 19'
+
     groups:
       dev-deps:
         dependency-type: development
