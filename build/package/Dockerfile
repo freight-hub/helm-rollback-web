@@ -7,7 +7,7 @@ COPY internal/ ./internal/
 COPY *.go ./
 RUN make static
 
-FROM node:23.6.1-alpine AS frontend
+FROM node:23.7.0-alpine AS frontend
 WORKDIR /frontend
 COPY build/react-frontend/package.json build/react-frontend/yarn.lock ./
 RUN yarn
