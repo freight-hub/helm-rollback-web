@@ -29,7 +29,6 @@ workflows:
           name: Diff against Sandbox
           context:
               - gcp-oidc-deployer-sandbox
-              - sops-credential
               - github-oidc
           namespace: sre-tooling
           values_base: sandbox
@@ -43,7 +42,6 @@ workflows:
           name: Diff against Production
           context:
               - gcp-oidc-deployer-production
-              - sops-credential
               - github-oidc
           namespace: sre-tooling
           values_base: production
@@ -61,7 +59,6 @@ workflows:
           namespace: sre-tooling
           context:
               - gcp-oidc-deployer-sandbox
-              - sops-credential
               - github-oidc
           requires:
             - Build Image
@@ -78,7 +75,6 @@ workflows:
           namespace: sre-tooling
           context:
               - gcp-oidc-deployer-production
-              - sops-credential
               - github-oidc
           requires:
             - Build Image
