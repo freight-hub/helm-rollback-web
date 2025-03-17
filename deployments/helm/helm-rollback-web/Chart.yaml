@@ -23,4 +23,4 @@ appVersion: 0.1.0
 dependencies:
   - name: forto-app
     repository: "oci://europe-west1-docker.pkg.dev/forto-artifacts/helm-charts"
-    version: "^1.0.0"
+    version: "^2.0.0"
