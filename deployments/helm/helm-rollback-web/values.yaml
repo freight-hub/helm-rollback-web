@@ -5,6 +5,8 @@ forto-app:
     repository: https://github.com/freight-hub/helm-rollback-web
   image:
     repository: europe-west1-docker.pkg.dev/forto-artifacts/docker/helm-rollback-web
+  infisical:
+    enabled: true
   app:
     env:
       HELM_ROLLBACK_WEB_OIDC_ISSUER: https://accounts.google.com
