@@ -8124,7 +8124,7 @@ regenerate@^1.4.2:
   resolved "https://registry.yarnpkg.com/regenerate/-/regenerate-1.4.2.tgz#b9346d8827e8f5a32f7ba29637d398b69014848a"
   integrity sha512-zrceR/XhGYU/d/opr2EKO7aRHUeiBI8qjtfHqADTwZd6Szfy16la6kqD0MIUs5z5hx6AaKa+PixpPrR289+I0A==
 
-regenerator-runtime@^0.13.4, regenerator-runtime@^0.13.9:
+regenerator-runtime@^0.13.9:
   version "0.13.9"
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.13.9.tgz#8925742a98ffd90814988d7566ad30ca3b263b52"
   integrity sha512-p3VT+cOEgxFsRRA9X4lkI1E+k2/CtnKtU4gcxyaCUreilL/vqI6CdZ3wxVUx3UOUg+gnUOQQcRI7BmSI656MYA==
@@ -9254,10 +9254,10 @@ webpack-dev-server@^5.2.0:
     webpack-dev-middleware "^7.4.2"
     ws "^8.18.0"
 
-webpack-manifest-plugin@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/webpack-manifest-plugin/-/webpack-manifest-plugin-5.0.0.tgz#084246c1f295d1b3222d36e955546433ca8df803"
-  integrity sha512-8RQfMAdc5Uw3QbCQ/CBV/AXqOR8mt03B6GJmRbhWopE8GzRfEpn+k0ZuWywxW+5QZsffhmFDY1J6ohqJo+eMuw==
+webpack-manifest-plugin@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/webpack-manifest-plugin/-/webpack-manifest-plugin-5.0.1.tgz#8d401fec7fa587cba5af561eb60e39d6a8050e8a"
+  integrity sha512-xTlX7dC3hrASixA2inuWFMz6qHsNi6MT3Uiqw621sJjRTShtpMjbDYhPPZBwWUKdIYKIjSq9em6+uzWayf38aQ==
   dependencies:
     tapable "^2.0.0"
     webpack-sources "^2.2.0"
