@@ -2594,10 +2594,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/node@*", "@types/node@^22.14.0":
-  version "22.14.0"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.14.0.tgz#d3bfa3936fef0dbacd79ea3eb17d521c628bb47e"
-  integrity sha512-Kmpl+z84ILoG+3T/zQFyAJsU6EPTmOCj8/2+83fSN6djd6I4o7uOuGIH6vq3PrjY5BGitSbFuMN18j3iknubbA==
+"@types/node@*", "@types/node@^22.14.1":
+  version "22.14.1"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.14.1.tgz#53b54585cec81c21eee3697521e31312d6ca1e6f"
+  integrity sha512-u0HuPQwe/dHrItgHHpmw3N2fYCR6x4ivMNbPHRkBVP4CvN+kiRrKHWk3i8tXiO/joPwXLMYvF9TTF0eqgHIuOw==
   dependencies:
     undici-types "~6.21.0"
 
@@ -7941,10 +7941,10 @@ range-parser@^1.2.1, range-parser@~1.2.1:
   resolved "https://registry.yarnpkg.com/range-parser/-/range-parser-1.2.1.tgz#3cf37023d199e1c24d1a55b84800c2f3e6468031"
   integrity sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==
 
-raviger@^4.2.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/raviger/-/raviger-4.2.0.tgz#367e0e19ff100a4fc4eb89c16d9cd53f21c03f3c"
-  integrity sha512-sReFkMZlj4IPsQ7d8f2ABzPOnG/C8V1pNX4YtoJRc+SkeWWiapTIllaGBHYS7lYR30SBFUIQm2QEI4IpesqD6g==
+raviger@^4.2.1:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/raviger/-/raviger-4.2.1.tgz#24f66416caa35423a465c3c0744734314731fde1"
+  integrity sha512-NOsFsNj+ukYA5FqrZzNBfSmbhzuiEsM/15CbffoPaQV4pM0n4RaBB2NzLElh3vbd9xasF+7AATjE6PA5koUURw==
 
 raw-body@2.5.2:
   version "2.5.2"
