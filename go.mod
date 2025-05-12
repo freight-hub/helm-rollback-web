@@ -1,6 +1,7 @@
 module helm-rollback-web
 
-go 1.21
+go 1.24.0
+
 toolchain go1.24.1
 
 require (
@@ -11,7 +12,7 @@ require (
 	github.com/gorilla/securecookie v1.1.2
 	github.com/gorilla/sessions v1.4.0
 	github.com/slack-go/slack v0.16.0
-	golang.org/x/oauth2 v0.29.0
+	golang.org/x/oauth2 v0.30.0
 	google.golang.org/api v0.231.0
 	gopkg.in/DataDog/dd-trace-go.v1 v1.72.2
 	k8s.io/apimachinery v0.33.0
