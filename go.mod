@@ -11,7 +11,7 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/securecookie v1.1.2
 	github.com/gorilla/sessions v1.4.0
-	github.com/slack-go/slack v0.16.0
+	github.com/slack-go/slack v0.17.0
 	golang.org/x/oauth2 v0.30.0
 	google.golang.org/api v0.233.0
 	gopkg.in/DataDog/dd-trace-go.v1 v1.73.1
@@ -56,7 +56,6 @@ require (
 	github.com/go-openapi/jsonpointer v0.21.0 // indirect
 	github.com/go-openapi/jsonreference v0.20.2 // indirect
 	github.com/go-openapi/swag v0.23.0 // indirect
-	github.com/go-test/deep v1.1.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/gnostic-models v0.6.9 // indirect
