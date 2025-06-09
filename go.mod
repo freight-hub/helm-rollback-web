@@ -11,7 +11,7 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/securecookie v1.1.2
 	github.com/gorilla/sessions v1.4.0
-	github.com/slack-go/slack v0.17.0
+	github.com/slack-go/slack v0.17.1
 	golang.org/x/oauth2 v0.30.0
 	google.golang.org/api v0.235.0
 	gopkg.in/DataDog/dd-trace-go.v1 v1.73.1
