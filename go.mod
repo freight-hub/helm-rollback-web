@@ -14,7 +14,7 @@ require (
 	github.com/slack-go/slack v0.17.2
 	golang.org/x/oauth2 v0.30.0
 	google.golang.org/api v0.239.0
-	gopkg.in/DataDog/dd-trace-go.v1 v1.74.0
+	gopkg.in/DataDog/dd-trace-go.v1 v1.74.2
 	k8s.io/apimachinery v0.33.2
 	k8s.io/client-go v0.33.2
 )
@@ -33,9 +33,9 @@ require (
 	github.com/DataDog/datadog-agent/pkg/util/scrubber v0.64.2 // indirect
 	github.com/DataDog/datadog-agent/pkg/version v0.64.2 // indirect
 	github.com/DataDog/datadog-go/v5 v5.6.0 // indirect
-	github.com/DataDog/dd-trace-go/contrib/gorilla/mux/v2 v2.0.0 // indirect
-	github.com/DataDog/dd-trace-go/contrib/net/http/v2 v2.0.0 // indirect
-	github.com/DataDog/dd-trace-go/v2 v2.0.0 // indirect
+	github.com/DataDog/dd-trace-go/contrib/gorilla/mux/v2 v2.0.1 // indirect
+	github.com/DataDog/dd-trace-go/contrib/net/http/v2 v2.0.1 // indirect
+	github.com/DataDog/dd-trace-go/v2 v2.0.1 // indirect
 	github.com/DataDog/go-libddwaf/v3 v3.5.4 // indirect
 	github.com/DataDog/go-runtime-metrics-internal v0.0.4-0.20250319104955-81009b9bad14 // indirect
 	github.com/DataDog/go-sqllexer v0.1.3 // indirect
