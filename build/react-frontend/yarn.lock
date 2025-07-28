@@ -6545,7 +6545,7 @@ jest-resolve-dependencies@30.0.5:
     jest-regex-util "30.0.1"
     jest-snapshot "30.0.5"
 
-jest-resolve@30.0.5:
+jest-resolve@30.0.5, jest-resolve@^30.0.5:
   version "30.0.5"
   resolved "https://registry.yarnpkg.com/jest-resolve/-/jest-resolve-30.0.5.tgz#f52f91600070b7073db465dc553eee5471ea8e06"
   integrity sha512-d+DjBQ1tIhdz91B79mywH5yYu76bZuE96sSbxj8MkjWVx5WNdt1deEFRONVL4UkKLSrAbMkdhb24XN691yDRHg==
@@ -6556,20 +6556,6 @@ jest-resolve@30.0.5:
     jest-pnp-resolver "^1.2.3"
     jest-util "30.0.5"
     jest-validate "30.0.5"
-    slash "^3.0.0"
-    unrs-resolver "^1.7.11"
-
-jest-resolve@^30.0.2:
-  version "30.0.2"
-  resolved "https://registry.yarnpkg.com/jest-resolve/-/jest-resolve-30.0.2.tgz#4b7c826a35e9657189568e4dafc0ba5f05868cf2"
-  integrity sha512-q/XT0XQvRemykZsvRopbG6FQUT6/ra+XV6rPijyjT6D0msOyCvR2A5PlWZLd+fH0U8XWKZfDiAgrUNDNX2BkCw==
-  dependencies:
-    chalk "^4.1.2"
-    graceful-fs "^4.2.11"
-    jest-haste-map "30.0.2"
-    jest-pnp-resolver "^1.2.3"
-    jest-util "30.0.2"
-    jest-validate "30.0.2"
     slash "^3.0.0"
     unrs-resolver "^1.7.11"
 
@@ -6691,18 +6677,6 @@ jest-util@^29.7.0:
     ci-info "^3.2.0"
     graceful-fs "^4.2.9"
     picomatch "^2.2.3"
-
-jest-validate@30.0.2:
-  version "30.0.2"
-  resolved "https://registry.yarnpkg.com/jest-validate/-/jest-validate-30.0.2.tgz#f62a2f0e014dac94747509ba8c2bcd5d48215b7f"
-  integrity sha512-noOvul+SFER4RIvNAwGn6nmV2fXqBq67j+hKGHKGFCmK4ks/Iy1FSrqQNBLGKlu4ZZIRL6Kg1U72N1nxuRCrGQ==
-  dependencies:
-    "@jest/get-type" "30.0.1"
-    "@jest/types" "30.0.1"
-    camelcase "^6.3.0"
-    chalk "^4.1.2"
-    leven "^3.1.0"
-    pretty-format "30.0.2"
 
 jest-validate@30.0.5:
   version "30.0.5"
