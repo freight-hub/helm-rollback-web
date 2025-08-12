@@ -15,9 +15,9 @@ import (
 	"os"
 	"time"
 
+	muxtrace "github.com/DataDog/dd-trace-go/contrib/gorilla/mux/v2"
 	logger "github.com/apsdehal/go-logger"
 	slack "github.com/slack-go/slack"
-	muxtrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/gorilla/mux"
 )
 
 const COOKIE_NAME = "helm-rollback-web"
