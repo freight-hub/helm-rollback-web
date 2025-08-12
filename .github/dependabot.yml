@@ -4,10 +4,14 @@ updates:
   - package-ecosystem: gomod
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
     labels:
       - golang
       - dependencies
+    groups:
+      dependencies:
+        patterns:
+        - "*"
 
   - package-ecosystem: npm
     directory: /build/react-frontend/
@@ -44,7 +48,7 @@ updates:
   - package-ecosystem: docker
     directory: /build/package/
     schedule:
-      interval: weekly
+      interval: monthly
     labels:
       - dockerfile
       - dependencies
