@@ -97,22 +97,20 @@ func HandleHTTP(port string) {
 	r.PathPrefix("/rollback/").HandlerFunc(spaHandler)
 
 	// Static content
-	// react is told that it'll be mounted at /assets
-	staticServer := http.StripPrefix("/assets", http.FileServer(http.Dir("./web/react-frontend")))
-	r.PathPrefix("/assets/static/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	assetsServer := http.StripPrefix("/assets", http.FileServer(http.Dir("./web/react-frontend/assets")))
+	r.PathPrefix("/assets/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// All files inside static are keyed by hash
 		w.Header().Add("Cache-Control", "public, max-age=604800, immutable")
 		// Also loosen caching on 404 to prevent mixed-fleet poisoning
-		staticServer.ServeHTTP(&utility.UncachedErrorWriter{
+		assetsServer.ServeHTTP(&utility.UncachedErrorWriter{
 			Original:     w,
 			ErrorCaching: "public, no-cache, max-age=60",
 		}, r)
 	})
-	r.PathPrefix("/assets/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// icons etc aren't hashed
-		w.Header().Add("Cache-Control", "public, max-age=300")
-		staticServer.ServeHTTP(w, r)
-	})
+
+	staticServer := http.FileServer(http.Dir("./web/react-frontend"))
+	r.HandleFunc("/manifest.json", staticServer.ServeHTTP)
+	r.HandleFunc("/robots.txt", staticServer.ServeHTTP)
 
 	http.Handle("/", r)
 	srv := &http.Server{
