@@ -111,6 +111,9 @@ func HandleHTTP(port string) {
 	staticServer := http.FileServer(http.Dir("./web/react-frontend"))
 	r.HandleFunc("/manifest.json", staticServer.ServeHTTP)
 	r.HandleFunc("/robots.txt", staticServer.ServeHTTP)
+	r.HandleFunc("/logo192.png", staticServer.ServeHTTP)
+	r.HandleFunc("/logo512.png", staticServer.ServeHTTP)
+	r.HandleFunc("/favicon.ico", staticServer.ServeHTTP)
 
 	http.Handle("/", r)
 	srv := &http.Server{
