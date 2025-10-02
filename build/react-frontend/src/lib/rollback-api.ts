@@ -158,18 +158,18 @@ export class MockRollbackApi implements RollbackApi {
 
 function getDefaultRollbackApi(): RollbackApi {
 
-  const { HelmRollbackApiEndpoint } = (window as any).localStorage ?? {};
+  const { HelmRollbackApiEndpoint } = globalThis.localStorage ?? {};
   if (typeof HelmRollbackApiEndpoint === 'string') {
     console.log('Rollback API: Using', { endpoint: HelmRollbackApiEndpoint }, 'from localStorage');
     return new HttpRollbackApi(HelmRollbackApiEndpoint);
   }
 
-  if (window.location.hostname === "localhost") {
+  if (globalThis.location.hostname === "localhost") {
     console.log('Rollback API: Using mock data, no network interactions enabled');
     return new MockRollbackApi();
   }
 
-  const endpoint = new URL("/", window.location.href).toString();
+  const endpoint = new URL("/", globalThis.location.href).toString();
   console.log('Rollback API: Using default', { endpoint }, 'from our origin');
   return new HttpRollbackApi(endpoint);
 }

@@ -22,7 +22,7 @@ export default function TextPage(props) {
         {props.title}
       </Typography>
 
-      <Typography variant="p" gutterBottom>
+      <Typography variant="body1" gutterBottom>
         {props.children}
       </Typography>
 
