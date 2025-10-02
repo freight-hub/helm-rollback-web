@@ -114,6 +114,7 @@ func HandleHTTP(port string) {
 	r.HandleFunc("/logo192.png", staticServer.ServeHTTP)
 	r.HandleFunc("/logo512.png", staticServer.ServeHTTP)
 	r.HandleFunc("/favicon.ico", staticServer.ServeHTTP)
+	r.HandleFunc("/error-page.css", staticServer.ServeHTTP)
 
 	http.Handle("/", r)
 	srv := &http.Server{
