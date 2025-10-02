@@ -1,4 +1,4 @@
-FROM golang:1.23.0-alpine AS builder
+FROM golang:1.25.1-alpine AS builder
 RUN apk add --no-cache make ca-certificates
 WORKDIR /src
 COPY Makefile go.mod go.sum ./
@@ -7,7 +7,7 @@ COPY internal/ ./internal/
 COPY *.go ./
 RUN make static
 
-FROM node:22.6.0-alpine AS frontend
+FROM node:24.9.0-alpine AS frontend
 WORKDIR /frontend
 COPY build/react-frontend/package.json build/react-frontend/yarn.lock ./
 RUN yarn install
@@ -15,7 +15,7 @@ COPY build/react-frontend ./
 RUN yarn build
 
 # https://hub.docker.com/r/alpine/helm/tags
-FROM alpine/helm:3.15.4 AS helm
+FROM alpine/helm:3.19.0 AS helm
 
 FROM scratch AS final
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/

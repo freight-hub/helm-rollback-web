@@ -5,10 +5,6 @@
   "type": "module",
   "devDependencies": {
     "@eslint/js": "^9.9.0",
-    "@fontsource/inter": "^5.0.20",
-    "@material-ui/core": "^4.12.4",
-    "@material-ui/icons": "^4.11.3",
-    "@types/jest": "^29.5.12",
     "@types/node": "^22.4.1",
     "@types/react-dom": "^18.3.0",
     "@types/react": "^18.3.3",
@@ -16,14 +12,18 @@
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",
     "eslint": "^9.9.0",
-    "jest-environment-jsdom": "^29.7.0",
-    "raviger": "^4.1.2",
-    "react-dom": "^18.3.1",
-    "react-google-button": "^0.8.0",
-    "react": "^18.3.1",
     "typescript-eslint": "^8.1.0",
     "typescript": "^5.5.4",
     "vite": "^5.4.1"
+  },
+  "dependencies": {
+    "@fontsource/inter": "^5.0.20",
+    "@material-ui/core": "^4.12.4",
+    "@material-ui/icons": "^4.11.3",
+    "raviger": "^5.1.0",
+    "react-dom": "^18.3.1",
+    "react-google-button": "^0.8.0",
+    "react": "^18.3.1"
   },
   "scripts": {
     "lint": "eslint",
@@ -31,7 +31,5 @@
     "build": "vite build",
     "serve": "vite preview"
   },
-  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610",
-  "dependencies": {
-  }
+  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
 }

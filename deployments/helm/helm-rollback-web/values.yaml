@@ -5,6 +5,8 @@ forto-app:
     repository: https://github.com/freight-hub/helm-rollback-web
   image:
     repository: europe-west1-docker.pkg.dev/forto-artifacts/docker/helm-rollback-web
+  infisical:
+    enabled: true
   app:
     env:
       HELM_ROLLBACK_WEB_OIDC_ISSUER: https://accounts.google.com
@@ -21,9 +23,9 @@ forto-app:
             probePathLiveness: "/"
           preStopSleepDelay: 0
           cpuLimit: 1000m
-          memLimit: 512Mi
+          memLimit: 768Mi
           cpuRequest: 10m
-          memRequest: 512Mi
+          memRequest: 768Mi
           containerPort: 8080
         edgeStack:
           enabled: true

@@ -4,10 +4,14 @@ updates:
   - package-ecosystem: gomod
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
     labels:
       - golang
       - dependencies
+    groups:
+      dependencies:
+        patterns:
+        - "*"
 
   - package-ecosystem: npm
     directory: /build/react-frontend/
@@ -23,6 +27,20 @@ updates:
     - dependency-name: 'camelcase'
       versions:
       - '>= 7'
+
+    - dependency-name: 'react'
+      versions:
+        - '>= 19'
+    - dependency-name: 'react-dom'
+      versions:
+        - '>= 19'
+    - dependency-name: '@types/react'
+      versions:
+        - '>= 19'
+    - dependency-name: '@types/react-dom'
+      versions:
+        - '>= 19'
+
     groups:
       dev-deps:
         dependency-type: development
@@ -30,7 +48,7 @@ updates:
   - package-ecosystem: docker
     directory: /build/package/
     schedule:
-      interval: weekly
+      interval: monthly
     labels:
       - dockerfile
       - dependencies
