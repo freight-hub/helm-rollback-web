@@ -14,6 +14,11 @@ updates:
         - "*"
 
   - package-ecosystem: npm
+    cooldown:
+      default-days: 7
+      exclude:
+        - '@forto-dev/*'
+        - '@freighthub/*'
     directory: /build/react-frontend/
     schedule:
       interval: weekly
