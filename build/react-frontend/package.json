@@ -20,7 +20,7 @@
     "@fontsource/inter": "^5.0.20",
     "@material-ui/core": "^4.12.4",
     "@material-ui/icons": "^4.11.3",
-    "raviger": "^5.1.0",
+    "raviger": "^5.2.0",
     "react-dom": "^18.3.1",
     "react-google-button": "^0.8.0",
     "react": "^18.3.1"

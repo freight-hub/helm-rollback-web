@@ -1637,10 +1637,10 @@ punycode@^2.1.0:
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.1.1.tgz#b58b010ac40c22c5657616c8d2c2c02c7bf479ec"
   integrity sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==
 
-raviger@^5.1.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/raviger/-/raviger-5.1.0.tgz#2c57651b41b380df93a425cd211dd88a845466a4"
-  integrity sha512-RAFsSlmcpJAr+9LtRiEeTREJIEVKiraZ3dhV/D+Ea4//iy/VMC82oUkJjBOXIxMuQ5telQNok25u3ZLvYO9Vig==
+raviger@^5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/raviger/-/raviger-5.2.0.tgz#024073b17f48ca6e4b8905a800efb11573879e75"
+  integrity sha512-9xr+OKl81gyuBY0uHpjPF4utEqu1JV7B3f1H7IxvWEc+GDzwreJGWPfsKH8Dzgggpzp7Cr1VJhpbZxkhGB1Hxg==
 
 react-dom@^18.3.1:
   version "18.3.1"
