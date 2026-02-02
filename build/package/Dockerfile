@@ -15,7 +15,7 @@ COPY build/react-frontend ./
 RUN yarn build
 
 # https://hub.docker.com/r/alpine/helm/tags
-FROM alpine/helm:3.19.0 AS helm
+FROM alpine/helm:4.1.0 AS helm
 
 FROM scratch AS final
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
