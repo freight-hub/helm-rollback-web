@@ -42,6 +42,7 @@ export default function RollBackDetails(props) {
   const [ commandText, setCommandText ] = React.useState('');
   useEffect(() => {
     if (commandState !== 'triggered') return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCommandState('running');
 
     DefaultRollbackApi

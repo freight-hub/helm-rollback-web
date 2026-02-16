@@ -6,10 +6,25 @@ executors:
   build:
     docker:
       - image: cimg/base:2024.06
-
+  node:
+    docker:
+      - image: cimg/node:25.5
+jobs:
+  lint:
+    executor: node
+    steps:
+      - checkout
+      - run:
+          working_directory: build/react-frontend
+          command: yarn
+      - run:
+          working_directory: build/react-frontend
+          command: yarn lint
 workflows:
   ci-cd:
     jobs:
+
+      - lint
 
       - gcp-gcr/build-and-push-image:
           name: Build Image
@@ -62,6 +77,7 @@ workflows:
               - github-oidc
           requires:
             - Build Image
+            - lint
           filters:
             branches:
               ignore:
@@ -78,6 +94,7 @@ workflows:
               - github-oidc
           requires:
             - Build Image
+            - lint
           filters:
             branches:
               only:

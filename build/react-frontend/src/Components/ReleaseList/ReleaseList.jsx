@@ -57,8 +57,7 @@ export default function ReleaseList(props) {
     });
   }, [ setReleasesState ]);
 
-  const [ nsList, setNsList ] = React.useState([]);
-  useEffect(() => {
+  const nsList = useMemo(() => {
     const namespaceMap = releasesState.list.reduce((map, rel) => {
       const existing = map.get(rel.namespace);
       if (!existing || existing.updated < rel.updated) {
@@ -66,8 +65,8 @@ export default function ReleaseList(props) {
       }
       return map;
     }, new Map());
-    setNsList(Array.from(namespaceMap.values()));
-  }, [ setNsList, releasesState ]);
+    return Array.from(namespaceMap.values());
+  }, [ releasesState ]);
 
   const releases = releasesState.list;
 
