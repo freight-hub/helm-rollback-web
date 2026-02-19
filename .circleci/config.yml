@@ -14,6 +14,7 @@ jobs:
     executor: node
     steps:
       - checkout
+      - run: npm i -g corepack --force
       - run:
           working_directory: build/react-frontend
           command: yarn
