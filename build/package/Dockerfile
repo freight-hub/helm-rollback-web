@@ -8,7 +8,7 @@ COPY *.go ./
 RUN make static
 
 FROM node:25.5.0-alpine AS frontend
-RUN npm i -g corepack && corepack enable
+RUN npm i -g corepack --force
 WORKDIR /frontend
 COPY build/react-frontend/package.json build/react-frontend/yarn.lock ./
 RUN yarn install
