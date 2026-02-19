@@ -2051,6 +2051,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"globals@npm:^17.3.0":
+  version: 17.3.0
+  resolution: "globals@npm:17.3.0"
+  checksum: 10c0/7f21443ecaa60c6e9ff56d9fb6f10a9b5f9514e7f22e5392f715472bb220ce31c865ebf414a32695150e733fb3e1013e6322dbce70fddd1e066f372b8d55a4b8
+  languageName: node
+  linkType: hard
+
 "graceful-fs@npm:^4.2.6":
   version: 4.2.11
   resolution: "graceful-fs@npm:4.2.11"
@@ -2073,6 +2080,7 @@ __metadata:
     eslint: "npm:^10.0.0"
     eslint-plugin-react-hooks: "npm:^7.0.1"
     eslint-plugin-react-refresh: "npm:^0.5.0"
+    globals: "npm:^17.3.0"
     raviger: "npm:^5.2.1"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
