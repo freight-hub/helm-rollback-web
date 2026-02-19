@@ -10,7 +10,7 @@ RUN make static
 FROM node:25.5.0-alpine AS frontend
 RUN npm i -g corepack --force
 WORKDIR /frontend
-COPY build/react-frontend/package.json build/react-frontend/yarn.lock ./
+COPY build/react-frontend/package.json build/react-frontend/yarn.lock build/react-frontend/.yarnrc.yml ./
 RUN yarn install
 COPY build/react-frontend ./
 RUN yarn build
