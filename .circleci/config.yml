@@ -2,7 +2,6 @@ version: 2.1
 orbs:
   gcp-gcr: circleci/gcp-gcr@0.16
   helm3-deploy: freighthub/helm3-deploy@2.0
-  nodejs: freighthub/nodejs@1.1
 executors:
   build:
     docker:
