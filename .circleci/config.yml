@@ -2,6 +2,7 @@ version: 2.1
 orbs:
   gcp-gcr: circleci/gcp-gcr@0.16
   helm3-deploy: freighthub/helm3-deploy@2.0
+  helm-push: freighthub/helm-push@0.1
 executors:
   build:
     docker:
@@ -66,6 +67,12 @@ workflows:
             branches:
               ignore:
                 - main
+
+      - helm-push/to-artifact-registry:
+          name: push-helm-chart
+          context: gcp-oidc-artifact-registry
+          requires:
+            - Build Image
 
       - helm3-deploy/main-deploy:
           name: Deploy Sandbox
