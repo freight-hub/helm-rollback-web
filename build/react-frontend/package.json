@@ -8,14 +8,14 @@
     "@types/node": "^25.5.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^6.0.1",
+    "@vitejs/plugin-react": "^5",
     "eslint": "^10.0.3",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.57.0",
-    "vite": "^8.0.0"
+    "vite": "^7"
   },
   "dependencies": {
     "@fontsource/inter": "^5.0.20",

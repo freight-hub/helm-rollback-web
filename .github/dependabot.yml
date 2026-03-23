@@ -28,6 +28,15 @@ updates:
       - dependencies
 
     ignore:
+
+    # Vite 8 breaks the build somehow
+    - dependency-name: 'vite'
+      versions:
+        - '>= 8'
+    - dependency-name: '@vitejs/plugin-react'
+      versions:
+        - '>= 6'
+
     # Packages requiring ESM imports
     - dependency-name: 'camelcase'
       versions:
