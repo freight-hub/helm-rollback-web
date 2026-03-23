@@ -2083,7 +2083,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:^7.0.1"
     eslint-plugin-react-refresh: "npm:^0.5.2"
     globals: "npm:^17.4.0"
-    raviger: "npm:^5.2.1"
+    raviger: "npm:^5.3.0"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
     react-google-button: "npm:^0.8.0"
@@ -2745,12 +2745,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"raviger@npm:^5.2.1":
-  version: 5.2.1
-  resolution: "raviger@npm:5.2.1"
+"raviger@npm:^5.3.0":
+  version: 5.3.0
+  resolution: "raviger@npm:5.3.0"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/63916548d14191ac8beb9344c73391db92f3f5c90d72e4b3022f09d6028635adbb67a74642444e0b4e030777bb91415f03660eda2693eca828cfc81344c043d1
+  checksum: 10c0/bfad136d05b14783e18ad35e5eaf28a34dea1f5015099dfa524cb16f958bd527b357dcd1e8dd3de9394d58f8edcbe270affed367396da2c01f9a823ab0000d28
   languageName: node
   linkType: hard
 
