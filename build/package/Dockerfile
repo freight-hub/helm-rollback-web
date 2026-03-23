@@ -7,7 +7,7 @@ COPY internal/ ./internal/
 COPY *.go ./
 RUN make static
 
-FROM node:25.7.0-alpine AS frontend
+FROM node:25.8.1-alpine AS frontend
 RUN npm i -g corepack --force
 WORKDIR /frontend
 COPY build/react-frontend/package.json build/react-frontend/yarn.lock build/react-frontend/.yarnrc.yml ./
