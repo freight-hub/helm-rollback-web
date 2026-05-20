@@ -105,7 +105,9 @@ export class MockRollbackApi implements RollbackApi {
       { "name": "currency-core", "namespace": "yarrrnicorns", "revision": "4", "updated": "2021-03-01T08:45:44.291841847Z", "status": "deployed", "chart": "currency-core-0.1.0", "app_version": "ab46f0e145de72be0ad855fd6fc8ca3c2ac39ad1" },
       { "name": "customer-core", "namespace": "nexus", "revision": "4", "updated": "2021-03-02T13:57:06.443292751Z", "status": "deployed", "chart": "customer-core-0.1.0", "app_version": "22002d5f9ca8771dcf6ab9ea864243f814c54f0b" },
       { "name": "datadog", "namespace": "datadog", "revision": "28", "updated": "2020-04-25T12:02:35.302967792Z", "status": "deployed", "chart": "datadog-2.0.14", "app_version": "7" },
+      { "name": "dogfood-core", "namespace": "sre-tooling", "revision": "189", "updated": "2021-03-04T16:03:00.000000000Z", "status": "deployed", "chart": "dogfood-core-0.0.0+ccc333", "app_version": "ccc333ddd444eee555" },
       { "name": "external-dns", "namespace": "sre-tooling", "revision": "16", "updated": "2020-04-25T12:02:35.0378666Z", "status": "failed", "chart": "external-dns-2.20.15", "app_version": "0.7.1" },
+      { "name": "helm-rollback-web", "namespace": "sre-tooling", "revision": "42", "updated": "2021-03-04T10:00:00.000000000Z", "status": "deployed", "chart": "helm-rollback-web-0.1.0", "app_version": "abc123def456" },
       { "name": "foreign-currency-exchange-core", "namespace": "yarrrnicorns", "revision": "5", "updated": "2021-03-04T16:30:43.515086591Z", "status": "deployed", "chart": "foreign-currency-exchange-core-0.1.0", "app_version": "2ac86025a7ac3498eea512c18bbdd3fc4da709e8" },
       { "name": "fortox-backend", "namespace": "pomato", "revision": "1074", "updated": new Date().toISOString(), "status": "deployed", "chart": "fortox-backend-0.1.0", "app_version": "680972d0ba47bcbcf7fa062743fbc0aea400e3fc" },
       { "name": "freight-gate", "namespace": "tnt", "revision": "12", "updated": "2021-03-04T14:17:38.865137759Z", "status": "deployed", "chart": "freight-gate-0.1.0", "app_version": "050ea74ce57e55467d89dd7104ccec8eaa40f136" },
@@ -133,6 +135,14 @@ export class MockRollbackApi implements RollbackApi {
     const latestInfo = this.rawReleaseList.find(x =>
       x.namespace === namespace && x.name === releaseName
     );
+    // TEST ONLY: simulate a Flux-deployed release to exercise the banner
+    if (namespace === 'sre-tooling' && releaseName === 'dogfood-core') {
+      return parseDates([
+        { chart: `${releaseName}-0.0.0+aaa111`, revision: 11, updated: "2020-10-07T12:48:20.868948428Z", status: "superseded", app_version: "aaa111bbb222ccc333", description: "Upgrade complete" },
+        { chart: `${releaseName}-0.0.0+bbb222`, revision: 12, updated: "2020-10-09T13:49:15.64685762Z", status: "superseded", app_version: "bbb222ccc333ddd444", description: "Upgrade complete" },
+        { chart: `${releaseName}-0.0.0+ccc333`, revision: 13, updated: "2021-01-28T08:48:47.189032409Z", status: "deployed", app_version: "ccc333ddd444eee555", description: "Upgrade complete" },
+      ]);
+    }
     const chart = latestInfo?.chart || `${releaseName}-0.1.0`;
     const status = latestInfo?.status || `deployed`;
 

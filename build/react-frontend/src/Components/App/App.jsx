@@ -14,14 +14,6 @@ import ReleaseList from '../ReleaseList/ReleaseList.jsx';
 import RollBackDetails from '../RollBackDetails/RollBackDetails.jsx';
 import TextPage from '../TextPage/TextPage.jsx';
 
-const routes = {
-  '/': () => <ReleaseList />,
-  '/all-releases': () => <ReleaseList allReleases={true} />,
-  '/namespace/:namespace': args => <ReleaseList {...args} />,
-  '/release/:namespace/:releaseName': args => <ReleaseDetails {...args} />,
-  '/rollback/:namespace/:releaseName/:revision': args => <RollBackDetails {...args} />,
-};
-
 const useStyles = makeStyles({
   footerIconWrap: {
     margin: '5em 1em',
@@ -34,13 +26,22 @@ const useStyles = makeStyles({
 });
 
 export default function App() {
-  const routeResult = useRoutes(routes);
   const classes = useStyles();
 
   const [ userData, setUserData ] = useState({});
   useEffect(() => {
     DefaultRollbackApi.getLoginStatus().then(setUserData);
   }, [ setUserData ]);
+
+  const routes = {
+    '/': () => <ReleaseList />,
+    '/all-releases': () => <ReleaseList allReleases={true} />,
+    '/namespace/:namespace': args => <ReleaseList {...args} />,
+    '/release/:namespace/:releaseName': args => <ReleaseDetails {...args} environment={userData.environment} />,
+    '/rollback/:namespace/:releaseName/:revision': args => <RollBackDetails {...args} environment={userData.environment} />,
+  };
+
+  const routeResult = useRoutes(routes);
 
   const hasUser = typeof userData?.email === 'string';
 

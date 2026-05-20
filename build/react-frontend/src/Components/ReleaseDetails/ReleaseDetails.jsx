@@ -1,5 +1,6 @@
 import { Button, Table, TableBody, TableCell, TableContainer, TableRow, Paper, Toolbar, Typography, CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import FluxBanner from '../FluxBanner/FluxBanner.jsx';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { Link as RouterLink } from 'raviger';
 import PropTypes from 'prop-types';
@@ -24,7 +25,7 @@ const headCells = [
 const headCellsWithoutChart = headCells.filter(x => x.id !== 'chart');
 
 export default function ReleaseDetails(props) {
-  const { namespace, releaseName } = props;
+  const { namespace, releaseName, environment } = props;
   useTitle(`${releaseName} - ${namespace} - Helm Rollback`);
 
   const useStyles = makeStyles({
@@ -85,6 +86,7 @@ export default function ReleaseDetails(props) {
   return (
     <TableContainer component={Paper}>
       {toolbar}
+      <FluxBanner namespace={namespace} releaseName={releaseName} environment={environment} revisions={releasesState.revisions} />
       <Table className={classes.table} size="small" aria-label="simple table">
         <EnhancedTableHead
             headCells={allSameChart ? headCellsWithoutChart : headCells}
@@ -120,4 +122,5 @@ export default function ReleaseDetails(props) {
 ReleaseDetails.propTypes = {
   namespace: PropTypes.string.isRequired,
   releaseName: PropTypes.string.isRequired,
+  environment: PropTypes.string,
 };
