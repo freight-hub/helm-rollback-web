@@ -1,4 +1,5 @@
 import { Paper, Button, CircularProgress, Typography } from '@material-ui/core';
+import FluxBanner from '../FluxBanner/FluxBanner.jsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Link as RouterLink } from 'raviger';
 import PropTypes from 'prop-types';
@@ -26,7 +27,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function RollBackDetails(props) {
-  const { namespace, releaseName, revision } = props;
+  const { namespace, releaseName, revision, environment } = props;
   useTitle(`${releaseName} - ${namespace} - Helm Rollback`);
 
   const theme = useTheme()
@@ -115,6 +116,10 @@ export default function RollBackDetails(props) {
   return (
     <div className={classes.grid}>
 
+      <div style={{ gridColumn: '1 / -1' }}>
+        <FluxBanner namespace={namespace} releaseName={releaseName} environment={environment} standalone />
+      </div>
+
       <Paper className={classes.paper}>
         <div className={classes.paperPadding}>
 
@@ -158,4 +163,5 @@ RollBackDetails.propTypes = {
   namespace: PropTypes.string.isRequired,
   releaseName: PropTypes.string.isRequired,
   revision: PropTypes.string.isRequired,
+  environment: PropTypes.string,
 };
