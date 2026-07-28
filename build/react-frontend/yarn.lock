@@ -557,10 +557,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fontsource/inter@npm:^5.0.20":
-  version: 5.2.8
-  resolution: "@fontsource/inter@npm:5.2.8"
-  checksum: 10c0/f737dd50005e4809887ba55ae0c9b7174216d6d14875d17a4fbb9a0ad75dec4265928b805a43fe16a23f14a878f1974a398bbfc84ad65c79fc4d4b9c3ea154e1
+"@fontsource/inter@npm:^5.3.0":
+  version: 5.3.0
+  resolution: "@fontsource/inter@npm:5.3.0"
+  checksum: 10c0/568601c10c83601c23005f8cd7434499df6e007eaa22c4dabbb1dcae327cc8e4a148ece8d4a4edaa8bafc5d2371ea97a37d1cc91ffbed77a43e2d8c15a6e831b
   languageName: node
   linkType: hard
 
@@ -1909,7 +1909,7 @@ __metadata:
   resolution: "helm-rollback-web-frontend@workspace:."
   dependencies:
     "@eslint/js": "npm:^10.0.1"
-    "@fontsource/inter": "npm:^5.0.20"
+    "@fontsource/inter": "npm:^5.3.0"
     "@material-ui/core": "npm:^4.12.4"
     "@material-ui/icons": "npm:^4.11.3"
     "@types/node": "npm:^26.1.1"
