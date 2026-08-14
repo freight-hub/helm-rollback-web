@@ -5,9 +5,11 @@ orbs:
   helm-push: freighthub/helm-push@0.1
 executors:
   build:
+    resource_class: medium.gen2
     docker:
-      - image: cimg/base:2024.06
+      - image: cimg/base:2026.08
   node:
+    resource_class: medium.gen2
     docker:
       - image: cimg/node:25.5
 jobs:
