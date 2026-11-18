@@ -1,3 +1,8 @@
+/** Which pipeline deploys a release, read from its EnvironmentComponent in the cluster. */
+export type DeployerInfo =
+  | { deployedBy: 'flux' | 'circleci' | 'other'; component: string }
+  | { deployedBy: 'none' };
+
 export interface RollbackApi {
 
   getLoginStatus(): Promise<{
@@ -28,6 +33,11 @@ export interface RollbackApi {
     app_version: string;
     description: string;
   }>>;
+
+  getDeployer(
+    namespace: string,
+    releaseName: string,
+  ): Promise<DeployerInfo>;
 
   performRollback(
     namespace: string,
@@ -75,6 +85,12 @@ export class HttpRollbackApi implements RollbackApi {
       description: string;
     }[];
     return parseDates(raw);
+  }
+
+  async getDeployer(namespace: string, releaseName: string): Promise<DeployerInfo> {
+    const resp = await this.fetch(`helm-deployer/${namespace}/${releaseName}`);
+    if (!resp.ok) throw new Error(`Deployer lookup failed with HTTP ${resp.status}`);
+    return await resp.json() as DeployerInfo;
   }
 
   async performRollback(namespace: string, releaseName: string, targetRevision: number) {
@@ -135,7 +151,7 @@ export class MockRollbackApi implements RollbackApi {
     const latestInfo = this.rawReleaseList.find(x =>
       x.namespace === namespace && x.name === releaseName
     );
-    // TEST ONLY: simulate a Flux-deployed release to exercise the banner
+    // Mock a Flux-deployed release: its chart version changes on every deploy
     if (namespace === 'sre-tooling' && releaseName === 'dogfood-core') {
       return parseDates([
         { chart: `${releaseName}-0.0.0+aaa111`, revision: 11, updated: "2020-10-07T12:48:20.868948428Z", status: "superseded", app_version: "aaa111bbb222ccc333", description: "Upgrade complete" },
@@ -158,6 +174,15 @@ export class MockRollbackApi implements RollbackApi {
       { chart, "revision": 12, "updated": "2020-10-09T13:49:15.64685762Z", "status": "superseded", "app_version": "6368e944160609e840b120666c0494dd3e1c8f3c", "description": "Upgrade complete" },
       { chart, "revision": 13, "updated": "2021-01-28T08:48:47.189032409Z", "status": status, "app_version": "67e9b20ce66cabc65f6d85a6ab0072ee90a966d8", "description": "Upgrade complete" },
     ]);
+  }
+
+  async getDeployer(namespace: string, releaseName: string): Promise<DeployerInfo> {
+    await new Promise(ok => setTimeout(ok, 200));
+    if (namespace === 'sre-tooling' && releaseName === 'dogfood-core') {
+      return { deployedBy: 'flux', component: 'dogfood' };
+    }
+    if (namespace === 'datadog') return { deployedBy: 'none' };
+    return { deployedBy: 'circleci', component: releaseName };
   }
 
   async performRollback() {
