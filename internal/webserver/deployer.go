@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -33,6 +34,8 @@ const (
 	labelReleaseNamespace = "env.forto.com/release-namespace"
 )
 
+const lookupTimeout = 5 * time.Second
+
 var environmentComponentGVR = schema.GroupVersionResource{
 	Group:    "forto.com",
 	Version:  "v1alpha1",
@@ -48,6 +51,11 @@ type DeployerInfo struct {
 // lookupDeployer finds the EnvironmentComponent for a Helm release. Temp deploys
 // are components too, with their own release name, so they are found the same way.
 func lookupDeployer(ctx context.Context, client dynamic.Interface, namespace, releaseName string) (DeployerInfo, error) {
+	// Well inside the server's 15s WriteTimeout, so a slow lookup ends in the
+	// refusal path instead of starting helm after the client has given up.
+	ctx, cancel := context.WithTimeout(ctx, lookupTimeout)
+	defer cancel()
+
 	selector, err := labels.ValidatedSelectorFromSet(labels.Set{
 		labelReleaseNamespace: namespace,
 		labelReleaseName:      releaseName,

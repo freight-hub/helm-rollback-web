@@ -13,20 +13,21 @@ export function canRollBack(state: DeployerState): boolean {
 }
 
 export function useDeployer(namespace: string, releaseName: string): DeployerState {
-  const [state, setState] = useState<DeployerState>({ status: 'loading' });
+  const key = `${namespace}/${releaseName}`;
+  const [result, setResult] = useState<{ key: string; state: DeployerState } | null>(null);
 
   useEffect(() => {
     let active = true;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setState({ status: 'loading' });
     DefaultRollbackApi.getDeployer(namespace, releaseName)
-      .then(info => { if (active) setState({ status: 'ok', info }); })
+      .then(info => { if (active) setResult({ key, state: { status: 'ok', info } }); })
       .catch(e => {
         console.error('Deployer lookup failed', e);
-        if (active) setState({ status: 'error' });
+        if (active) setResult({ key, state: { status: 'error' } });
       });
     return () => { active = false; };
-  }, [namespace, releaseName]);
+  }, [key, namespace, releaseName]);
 
-  return state;
+  // A result for another release must never show, even for the one render
+  // before the effect for this release runs.
+  return result?.key === key ? result.state : { status: 'loading' };
 }

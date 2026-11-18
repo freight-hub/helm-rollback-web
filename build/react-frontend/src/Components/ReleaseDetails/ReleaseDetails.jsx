@@ -78,6 +78,7 @@ export default function ReleaseDetails(props) {
     return (
       <Paper>
         {toolbar}
+        <FluxBanner deployer={deployer} environment={environment} />
         <div className={classes.spinnerWrap}>
           <CircularProgress size="5em" />
         </div>

@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"testing"
 
@@ -43,7 +44,18 @@ func TestHelmRollBackHandlerRefusesWithoutRunningHelm(t *testing.T) {
 	dir := t.TempDir()
 	marker := filepath.Join(dir, "helm-ran")
 	helmCommand = filepath.Join(dir, "helm")
-	if err := os.WriteFile(helmCommand, []byte("#!/bin/sh\ntouch "+marker+"\n"), 0o755); err != nil {
+	t.Setenv("HELM_RAN_MARKER", marker)
+	if err := os.WriteFile(helmCommand, []byte("#!/bin/sh\ntouch \"$HELM_RAN_MARKER\"\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	// Prove the stand-in leaves the marker, so its absence below means helm never ran.
+	if err := exec.Command(helmCommand).Run(); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(marker); err != nil {
+		t.Fatalf("stand-in helm did not write its marker: %v", err)
+	}
+	if err := os.Remove(marker); err != nil {
 		t.Fatal(err)
 	}
 
