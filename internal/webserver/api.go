@@ -118,6 +118,30 @@ func HelmHistoryHandler(response http.ResponseWriter, request *http.Request) {
 	fmt.Fprint(response, string(out))
 }
 
+func HelmDeployerHandler(response http.ResponseWriter, request *http.Request) {
+	response.Header().Add("Cache-Control", "no-store")
+
+	vars := mux.Vars(request)
+	session, _ := sessionStorage.Get(request, COOKIE_NAME)
+	if session.Values["userEmail"] == nil {
+		UnauthorizedHandler(response, request)
+		return
+	}
+	userEmail := session.Values["userEmail"].(string)
+	if !utility.UserIsAllowed(userEmail) {
+		UnauthorizedHandler(response, request)
+		return
+	}
+	info, err := lookupDeployer(request.Context(), dynamicClient, vars["namespace"], vars["releasename"])
+	if err != nil {
+		log.ErrorF("Could not look up the deployer of release %s in namespace %s: %s", vars["releasename"], vars["namespace"], err.Error())
+		ServerErrorHandler(response, request)
+		return
+	}
+	response.Header().Add("Content-type", "application/json")
+	json.NewEncoder(response).Encode(info)
+}
+
 func HelmRollBackHandler(response http.ResponseWriter, request *http.Request) {
 	response.Header().Add("Cache-Control", "no-store")
 
@@ -130,8 +154,21 @@ func HelmRollBackHandler(response http.ResponseWriter, request *http.Request) {
 	}
 	userEmail := session.Values["userEmail"].(string)
 	if !utility.UserIsAllowed(userEmail) {
-		log.WarningF("User `%s` is not allowed to rollback!")
+		log.WarningF("User `%s` is not allowed to rollback!", userEmail)
 		UnauthorizedHandler(response, request)
+		return
+	}
+
+	environment := os.Getenv("HELM_ROLLBACK_WEB_ENVIRONMENT")
+	info, lookupErr := lookupDeployer(request.Context(), dynamicClient, vars["namespace"], vars["releasename"])
+	if lookupErr != nil {
+		log.ErrorF("Could not look up the deployer of release %s in namespace %s: %s", vars["releasename"], vars["namespace"], lookupErr.Error())
+	}
+	if refuse, status, message := rollbackRefusal(info, lookupErr, environment, vars["releasename"]); refuse {
+		log.WarningF("Refused rollback of release %s in namespace %s (deployed by %q)", vars["releasename"], vars["namespace"], info.DeployedBy)
+		response.Header().Add("Content-type", "text/plain")
+		response.WriteHeader(status)
+		fmt.Fprint(response, message)
 		return
 	}
 	log.Info("Executing `" + helmCommand + " rollback --namespace " + vars["namespace"] + " " + vars["releasename"] + " " + vars["revision"] + " (by " + userEmail + ")")
