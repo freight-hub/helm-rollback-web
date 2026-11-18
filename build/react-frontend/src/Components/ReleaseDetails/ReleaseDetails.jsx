@@ -8,6 +8,7 @@ import React, { useEffect } from 'react';
 
 import { useTitle } from "../../lib/use-title";
 import { DefaultRollbackApi } from "../../lib/rollback-api";
+import { canRollBack, useDeployer } from "../../lib/use-deployer";
 import { stableSort, getComparator } from '../../lib/sorting.ts';
 import EnhancedTableHead from '../EnhancedTableHead/EnhancedTableHead.jsx';
 import StatusIcon from '../StatusIcon/StatusIcon.tsx';
@@ -39,6 +40,7 @@ export default function ReleaseDetails(props) {
   const [ order, setOrder ] = React.useState('desc');
   const [ orderBy, setOrderBy ] = React.useState('revision');
   const classes = useStyles();
+  const deployer = useDeployer(namespace, releaseName);
 
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -76,6 +78,7 @@ export default function ReleaseDetails(props) {
     return (
       <Paper>
         {toolbar}
+        <FluxBanner deployer={deployer} environment={environment} />
         <div className={classes.spinnerWrap}>
           <CircularProgress size="5em" />
         </div>
@@ -86,7 +89,7 @@ export default function ReleaseDetails(props) {
   return (
     <TableContainer component={Paper}>
       {toolbar}
-      <FluxBanner namespace={namespace} releaseName={releaseName} environment={environment} revisions={releasesState.revisions} />
+      <FluxBanner deployer={deployer} environment={environment} />
       <Table className={classes.table} size="small" aria-label="simple table">
         <EnhancedTableHead
             headCells={allSameChart ? headCellsWithoutChart : headCells}
@@ -110,6 +113,7 @@ export default function ReleaseDetails(props) {
               <TableCell>
                 <Button variant="contained" color="primary" component={RouterLink}
                     href={`/rollback/${namespace}/${releaseName}/${row.revision}`}
+                    disabled={!canRollBack(deployer)}
                   ><ChevronRightIcon /></Button>
               </TableCell>
             </TableRow>

@@ -7,6 +7,7 @@ import React, { useEffect } from 'react';
 
 import { useTitle } from "../../lib/use-title";
 import { DefaultRollbackApi } from "../../lib/rollback-api";
+import { canRollBack, useDeployer } from "../../lib/use-deployer";
 
 const useStyles = makeStyles(theme => ({
   grid: {
@@ -32,11 +33,13 @@ export default function RollBackDetails(props) {
 
   const theme = useTheme()
   const classes = useStyles(theme);
+  const deployer = useDeployer(namespace, releaseName);
+  const rollbackAllowed = canRollBack(deployer);
 
   // idle --UI-> triggered --EFFECT-> running --API-> done
   const [ commandState, setCommandState ] = React.useState('idle');
   function triggerRollback() {
-    if (commandState !== 'idle') return;
+    if (commandState !== 'idle' || !rollbackAllowed) return;
     setCommandState('triggered');
   }
 
@@ -63,6 +66,21 @@ export default function RollBackDetails(props) {
   function RollbackCard () { switch (commandState) {
 
     case 'idle': {
+      if (deployer.status === 'loading') {
+        return (
+          <div style={{ textAlign: 'center' }}>
+            <p>Checking how this service is deployed...</p>
+            <CircularProgress size="3em" />
+          </div>
+        );
+      }
+      if (!rollbackAllowed) {
+        return (
+          <p>
+            Rollback is turned off for this service. See the message above.
+          </p>
+        );
+      }
       return (<>
         <p>
           Are you sure you want to rollback to this release?
@@ -117,7 +135,7 @@ export default function RollBackDetails(props) {
     <div className={classes.grid}>
 
       <div style={{ gridColumn: '1 / -1' }}>
-        <FluxBanner namespace={namespace} releaseName={releaseName} environment={environment} standalone />
+        <FluxBanner deployer={deployer} environment={environment} standalone />
       </div>
 
       <Paper className={classes.paper}>

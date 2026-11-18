@@ -2,9 +2,7 @@ import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import WarningIcon from '@material-ui/icons/Warning';
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
-
-import { DefaultRollbackApi } from '../../lib/rollback-api';
+import React from 'react';
 
 const CLUSTER_NANNY_BASE = 'https://cluster-nanny.forto.tools';
 
@@ -21,60 +19,52 @@ const useStyles = makeStyles({
     borderRadius: '4px',
     marginBottom: '1em',
   },
+  link: {
+    color: 'inherit',
+    fontWeight: 'bold',
+    textDecoration: 'underline',
+  },
 });
 
-function detectFlux(revisions) {
-  const firstChart = revisions[0]?.chart;
-  return !!firstChart && revisions.some(r => r.chart !== firstChart);
+function clusterNannyUrl(environment, component) {
+  if (!environment) return CLUSTER_NANNY_BASE;
+  const env = `${CLUSTER_NANNY_BASE}/environments/by-id/${encodeURIComponent(environment)}`;
+  return component
+    ? `${env}/components/by-name/${encodeURIComponent(component)}/rollback`
+    : env;
 }
 
-export default function FluxBanner({ namespace, releaseName, environment, standalone, revisions }) {
+export default function FluxBanner({ deployer, environment, standalone }) {
   const classes = useStyles();
-  const [fetchedIsFlux, setFetchedIsFlux] = React.useState(false);
 
-  useEffect(() => {
-    if (revisions != null) return;
-    let active = true;
-    DefaultRollbackApi.getReleaseHistory(namespace, releaseName)
-      .then(data => {
-        if (active) setFetchedIsFlux(detectFlux(data));
-      })
-      .catch(e => {
-        console.error('FluxBanner: failed to fetch release history', e);
-        if (active) setFetchedIsFlux(false);
-      });
-    return () => { active = false; };
-  }, [namespace, releaseName, revisions]);
+  const isFlux = deployer.status === 'ok' && deployer.info.deployedBy === 'flux';
+  if (!isFlux && deployer.status !== 'error') return null;
 
-  const isFlux = revisions != null ? detectFlux(revisions) : fetchedIsFlux;
-
-  if (!isFlux) return null;
-
-  const url = environment
-    ? `${CLUSTER_NANNY_BASE}/environments/by-id/${encodeURIComponent(environment)}/components/by-release-name/${encodeURIComponent(releaseName)}/rollback`
-    : null;
-
+  const url = clusterNannyUrl(environment, isFlux ? deployer.info.component : null);
+  const link = (
+    <a href={url} target="_blank" rel="noreferrer" className={classes.link}>Cluster Nanny</a>
+  );
   const cx = [classes.banner, standalone && classes.bannerStandalone].filter(Boolean).join(' ');
 
   return (
     <div className={cx}>
       <WarningIcon fontSize="large" />
       <Typography variant="body1">
-        This service is deployed via Flux. Rollbacks should be done in{' '}
-        {url ? (
-          <a href={url} target="_blank" rel="noreferrer" style={{ color: 'inherit', fontWeight: 'bold', textDecoration: 'underline' }}>
-            Cluster Nanny
-          </a>
-        ) : 'Cluster Nanny'}
-        , not here!
+        {isFlux
+          ? <>This service is deployed by Pipeline v2 (Flux), so it can&apos;t be rolled back here. A rollback here would be undone by Flux within the hour. Roll it back in {link}.</>
+          : <>Could not check how this service is deployed, so rollback is turned off. Reload to try again, or roll back in {link}.</>}
       </Typography>
     </div>
   );
 }
 FluxBanner.propTypes = {
-  namespace: PropTypes.string.isRequired,
-  releaseName: PropTypes.string.isRequired,
+  deployer: PropTypes.shape({
+    status: PropTypes.oneOf(['loading', 'error', 'ok']).isRequired,
+    info: PropTypes.shape({
+      deployedBy: PropTypes.oneOf(['flux', 'circleci', 'other', 'none']).isRequired,
+      component: PropTypes.string,
+    }),
+  }).isRequired,
   environment: PropTypes.string,
   standalone: PropTypes.bool,
-  revisions: PropTypes.array,
 };
