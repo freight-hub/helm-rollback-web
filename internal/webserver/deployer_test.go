@@ -12,7 +12,7 @@ import (
 	dynamicfake "k8s.io/client-go/dynamic/fake"
 )
 
-func component(name, namespace, releaseName, orbMode, deployer string) *unstructured.Unstructured {
+func component(name, namespace, releaseName, deployer string) *unstructured.Unstructured {
 	obj := &unstructured.Unstructured{}
 	obj.SetAPIVersion("forto.com/v1alpha1")
 	obj.SetKind("EnvironmentComponent")
@@ -20,7 +20,6 @@ func component(name, namespace, releaseName, orbMode, deployer string) *unstruct
 	obj.SetLabels(map[string]string{
 		labelReleaseNamespace: namespace,
 		labelReleaseName:      releaseName,
-		labelOrbMode:          orbMode,
 		labelDeployer:         deployer,
 	})
 	return obj
@@ -36,11 +35,10 @@ func fakeClient(objs ...runtime.Object) *dynamicfake.FakeDynamicClient {
 
 func TestLookupDeployer(t *testing.T) {
 	cluster := fakeClient(
-		component("macro-view", "macro-view", "macro-view", "main-deploy", "corehelm-operator"),
-		component("booking", "booking-v1", "booking-core", "main-deploy", "circleci-helm-orb"),
-		component("decision-billing", "decisions", "decision-billing", "main-deploy", "ode-operator"),
-		// A temp deploy that shares the release labels must not be picked up.
-		component("macro-view-pull-12", "macro-view", "macro-view", "temp-deploy", "circleci-helm-orb"),
+		component("macro-view", "macro-view", "macro-view", "corehelm-operator"),
+		component("macro-view-pull-12", "macro-view", "macro-view-pull-12", "corehelm-operator"),
+		component("booking", "booking-v1", "booking-core", "circleci-helm-orb"),
+		component("decision-billing", "decisions", "decision-billing", "ode-operator"),
 	)
 
 	tests := []struct {
@@ -48,6 +46,7 @@ func TestLookupDeployer(t *testing.T) {
 		want                     DeployerInfo
 	}{
 		{"flux", "macro-view", "macro-view", DeployerInfo{DeployedBy: DeployedByFlux, Component: "macro-view"}},
+		{"flux temp deploy", "macro-view", "macro-view-pull-12", DeployerInfo{DeployedBy: DeployedByFlux, Component: "macro-view-pull-12"}},
 		{"circleci, component named after the chart", "booking-v1", "booking-core", DeployerInfo{DeployedBy: DeployedByCircleCI, Component: "booking"}},
 		{"other deployer", "decisions", "decision-billing", DeployerInfo{DeployedBy: DeployedByOther, Component: "decision-billing"}},
 		{"no component record", "datadog", "datadog", DeployerInfo{DeployedBy: DeployedByNone}},
@@ -66,10 +65,10 @@ func TestLookupDeployer(t *testing.T) {
 }
 
 func TestLookupDeployerErrors(t *testing.T) {
-	t.Run("two main-deploy components for one release", func(t *testing.T) {
+	t.Run("two components for one release", func(t *testing.T) {
 		cluster := fakeClient(
-			component("a", "ns", "svc", "main-deploy", "corehelm-operator"),
-			component("b", "ns", "svc", "main-deploy", "circleci-helm-orb"),
+			component("a", "ns", "svc", "corehelm-operator"),
+			component("b", "ns", "svc", "circleci-helm-orb"),
 		)
 		if _, err := lookupDeployer(context.Background(), cluster, "ns", "svc"); err == nil {
 			t.Fatal("expected an error")

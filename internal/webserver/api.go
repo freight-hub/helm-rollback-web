@@ -154,7 +154,7 @@ func HelmRollBackHandler(response http.ResponseWriter, request *http.Request) {
 	}
 	userEmail := session.Values["userEmail"].(string)
 	if !utility.UserIsAllowed(userEmail) {
-		log.WarningF("User `%s` is not allowed to rollback!", userEmail)
+		log.Warning("A signed-in user is not allowed to rollback")
 		UnauthorizedHandler(response, request)
 		return
 	}
@@ -165,7 +165,7 @@ func HelmRollBackHandler(response http.ResponseWriter, request *http.Request) {
 		log.ErrorF("Could not look up the deployer of release %s in namespace %s: %s", vars["releasename"], vars["namespace"], lookupErr.Error())
 	}
 	if refuse, status, message := rollbackRefusal(info, lookupErr, environment, vars["releasename"]); refuse {
-		log.WarningF("Refused rollback of release %s in namespace %s (deployed by %q)", vars["releasename"], vars["namespace"], info.DeployedBy)
+		log.WarningF("Refused rollback of release %s in namespace %s with HTTP %d", vars["releasename"], vars["namespace"], status)
 		response.Header().Add("Content-type", "text/plain")
 		response.WriteHeader(status)
 		fmt.Fprint(response, message)

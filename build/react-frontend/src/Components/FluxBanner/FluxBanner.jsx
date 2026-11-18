@@ -61,7 +61,7 @@ FluxBanner.propTypes = {
   deployer: PropTypes.shape({
     status: PropTypes.oneOf(['loading', 'error', 'ok']).isRequired,
     info: PropTypes.shape({
-      deployedBy: PropTypes.string.isRequired,
+      deployedBy: PropTypes.oneOf(['flux', 'circleci', 'other', 'none']).isRequired,
       component: PropTypes.string,
     }),
   }).isRequired,

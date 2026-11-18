@@ -29,7 +29,6 @@ const (
 
 const (
 	labelDeployer         = "env.forto.com/deployer"
-	labelOrbMode          = "env.forto.com/orb-mode"
 	labelReleaseName      = "env.forto.com/release-name"
 	labelReleaseNamespace = "env.forto.com/release-namespace"
 )
@@ -46,13 +45,12 @@ type DeployerInfo struct {
 	Component string `json:"component,omitempty"`
 }
 
-// lookupDeployer finds the main-deploy EnvironmentComponent for a Helm release.
-// Temp deploys are left out: they are separate components with their own release.
+// lookupDeployer finds the EnvironmentComponent for a Helm release. Temp deploys
+// are components too, with their own release name, so they are found the same way.
 func lookupDeployer(ctx context.Context, client dynamic.Interface, namespace, releaseName string) (DeployerInfo, error) {
 	selector, err := labels.ValidatedSelectorFromSet(labels.Set{
 		labelReleaseNamespace: namespace,
 		labelReleaseName:      releaseName,
-		labelOrbMode:          "main-deploy",
 	})
 	if err != nil {
 		return DeployerInfo{}, fmt.Errorf("invalid release %s/%s: %w", namespace, releaseName, err)
