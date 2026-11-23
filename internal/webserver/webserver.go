@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 
+	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 
@@ -27,6 +28,7 @@ var (
 	sessionStorage *sessions.CookieStore
 	helmCommand    = ""
 	clientset      *kubernetes.Clientset
+	dynamicClient  dynamic.Interface
 	slackClient    = slack.New(os.Getenv("SLACK_APP_HELM_OAUTH_TOKEN"))
 )
 
@@ -64,6 +66,10 @@ func HandleHTTP(port string) {
 	if err != nil {
 		panic(err.Error())
 	}
+	dynamicClient, err = dynamic.NewForConfig(config)
+	if err != nil {
+		panic(err.Error())
+	}
 
 	helmCommand = os.Getenv("HELM_ROLLBACK_WEB_HELM_COMMAND")
 	if helmCommand == "" {
@@ -86,6 +92,7 @@ func HandleHTTP(port string) {
 	r.HandleFunc("/login-status", LoginStatusHandler)
 	r.HandleFunc("/helm-list", HelmListHandler)
 	r.HandleFunc("/helm-history/{namespace}/{releasename}", HelmHistoryHandler)
+	r.HandleFunc("/helm-deployer/{namespace}/{releasename}", HelmDeployerHandler)
 	r.HandleFunc("/dorollback/{namespace}/{releasename}/{revision}", HelmRollBackHandler).Methods("POST")
 
 	// SPA routes, roughly, doesn't need to be exact
